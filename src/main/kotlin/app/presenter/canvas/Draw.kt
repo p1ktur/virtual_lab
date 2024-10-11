@@ -1,20 +1,14 @@
 package app.presenter.canvas
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
 import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
-import androidx.compose.ui.unit.*
-import kotlin.math.*
 
 const val BACKGROUND_COLOR = 0xFFDDDDEE
 const val GRID_COLOR = 0xFFBBBBCC
 const val CENTER_HELPER_COLOR = 0xFF9999AA
+
+const val SMOOTHEN_VALUE = 4f
 
 fun DrawScope.drawCenterHelper(squareSize: Float) {
     drawLine(
@@ -91,50 +85,4 @@ fun DrawScope.drawGrid(step: Float, canvasZoom: Float, canvasOffset: Offset) {
 
         currentY -= step
     }
-}
-
-fun DrawScope.drawArrowFromTo(
-    from: Offset,
-    to: Offset,
-    color: Color
-) {
-    drawLine(
-        color = color,
-        start = from,
-        end = to,
-        strokeWidth = 1f
-    )
-
-    val tan = (from.y - to.y) / (from.x - to.x)
-    val angleRadians = atan(tan) + if (from.x - to.x < 0) 0f else Math.PI.toFloat()
-
-    drawSimpleArrowHead(
-        at = to,
-        length = 12f,
-        color = color,
-        angleRadians = angleRadians
-    )
-}
-
-fun DrawScope.drawSquaredArrowFromTo(
-    from: Offset,
-    to: Offset,
-    color: Color
-) {
-    drawLine(
-        color = color,
-        start = from,
-        end = to,
-        strokeWidth = 1f
-    )
-
-    val tan = (from.y - to.y) / (from.x - to.x)
-    val angleRadians = atan(tan) + if (from.x - to.x < 0) 0f else Math.PI.toFloat()
-
-    drawSimpleArrowHead(
-        at = to,
-        length = 12f,
-        color = color,
-        angleRadians = angleRadians
-    )
 }

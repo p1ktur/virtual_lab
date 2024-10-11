@@ -3,8 +3,10 @@ package app.presenter.navigation
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import app.domain.viewModels.designing.*
 import app.presenter.components.common.*
 import app.presenter.screens.designing.*
+import moe.tlaster.precompose.koin.*
 import moe.tlaster.precompose.navigation.*
 
 @Composable
@@ -26,7 +28,13 @@ fun NavigationScreen() {
             initialRoute = "/designing"
         ) {
             scene(route = "/designing") {
-                DesigningScreen()
+                val viewModel = koinViewModel<DesigningViewModel>()
+                val uiState by viewModel.uiState.collectAsState()
+
+                DesigningScreen(
+                    uiState = uiState,
+                    onUiAction = viewModel::onUiAction,
+                )
             }
         }
     }

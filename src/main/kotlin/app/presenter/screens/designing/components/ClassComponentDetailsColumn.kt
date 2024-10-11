@@ -6,20 +6,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.unit.*
 import app.domain.umlDiagram.model.components.*
+import app.domain.viewModels.designing.*
 import app.presenter.components.common.*
 
 @Composable
 fun ClassComponentDetailsColumn(
     modifier: Modifier = Modifier,
-    classComponents: List<UMLClassComponent>,
-    focusedDiagramReference: UMLClassComponent?,
-    updateCounter: MutableState<Int>
+    uiState: DesigningUiState,
+    onUiAction: (DesigningUiAction) -> Unit
 ) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        focusedDiagramReference?.let { ref ->
+        uiState.focusedComponentReference?.let { ref ->
             DefaultTextField(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -27,8 +27,8 @@ fun ClassComponentDetailsColumn(
                 startValue = ref.name,
                 label = "Name:",
                 onValueChange = { newValue ->
-                    classComponents.last().name = newValue
-                    updateCounter.value++
+                    uiState.classComponents.last().name = newValue
+                    onUiAction(DesigningUiAction.UpdateCommonCounter)
                 },
                 maxLength = 48,
                 showEditIcon = false,

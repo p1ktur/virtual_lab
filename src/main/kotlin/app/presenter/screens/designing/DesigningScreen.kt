@@ -14,39 +14,23 @@ import app.domain.umlDiagram.editing.*
 import app.domain.umlDiagram.model.components.*
 import app.domain.umlDiagram.model.connections.*
 import app.domain.umlDiagram.mouse.*
+import app.domain.util.geometry.*
 import app.presenter.screens.designing.components.*
 import kotlin.random.*
+import app.domain.viewModels.designing.*
 
 const val ICON_BACKGROUND_COLOR = 0xFFDDEEDD
 const val ICON_BACKGROUND_COLOR_HIGHLIGHTED = 0xFFDDDDFF
-const val ICON_IMAGE_COLOR = 0xFF8899DD
-const val ICON_IMAGE_COLOR_HIGHLIGHTED = 0xFFAAAAFF
+const val EDIT_ICON_IMAGE_COLOR = 0xFF8899DD
+const val EDIT_ICON_IMAGE_COLOR_HIGHLIGHTED = 0xFFAAAAFF
+const val ACTION_ICON_IMAGE_COLOR = 0xFFDD9988
+const val ACTION_ICON_IMAGE_COLOR_HIGHLIGHTED = 0xFFFFAAAA
 
 @Composable
-fun DesigningScreen() {
-    // Global
-    val updateCounter = remember { mutableIntStateOf(0) }
-
-    // Diagram data
-    val classComponents = remember {
-        List(5) {
-            UMLClassComponent(
-                name = "Class $it",
-                position = Offset(Random.nextFloat() * 1000f, Random.nextFloat() * 500f)
-            )
-        }.toMutableStateList()
-    }
-
-    val classConnections = remember { emptyList<UMLClassConnection>().toMutableStateList() }
-
-    val diagramInFocus = remember { mutableStateOf(false) }
-    val diagramSideInFocus = remember { mutableStateOf<SideDirection?>(null) }
-    val diagramVertexInFocus = remember { mutableStateOf<VertexDirection?>(null) }
-    val focusedDiagramReference = remember { mutableStateOf<UMLClassComponent?>(null) }
-
-    // Editing data
-    val editMode = remember { mutableStateOf(EditMode.SELECTOR) }
-
+fun DesigningScreen(
+    uiState: DesigningUiState,
+    onUiAction: (DesigningUiAction) -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -65,9 +49,8 @@ fun DesigningScreen() {
                     .background(MaterialTheme.colorScheme.primaryContainer)
                     .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f))
                     .padding(4.dp),
-                classComponents = classComponents,
-                focusedDiagramReference = focusedDiagramReference.value,
-                updateCounter = updateCounter
+                uiState = uiState,
+                onUiAction = onUiAction
             )
             Column(
                 modifier = Modifier
@@ -76,14 +59,15 @@ fun DesigningScreen() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                EditModesRow(
+                ToolAndActionsBar(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12f))
                         .background(Color.White)
                         .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f))
                         .padding(4.dp),
-                    editMode = editMode
+                    uiState = uiState,
+                    onUiAction = onUiAction
                 )
                 DiagramCanvas(
                     modifier = Modifier
@@ -91,14 +75,8 @@ fun DesigningScreen() {
                         .clip(RoundedCornerShape(12f))
                         .background(Color.White)
                         .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f)),
-                    classComponents = classComponents,
-                    classConnections = classConnections,
-                    diagramInFocus = diagramInFocus,
-                    diagramSideInFocus = diagramSideInFocus,
-                    diagramVertexInFocus = diagramVertexInFocus,
-                    focusedDiagramReference = focusedDiagramReference,
-                    editMode = editMode,
-                    updateCounter = updateCounter
+                    uiState = uiState,
+                    onUiAction = onUiAction
                 )
             }
         }

@@ -14,16 +14,11 @@ import kotlin.math.*
 data class UMLClassComponent(
     var position: Offset = Offset(100f, 100f),
     var size: Size = Size(MIN_WIDTH, MIN_HEIGHT),
-    var name: String = "Class",
+    var name: String = "Class Component",
     var isHighlighted: Boolean = false,
     val highlightedSides: MutableList<SideDirection> = mutableListOf(),
     val highlightedVertices: MutableList<VertexDirection> = mutableListOf()
 ) : UMLDiagramComponent {
-
-    private var containedClickPosition: Offset? = null
-
-    private var cachedSize: Size? = null
-    private var cachedPosition: Offset? = null
 
     companion object {
         const val MIN_WIDTH = 144f
@@ -36,8 +31,13 @@ data class UMLClassComponent(
         const val HIGHLIGHT_COLOR = 0xFFBB4499
     }
 
+    private var containedClickPosition: Offset? = null
+
+    private var cachedSize: Size? = null
+    private var cachedPosition: Offset? = null
+
     fun moveTo(position: Offset) {
-        this.position = position - (containedClickPosition ?: Offset.Zero)
+        this.position = (position - (containedClickPosition ?: Offset.Zero)).smoothen()
     }
 
     fun resizeLeftBy(delta: Float) {
@@ -46,7 +46,6 @@ data class UMLClassComponent(
 
         if (delta >= 0f) {
             size = cachedSize?.let { it.copy(width = max(MIN_WIDTH, it.width - delta)) } ?: size
-
             position = cachedPosition?.let { it.copy(x = min(it.x + (cachedSize?.width ?: MIN_WIDTH) - MIN_WIDTH, it.x + delta)) } ?: position
         } else {
             size = cachedSize?.let { it.copy(width = max(MIN_WIDTH, it.width - delta)) } ?: size
@@ -80,6 +79,12 @@ data class UMLClassComponent(
             size = size.copy(height = max(size.height, nameText.size.height + DRAW_PADDING * 2))
         }
 
+        drawScope.drawRect(
+            color = Color.White,
+            topLeft = position,
+            size = size,
+            style = Fill
+        )
         drawScope.drawRect(
             color = if (isHighlighted) Color(HIGHLIGHT_COLOR) else Color.Black,
             topLeft = position,
@@ -115,19 +120,19 @@ data class UMLClassComponent(
         )
     }
 
-    fun containsMouse(mousePosition: Offset, isClick: Boolean): ContainmentResult {
-        val sidesContainment = checkSidesForContainment(position, mousePosition)
-        if (sidesContainment != ContainmentResult.None) {
-            (sidesContainment as? ContainmentResult.Side)?.let {
+    fun containsMouse(mousePosition: Offset, isClick: Boolean): ComponentContainmentResult {
+        val sidesContainment = checkSidesForContainment(mousePosition)
+        if (sidesContainment != ComponentContainmentResult.None) {
+            (sidesContainment as? ComponentContainmentResult.Side)?.let {
                 clearHighlight()
                 highlightedSides.add(it.direction)
             }
             return sidesContainment
         }
 
-        val verticesContainment = checkVerticesForContainment(position, mousePosition)
-        if (verticesContainment != ContainmentResult.None) {
-            (verticesContainment as? ContainmentResult.Vertex)?.let {
+        val verticesContainment = checkVerticesForContainment(mousePosition)
+        if (verticesContainment != ComponentContainmentResult.None) {
+            (verticesContainment as? ComponentContainmentResult.Vertex)?.let {
                 clearHighlight()
                 highlightedVertices.add(it.direction)
             }
@@ -141,11 +146,11 @@ data class UMLClassComponent(
             if (isClick) containedClickPosition = mousePosition - position
             isHighlighted = true
 
-            return ContainmentResult.Whole
+            return ComponentContainmentResult.Whole
         } else {
             clearHighlight()
 
-            return ContainmentResult.None
+            return ComponentContainmentResult.None
         }
     }
 

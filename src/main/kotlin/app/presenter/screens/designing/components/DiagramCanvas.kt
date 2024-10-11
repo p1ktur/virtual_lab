@@ -3,10 +3,9 @@ package app.presenter.screens.designing.components
 import androidx.compose.foundation.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.*
 import androidx.compose.ui.*
 import androidx.compose.ui.geometry.*
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
 import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.layout.*
@@ -17,6 +16,7 @@ import app.domain.umlDiagram.model.connections.*
 import app.domain.umlDiagram.mouse.*
 import app.domain.util.geometry.*
 import app.domain.util.list.*
+import app.domain.viewModels.designing.*
 import app.presenter.canvas.*
 import java.awt.*
 
@@ -24,87 +24,39 @@ import java.awt.*
 @Composable
 fun DiagramCanvas(
     modifier: Modifier = Modifier,
-    classComponents: SnapshotStateList<UMLClassComponent>,
-    classConnections: SnapshotStateList<UMLClassConnection>,
-    diagramInFocus: MutableState<Boolean>,
-    diagramSideInFocus: MutableState<SideDirection?>,
-    diagramVertexInFocus: MutableState<VertexDirection?>,
-    focusedDiagramReference: MutableState<UMLClassComponent?>,
-    editMode: MutableState<EditMode>,
-    updateCounter: MutableState<Int>
+    uiState: DesigningUiState,
+    onUiAction: (DesigningUiAction) -> Unit
 ) {
-    // Canvas data
-    var canvasSize by remember { mutableStateOf(Size.Zero) }
-    val canvasCenter = remember(canvasSize) { Offset(canvasSize.width / 2f, canvasSize.height / 2f) }
-
-    var canvasZoom by remember { mutableFloatStateOf(1f) }
-
-    var cachedCanvasOffset by remember { mutableStateOf(Offset.Zero) }
-    var canvasOffset by remember { mutableStateOf(Offset.Zero) }
-
     val textMeasurer = rememberTextMeasurer()
     val umlClassTextStyle = MaterialTheme.typography.bodyMedium
 
-    // Mouse data
-    var mouseClickEvent by remember { mutableStateOf<PointerInputChange?>(null) }
+    fun Offset.scaledAndTranslated(): Offset = unZoom(uiState.canvasUiState.center, uiState.canvasUiState.zoom) - uiState.canvasUiState.offset
 
-    var mouseMoveEvent by remember { mutableStateOf<PointerInputChange?>(null) }
-
-    var cursorPointerIcon by remember { mutableStateOf(PointerIcon(Cursor(Cursor.DEFAULT_CURSOR))) }
-
-    fun Offset.scaledAndTranslated(canvasOffset: Offset, canvasCenter: Offset, canvasZoom: Float): Offset = unZoom(canvasCenter, canvasZoom) - canvasOffset
-
-    // Connection Data
-
-    var creatingConnection by remember { mutableStateOf(false) }
-
-    LaunchedEffect(editMode.value) {
-        classComponents.forEach { it.clearHighlight() }
-        diagramInFocus.value = false
-        diagramSideInFocus.value = null
-        diagramVertexInFocus.value = null
-
-        when (editMode.value) {
-            EditMode.SELECTOR -> {
-                creatingConnection = false
-            }
-            EditMode.CONNECTOR -> Unit
-        }
+    // EDIT MODE CHANGE PROCESS
+    LaunchedEffect(uiState.editMode) {
+        onUiAction(DesigningUiAction.ClearAllFocuses)
     }
 
-    LaunchedEffect(mouseClickEvent) {
-        mouseClickEvent?.let { event ->
-            classComponents.forEachReversedIndexed { index, it ->
-                when (val containment = it.containsMouse(event.position.scaledAndTranslated(canvasOffset, canvasCenter, canvasZoom), true)) {
-                    ContainmentResult.None -> Unit
+    // MOUSE CLICK PROCESS
+    LaunchedEffect(uiState.canvasUiState.mouseClickEvent) {
+        uiState.canvasUiState.mouseClickEvent?.let { event ->
+            uiState.classComponents.forEachReversedIndexed { index, it ->
+                when (val containment = it.containsMouse(event.position.scaledAndTranslated(), true)) {
+                    ComponentContainmentResult.None -> Unit
                     else -> {
-                        when (editMode.value) {
+                        when (uiState.editMode) {
                             EditMode.SELECTOR -> {
-                                mouseMoveEvent = null
-
-                                classComponents.swapWithLast(index)
-                                focusedDiagramReference.value = classComponents.last()
-
-                                diagramInFocus.value = true
-
-                                if (containment is ContainmentResult.Side) {
-                                    diagramSideInFocus.value = containment.direction
-                                } else if (containment is ContainmentResult.Vertex) {
-                                    diagramVertexInFocus.value = containment.direction
-                                }
-
-                                updateCounter.value++
+                                onUiAction(DesigningUiAction.ClickOnComponent(index, containment))
                                 return@LaunchedEffect
                             }
                             EditMode.CONNECTOR -> {
-                                mouseMoveEvent = null
+                                if (uiState.creatingConnection && index != uiState.classComponents.lastIndex) {
+                                    onUiAction(DesigningUiAction.CreateConnectionOn(index))
+                                } else {
+                                    onUiAction(DesigningUiAction.StartConnectionOn(index))
+                                }
 
-                                classComponents.swapWithLast(index)
-                                diagramInFocus.value = true
-
-                                creatingConnection = true
-
-                                updateCounter.value++
+                                onUiAction(DesigningUiAction.UpdateCommonCounter)
                                 return@LaunchedEffect
                             }
                         }
@@ -112,89 +64,185 @@ fun DiagramCanvas(
                 }
             }
 
-            classComponents.forEach { it.clearHighlight() }
-            diagramInFocus.value = false
-            focusedDiagramReference.value = null
-            diagramSideInFocus.value = null
-            diagramVertexInFocus.value = null
+            uiState.classConnections.forEachReversedIndexed { index, it ->
+                when (val containment = it.containsMouse(event.position.scaledAndTranslated())) {
+                    ConnectionContainmentResult.None -> Unit
+                    else -> {
+                        onUiAction(DesigningUiAction.ClickOnConnection(index, containment))
+                        return@LaunchedEffect
+                    }
+                }
+            }
 
-            creatingConnection = false
+            onUiAction(DesigningUiAction.ClearAllFocuses)
         }
     }
 
-    LaunchedEffect(diagramInFocus, mouseMoveEvent) {
-        if (classComponents.isEmpty()) return@LaunchedEffect
-
-        when (editMode.value) {
-            EditMode.SELECTOR -> mouseMoveEvent?.let { event ->
-                if (mouseClickEvent != null) mouseClickEvent?.let { clickEvent ->
-                    if (diagramInFocus.value) {
-                        when {
-                            diagramSideInFocus.value != null -> {
-                                when (diagramSideInFocus.value) {
+    // MOUSE MOVEMENT PROCESS
+    LaunchedEffect(uiState.componentInFocus, uiState.connectionInFocus, uiState.canvasUiState.mouseMoveEvent) {
+        when (uiState.editMode) {
+            EditMode.SELECTOR -> uiState.canvasUiState.mouseMoveEvent?.let { event ->
+                if (uiState.canvasUiState.mouseClickEvent != null) uiState.canvasUiState.mouseClickEvent?.let { clickEvent ->
+                    // MOUSE CLICK AND MOVE
+                    when {
+                        uiState.componentInFocus && uiState.classComponents.isNotEmpty() -> when {
+                            uiState.componentSideInFocus != null -> {
+                                when (uiState.componentSideInFocus) {
                                     SideDirection.LEFT -> {
-                                        classComponents.last().resizeLeftBy((event.position.x - clickEvent.position.x).div(canvasZoom))
-                                        updateCounter.value++
+                                        uiState.classComponents.last().resizeLeftBy(
+                                            (event.position.x - clickEvent.position.x).div(uiState.canvasUiState.zoom).smoothen()
+                                        )
+                                        onUiAction(DesigningUiAction.UpdateCommonCounter)
                                     }
                                     SideDirection.RIGHT -> {
-                                        classComponents.last().resizeRightBy((event.position.x - clickEvent.position.x).div(canvasZoom))
-                                        updateCounter.value++
+                                        uiState.classComponents.last().resizeRightBy(
+                                            (event.position.x - clickEvent.position.x).div(uiState.canvasUiState.zoom).smoothen()
+                                        )
+                                        onUiAction(DesigningUiAction.UpdateCommonCounter)
                                     }
                                     else -> Unit
                                 }
                             }
-                            diagramVertexInFocus.value != null -> Unit
+                            uiState.componentVertexInFocus != null -> Unit
                             else -> {
-                                classComponents.last().moveTo(event.position.scaledAndTranslated(canvasOffset, canvasCenter, canvasZoom))
-                                updateCounter.value++
+                                uiState.classComponents.last().moveTo(event.position.scaledAndTranslated())
+                                onUiAction(DesigningUiAction.UpdateCommonCounter)
                             }
                         }
-                    } else {
-                        canvasOffset = cachedCanvasOffset + Offset(
-                            event.position.x - clickEvent.position.x,
-                            event.position.y - clickEvent.position.y
-                        ).div(canvasZoom)
-                        updateCounter.value++
+                        uiState.connectionInFocus && uiState.classConnections.isNotEmpty() -> when {
+                            uiState.connectionSegmentInFocus != null -> {
+                                when (uiState.connectionSegmentInFocus) {
+                                    ConnectionSegment.FIRST -> {
+                                        val segmentOffset = uiState.classConnections.last().calculateSegmentOffset(
+                                            ConnectionSegment.FIRST,
+                                            event.position.scaledAndTranslated().smoothen()
+                                        )
+
+                                        uiState.classConnections.last().setSegmentOffset(ConnectionSegment.FIRST, segmentOffset)
+                                        onUiAction(DesigningUiAction.UpdateCommonCounter)
+                                    }
+                                    ConnectionSegment.SECOND -> {
+                                        val segmentOffset = uiState.classConnections.last().calculateSegmentOffset(
+                                            ConnectionSegment.SECOND,
+                                            event.position.scaledAndTranslated().smoothen()
+                                        )
+
+                                        uiState.classConnections.last().setSegmentOffset(ConnectionSegment.SECOND, segmentOffset)
+                                        onUiAction(DesigningUiAction.UpdateCommonCounter)
+                                    }
+                                    ConnectionSegment.THIRD -> {
+                                        val segmentOffset = uiState.classConnections.last().calculateSegmentOffset(
+                                            ConnectionSegment.THIRD,
+                                            event.position.scaledAndTranslated().smoothen()
+                                        )
+
+                                        uiState.classConnections.last().setSegmentOffset(ConnectionSegment.THIRD, segmentOffset)
+                                        onUiAction(DesigningUiAction.UpdateCommonCounter)
+                                    }
+                                }
+                            }
+                            else -> Unit
+                        }
+                        else -> {
+                            onUiAction(DesigningUiAction.UpdateCanvasOffset(
+                                offset = uiState.canvasUiState.cachedOffset + Offset(
+                                    event.position.x - clickEvent.position.x,
+                                    event.position.y - clickEvent.position.y
+                                ).div(uiState.canvasUiState.zoom)
+                            ))
+                            onUiAction(DesigningUiAction.UpdateCommonCounter)
+                        }
                     }
                 } else {
-                    classComponents.forEachReversed {
-                        when (val containment = it.containsMouse(event.position.scaledAndTranslated(canvasOffset, canvasCenter, canvasZoom), false)) {
-                            ContainmentResult.None -> {
-                                cursorPointerIcon = PointerIcon(Cursor(Cursor.DEFAULT_CURSOR))
+                    // MOUSE MOVE AND NOT CLICKED
+                    uiState.classComponents.forEachReversedIndexed { index, it ->
+                        when (val containment = it.containsMouse(event.position.scaledAndTranslated(), false)) {
+                            ComponentContainmentResult.None -> {
+                                onUiAction(DesigningUiAction.UpdatePointerIcon(PointerIcon(Cursor(Cursor.DEFAULT_CURSOR))))
                             }
-                            ContainmentResult.Whole -> {
-                                cursorPointerIcon = PointerIcon(Cursor(Cursor.MOVE_CURSOR))
+                            ComponentContainmentResult.Whole -> {
+                                onUiAction(DesigningUiAction.UpdatePointerIcon(PointerIcon(Cursor(Cursor.MOVE_CURSOR))))
 
-                                updateCounter.value++
+                                uiState.classComponents.forEachIndexed { i, com -> if (i != index) com.clearHighlight() }
+                                uiState.classConnections.forEach { con -> con.clearHighlight() }
+                                onUiAction(DesigningUiAction.UpdateCommonCounter)
                                 return@LaunchedEffect
                             }
-                            is ContainmentResult.Side -> {
+                            is ComponentContainmentResult.Side -> {
                                 if (containment.direction == SideDirection.LEFT || containment.direction == SideDirection.RIGHT) {
-                                    cursorPointerIcon = PointerIcon(Cursor(Cursor.E_RESIZE_CURSOR))
+                                    onUiAction(DesigningUiAction.UpdatePointerIcon(PointerIcon(Cursor(Cursor.E_RESIZE_CURSOR))))
                                 } else {
-                                    cursorPointerIcon = PointerIcon(Cursor(Cursor.DEFAULT_CURSOR))
+                                    onUiAction(DesigningUiAction.UpdatePointerIcon(PointerIcon(Cursor(Cursor.DEFAULT_CURSOR))))
                                 }
 
-                                updateCounter.value++
+                                uiState.classComponents.forEachIndexed { i, com -> if (i != index) com.clearHighlight() }
+                                uiState.classConnections.forEach { con -> con.clearHighlight() }
+                                onUiAction(DesigningUiAction.UpdateCommonCounter)
                                 return@LaunchedEffect
                             }
-                            is ContainmentResult.Vertex -> {
-                                cursorPointerIcon = PointerIcon(Cursor(Cursor.DEFAULT_CURSOR))
+                            is ComponentContainmentResult.Vertex -> {
+                                onUiAction(DesigningUiAction.UpdatePointerIcon(PointerIcon(Cursor(Cursor.DEFAULT_CURSOR))))
 
-                                updateCounter.value++
+                                uiState.classComponents.forEachIndexed { i, com -> if (i != index) com.clearHighlight() }
+                                uiState.classConnections.forEach { con -> con.clearHighlight() }
+                                onUiAction(DesigningUiAction.UpdateCommonCounter)
                                 return@LaunchedEffect
                             }
                         }
                     }
 
-                    updateCounter.value++
+                    uiState.classConnections.forEachReversedIndexed { index, it ->
+                        when (val containment = it.containsMouse(event.position.scaledAndTranslated())) {
+                            ConnectionContainmentResult.None -> {
+                                onUiAction(DesigningUiAction.UpdatePointerIcon(PointerIcon(Cursor(Cursor.DEFAULT_CURSOR))))
+                            }
+                            is ConnectionContainmentResult.FirstSegment -> {
+                                if (containment.direction == SegmentDirection.VERTICAL) {
+                                    onUiAction(DesigningUiAction.UpdatePointerIcon(PointerIcon(Cursor(Cursor.E_RESIZE_CURSOR))))
+                                } else {
+                                    onUiAction(DesigningUiAction.UpdatePointerIcon(PointerIcon(Cursor(Cursor.N_RESIZE_CURSOR))))
+                                }
+
+                                uiState.classConnections.forEachIndexed { i, con -> if (i != index) con.clearHighlight() }
+                                uiState.classComponents.forEach { com -> com.clearHighlight() }
+                                onUiAction(DesigningUiAction.UpdateCommonCounter)
+                                return@LaunchedEffect
+                            }
+                            is ConnectionContainmentResult.SecondSegment -> {
+                                if (containment.direction == SegmentDirection.VERTICAL) {
+                                    onUiAction(DesigningUiAction.UpdatePointerIcon(PointerIcon(Cursor(Cursor.E_RESIZE_CURSOR))))
+                                } else {
+                                    onUiAction(DesigningUiAction.UpdatePointerIcon(PointerIcon(Cursor(Cursor.N_RESIZE_CURSOR))))
+                                }
+
+                                uiState.classConnections.forEachIndexed { i, con -> if (i != index) con.clearHighlight() }
+                                uiState.classComponents.forEach { com -> com.clearHighlight() }
+                                onUiAction(DesigningUiAction.UpdateCommonCounter)
+                                return@LaunchedEffect
+                            }
+                            is ConnectionContainmentResult.ThirdSegment -> {
+                                if (containment.direction == SegmentDirection.VERTICAL) {
+                                    onUiAction(DesigningUiAction.UpdatePointerIcon(PointerIcon(Cursor(Cursor.E_RESIZE_CURSOR))))
+                                } else {
+                                    onUiAction(DesigningUiAction.UpdatePointerIcon(PointerIcon(Cursor(Cursor.N_RESIZE_CURSOR))))
+                                }
+
+                                uiState.classConnections.forEachIndexed { i, con -> if (i != index) con.clearHighlight() }
+                                uiState.classComponents.forEach { com -> com.clearHighlight() }
+                                onUiAction(DesigningUiAction.UpdateCommonCounter)
+                                return@LaunchedEffect
+                            }
+                        }
+                    }
+
+                    onUiAction(DesigningUiAction.UpdateCommonCounter)
                 }
             }
             EditMode.CONNECTOR -> {
-                mouseMoveEvent?.let { event ->
-                    classComponents.forEachReversed {
-                        it.containsMouse(event.position.scaledAndTranslated(canvasOffset, canvasCenter, canvasZoom), false)
-                        updateCounter.value++
+                uiState.canvasUiState.mouseMoveEvent?.let { event ->
+                    uiState.classComponents.forEachReversed {
+                        it.containsMouse(event.position.scaledAndTranslated(), false)
+                        onUiAction(DesigningUiAction.UpdateCommonCounter)
                     }
                 }
             }
@@ -203,55 +251,54 @@ fun DiagramCanvas(
 
     Canvas(
         modifier = modifier
-            .pointerHoverIcon(cursorPointerIcon)
+            .pointerHoverIcon(uiState.canvasUiState.cursorPointerIcon)
             .onPointerEvent(PointerEventType.Press) { event ->
-                cachedCanvasOffset = canvasOffset
-                mouseClickEvent = event.changes.last()
+                onUiAction(DesigningUiAction.MouseClick(event.changes.last()))
             }
             .onPointerEvent(PointerEventType.Move) { event ->
-                mouseMoveEvent = event.changes.last()
+                onUiAction(DesigningUiAction.MouseMove(event.changes.last()))
             }
             .onPointerEvent(PointerEventType.Release) {
-                classComponents.last().applyResizing()
-
-                diagramInFocus.value = false
-                diagramSideInFocus.value = null
-                diagramVertexInFocus.value = null
-
-                mouseClickEvent = null
-                mouseMoveEvent = null
+                onUiAction(DesigningUiAction.MouseRelease)
             }
             .onPointerEvent(PointerEventType.Scroll) { event ->
-                var delta = event.changes.last().scrollDelta.x
-                if (delta == 0f) delta = event.changes.last().scrollDelta.y
-                canvasZoom -= delta * 0.1f
-                canvasZoom = kotlin.math.max(0.1f, kotlin.math.min(10f, canvasZoom))
+                onUiAction(DesigningUiAction.MouseScroll(event.changes.last()))
             }
             .onSizeChanged { size ->
-                canvasSize = Size(size.width.toFloat(), size.height.toFloat())
+                onUiAction(DesigningUiAction.UpdateCanvasSize(Size(size.width.toFloat(), size.height.toFloat())))
             }
     ) {
-        updateCounter.value.let {
+        uiState.commonCounter.let {
             drawGrid(
-                step = 24f * canvasZoom,
-                canvasZoom = canvasZoom,
-                canvasOffset = canvasOffset
+                step = 24f * uiState.canvasUiState.zoom,
+                canvasZoom = uiState.canvasUiState.zoom,
+                canvasOffset = uiState.canvasUiState.offset
             )
-            scale(canvasZoom) {
-                translate(canvasOffset.x, canvasOffset.y) {
+            scale(uiState.canvasUiState.zoom) {
+                translate(uiState.canvasUiState.offset.x, uiState.canvasUiState.offset.y) {
                     drawCenterHelper(
-                        squareSize = 24f / canvasZoom
+                        squareSize = 24f / uiState.canvasUiState.zoom
                     )
 
-                    classComponents.forEach {
-                        it.drawOn(this@Canvas, textMeasurer, umlClassTextStyle)
+                    uiState.classConnections.forEach {
+                        it.drawOn(
+                            drawScope = this@Canvas
+                        )
                     }
 
-                    if (creatingConnection) classComponents.lastOrNull()?.let { component ->
+                    uiState.classComponents.forEach {
+                        it.drawOn(
+                            drawScope = this@Canvas,
+                            textMeasurer = textMeasurer,
+                            textStyle = umlClassTextStyle
+                        )
+                    }
+
+                    if (uiState.creatingConnection) uiState.classComponents.lastOrNull()?.let { component ->
                         val origin = component.position.plus(Offset(component.size.width / 2, component.size.height / 2))
                         drawArrowFromTo(
                             from = origin,
-                            to = mouseMoveEvent?.position?.scaledAndTranslated(canvasOffset, canvasCenter, canvasZoom) ?: origin,
+                            to = uiState.canvasUiState.mouseMoveEvent?.position?.scaledAndTranslated() ?: origin,
                             color = Color(UMLClassComponent.HIGHLIGHT_COLOR)
                         )
                     }

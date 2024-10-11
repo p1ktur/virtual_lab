@@ -5,6 +5,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.*
+import app.domain.di.*
 import app.presenter.components.window.*
 import app.presenter.navigation.*
 import app.presenter.theme.*
@@ -17,16 +18,11 @@ import java.awt.*
 fun main() {
     startKoin {
         modules(
-//            sharedModule,
-//            clientModule,
-//            doctorModule,
-//            adminModule
+            mainKoinModule
         )
     }
 
     application {
-        val coroutineScope = rememberCoroutineScope()
-
         val windowState = rememberWindowState(
             placement = WindowPlacement.Floating,
             position = WindowPosition.Aligned(Alignment.Center),

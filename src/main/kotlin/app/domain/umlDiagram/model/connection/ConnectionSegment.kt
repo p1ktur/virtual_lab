@@ -1,4 +1,4 @@
-package app.domain.umlDiagram.model.connections
+package app.domain.umlDiagram.model.connection
 
 enum class ConnectionSegment {
     FIRST,

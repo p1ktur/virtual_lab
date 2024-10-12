@@ -19,6 +19,8 @@ import app.domain.umlDiagram.editing.*
 import app.presenter.components.tooltip.*
 import app.presenter.screens.designing.*
 import app.domain.viewModels.designing.*
+import app.presenter.components.buttons.*
+import app.presenter.components.common.*
 
 @Composable
 fun ToolAndActionsBar(
@@ -32,18 +34,16 @@ fun ToolAndActionsBar(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         ActionButton(
+            modifier = Modifier.size(32.dp),
             icon = Icons.Filled.Add,
             actionText = "Add Component",
             onClick = {
                 onUiAction(DesigningUiAction.AddComponent)
             }
         )
-        Box(
-            modifier = Modifier
-                .size(1.dp, 32.dp)
-                .background(Color.LightGray)
-        )
+        VerticalDivider(height = 32.dp)
         ModeButton(
+            modifier = Modifier.size(32.dp),
             icon = Icons.Filled.PanTool,
             editMode = uiState.editMode,
             connectedEditMode = EditMode.SELECTOR,
@@ -52,6 +52,7 @@ fun ToolAndActionsBar(
             }
         )
         ModeButton(
+            modifier = Modifier.size(32.dp),
             icon = Icons.Filled.SyncAlt,
             editMode = uiState.editMode,
             connectedEditMode = EditMode.CONNECTOR,
@@ -71,72 +72,5 @@ fun ToolAndActionsBar(
             textAlign = TextAlign.End,
             color = Color.Black
         )
-    }
-}
-
-@Composable
-private fun ActionButton(
-    icon: ImageVector,
-    actionText: String,
-    onClick: () -> Unit
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-
-    TooltipOn(
-        text = actionText
-    ) {
-        Box(
-            modifier = Modifier
-                .size(32.dp)
-                .clip(CircleShape)
-                .background(Color(if (isPressed) ICON_BACKGROUND_COLOR_HIGHLIGHTED else ICON_BACKGROUND_COLOR))
-                .border(1.dp, Color(if (isPressed) ACTION_ICON_IMAGE_COLOR_HIGHLIGHTED else ACTION_ICON_IMAGE_COLOR), CircleShape)
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = rememberRipple(),
-                    onClick = onClick
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                modifier = Modifier.size(16.dp),
-                imageVector = icon,
-                contentDescription = "Edit mode button",
-                tint = Color(if (isPressed) ACTION_ICON_IMAGE_COLOR_HIGHLIGHTED else ACTION_ICON_IMAGE_COLOR)
-            )
-        }
-    }
-}
-
-@Composable
-private fun ModeButton(
-    icon: ImageVector,
-    editMode: EditMode,
-    connectedEditMode: EditMode,
-    onClick: () -> Unit
-) {
-    TooltipOn(
-        text = when (connectedEditMode) {
-            EditMode.SELECTOR -> "Selector Tool"
-            EditMode.CONNECTOR -> "Connector Tool"
-        }
-    ) {
-        Box(
-            modifier = Modifier
-                .size(32.dp)
-                .clip(CircleShape)
-                .background(Color(if (editMode == connectedEditMode) ICON_BACKGROUND_COLOR_HIGHLIGHTED else ICON_BACKGROUND_COLOR))
-                .border(1.dp, Color(if (editMode == connectedEditMode) EDIT_ICON_IMAGE_COLOR_HIGHLIGHTED else EDIT_ICON_IMAGE_COLOR), CircleShape)
-                .clickable(onClick = onClick),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                modifier = Modifier.size(16.dp),
-                imageVector = icon,
-                contentDescription = "Edit mode button",
-                tint = Color(if (editMode == connectedEditMode) EDIT_ICON_IMAGE_COLOR_HIGHLIGHTED else EDIT_ICON_IMAGE_COLOR)
-            )
-        }
     }
 }

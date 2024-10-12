@@ -30,9 +30,7 @@ fun DefaultTextField(
     labelTextStyle: TextStyle,
     textColor: Color
 ) {
-    var text by remember(startValue) {
-        mutableStateOf(startValue)
-    }
+    var text by remember(startValue) { mutableStateOf(startValue) }
 
     Column(
         modifier = modifier

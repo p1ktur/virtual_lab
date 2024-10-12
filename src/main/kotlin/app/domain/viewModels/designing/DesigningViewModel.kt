@@ -3,11 +3,13 @@ package app.domain.viewModels.designing
 import androidx.compose.ui.geometry.*
 import androidx.compose.ui.input.pointer.*
 import app.domain.umlDiagram.editing.*
-import app.domain.umlDiagram.model.components.*
-import app.domain.umlDiagram.model.connections.*
+import app.domain.umlDiagram.model.component.*
+import app.domain.umlDiagram.model.connection.*
 import app.domain.umlDiagram.mouse.*
 import app.domain.util.list.*
 import app.domain.util.numbers.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.*
 import kotlinx.coroutines.flow.*
 import moe.tlaster.precompose.viewmodel.*
 
@@ -16,38 +18,53 @@ class DesigningViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(DesigningUiState())
     val uiState = _uiState.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            delay(1000)
+            addComponent()
+            addComponent()
+            startConnectionOn(0)
+            createConnectionOn(0)
+            updateCommonCounter()
+        }
+    }
+
     fun onUiAction(action: DesigningUiAction) {
-        when (action) {
-            // Common
-            DesigningUiAction.UpdateCommonCounter -> updateCommonCounter()
+        viewModelScope.launch {
+            when (action) {
+                // Common
+                DesigningUiAction.UpdateCommonCounter -> updateCommonCounter()
 
-            // Components
-            is DesigningUiAction.ClickOnComponent -> clickOnComponent(action.index, action.containment)
-            DesigningUiAction.AddComponent -> addComponent()
+                // Components
+                is DesigningUiAction.ClickOnComponent -> clickOnComponent(action.index, action.containment)
+                DesigningUiAction.AddComponent -> addComponent()
+                is DesigningUiAction.UpdateComponentData -> updateComponent(action.updater)
 
-            // Connections
-            is DesigningUiAction.ClickOnConnection -> clickOnConnection(action.index, action.containment)
-            is DesigningUiAction.StartConnectionOn -> startConnectionOn(action.index)
-            is DesigningUiAction.CreateConnectionOn -> createConnectionOn(action.index)
+                // Connections
+                is DesigningUiAction.ClickOnConnection -> clickOnConnection(action.index, action.containment)
+                is DesigningUiAction.StartConnectionOn -> startConnectionOn(action.index)
+                is DesigningUiAction.CreateConnectionOn -> createConnectionOn(action.index)
+                is DesigningUiAction.UpdateConnectionData -> updateConnection(action.updater)
 
-            // Edit mode
-            is DesigningUiAction.UpdateEditMode -> updateEditMode(action.editMode)
+                // Edit mode
+                is DesigningUiAction.UpdateEditMode -> updateEditMode(action.editMode)
 
-            // Clearing
-            DesigningUiAction.ClearAllReferences -> clearAllReferences()
-            DesigningUiAction.ClearAllFocuses -> clearAllFocuses()
-            DesigningUiAction.ClearComponentFocuses -> clearComponentFocuses()
+                // Clearing
+                DesigningUiAction.ClearAllReferences -> clearAllReferences()
+                DesigningUiAction.ClearAllFocuses -> clearAllFocuses()
+                DesigningUiAction.ClearComponentFocuses -> clearComponentFocuses()
 
-            // Canvas actions
-            is DesigningUiAction.UpdateCanvasOffset -> updateCanvasOffset(action.offset)
-            is DesigningUiAction.UpdatePointerIcon -> updatePointerIcon(action.pointerIcon)
-            is DesigningUiAction.UpdateCanvasSize -> updateCanvasSize(action.size)
+                // Canvas actions
+                is DesigningUiAction.UpdateCanvasOffset -> updateCanvasOffset(action.offset)
+                is DesigningUiAction.UpdatePointerIcon -> updatePointerIcon(action.pointerIcon)
+                is DesigningUiAction.UpdateCanvasSize -> updateCanvasSize(action.size)
 
-            // Mouse actions
-            is DesigningUiAction.MouseClick -> mouseClick(action.pointerInputChange)
-            is DesigningUiAction.MouseMove -> mouseMove(action.pointerInputChange)
-            is DesigningUiAction.MouseRelease -> mouseRelease()
-            is DesigningUiAction.MouseScroll -> mouseScroll(action.pointerInputChange)
+                // Mouse actions
+                is DesigningUiAction.MouseClick -> mouseClick(action.pointerInputChange)
+                is DesigningUiAction.MouseMove -> mouseMove(action.pointerInputChange)
+                is DesigningUiAction.MouseRelease -> mouseRelease()
+                is DesigningUiAction.MouseScroll -> mouseScroll(action.pointerInputChange)
+            }
         }
     }
 
@@ -68,11 +85,13 @@ class DesigningViewModel : ViewModel() {
 
         _uiState.update {
             it.copy(
-                focusedComponentReference = it.classComponents.last(),
+                focusUiState = it.focusUiState.copy(
+                    focusedComponent = it.classComponents.last(),
+                    focusedConnection = null
+                ),
                 componentInFocus = true,
                 componentSideInFocus = (containment as? ComponentContainmentResult.Side)?.direction,
                 componentVertexInFocus = (containment as? ComponentContainmentResult.Vertex)?.direction,
-                focusedConnectionReference = null,
                 commonCounter = it.commonCounter + 1,
                 canvasUiState = it.canvasUiState.copy(
                     mouseMoveEvent = null
@@ -101,6 +120,20 @@ class DesigningViewModel : ViewModel() {
         }
     }
 
+    private fun updateComponent(updater: UMLClassComponent.() -> Unit) {
+        uiState.value.classComponents.last().apply(updater)
+
+        _uiState.update {
+            it.copy(
+                focusUiState = it.focusUiState.copy(
+                    focusedComponent = it.classComponents.last().copy()
+                )
+            )
+        }
+
+        updateCommonCounter()
+    }
+
     private fun clickOnConnection(index: Int, containment: ConnectionContainmentResult) {
         _uiState.update {
             it.copy(
@@ -110,8 +143,10 @@ class DesigningViewModel : ViewModel() {
 
         _uiState.update {
             it.copy(
-                focusedComponentReference = null,
-                focusedConnectionReference = it.classConnections.last(),
+                focusUiState = it.focusUiState.copy(
+                    focusedComponent = null,
+                    focusedConnection = it.classConnections.last()
+                ),
                 connectionInFocus = true,
                 connectionSegmentInFocus = when (containment) {
                     ConnectionContainmentResult.None -> null
@@ -166,6 +201,20 @@ class DesigningViewModel : ViewModel() {
         }
     }
 
+    private fun updateConnection(updater: UMLClassConnection.() -> Unit) {
+        uiState.value.classConnections.last().apply(updater)
+
+        _uiState.update {
+            it.copy(
+                focusUiState = it.focusUiState.copy(
+                    focusedConnection = it.classConnections.last().copy()
+                )
+            )
+        }
+
+        updateCommonCounter()
+    }
+
     private fun updateEditMode(editMode: EditMode) {
         _uiState.update {
             it.copy(
@@ -179,8 +228,10 @@ class DesigningViewModel : ViewModel() {
 
         _uiState.update {
             it.copy(
-                focusedComponentReference = null,
-                focusedConnectionReference = null
+                focusUiState = it.focusUiState.copy(
+                    focusedComponent = null,
+                    focusedConnection = null
+                )
             )
         }
     }

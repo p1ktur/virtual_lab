@@ -1,19 +1,31 @@
-package app.domain.umlDiagram.model.connections
+package app.domain.umlDiagram.model.connection
 
 import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
+import androidx.compose.ui.text.*
 import app.domain.umlDiagram.mouse.*
 import app.domain.util.geometry.*
 import app.domain.util.numbers.*
 import app.presenter.canvas.*
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
+@Serializable
 data class UMLClassConnection(
+    // Data
+    var name: String = "",
+    var startText: String = "",
+    var endText: String = "",
     val startRef: RefConnection,
     val endRef: RefConnection,
-    var middleOffset: Float = 0.5f,
-    val forcedType: Type? = null,
-    val highlightedSegments: MutableList<ConnectionSegment> = mutableListOf()
+    var startArrowHead: ArrowHead = ArrowHead.ASSOCIATION,
+    var endArrowHead: ArrowHead = ArrowHead.ASSOCIATION,
+    var arrowType: ArrowType = ArrowType.SOLID,
+    // Graphics
+    @Transient var middleOffset: Float = 0.5f,
+    @Transient val forcedType: Type? = null,
+    @Transient val highlightedSegments: MutableList<ConnectionSegment> = mutableListOf()
 ) {
     enum class Type {
         HVH,           // horizontal-vertical-horizontal
@@ -39,8 +51,8 @@ data class UMLClassConnection(
         const val HIGHLIGHT_COLOR = 0xFFBB4499
     }
 
-    var calculatedFrom: Offset = Offset.Zero
-    var calculatedTo: Offset = Offset.Zero
+    @Transient var calculatedFrom: Offset = Offset.Zero
+    @Transient var calculatedTo: Offset = Offset.Zero
 
     private val relativePosition: RelativePosition get() = defineRelativePosition().apply {
         cachedRelativePosition = this
@@ -52,10 +64,7 @@ data class UMLClassConnection(
         RelativePosition.TOP -> Type.VHV
         RelativePosition.RIGHT -> Type.HVH
         RelativePosition.BOTTOM -> Type.VHV
-    }.apply {
-        cachedType = this
     }
-    var cachedType: Type = type
 
     fun setSegmentOffset(
         connectionSegment: ConnectionSegment,
@@ -161,43 +170,12 @@ data class UMLClassConnection(
     }
 
     fun drawOn(
-        drawScope: DrawScope
+        drawScope: DrawScope,
+        textMeasurer: TextMeasurer,
+        textStyle: TextStyle
     ) {
-        drawSimpleConnection(drawScope)
-    }
-
-    fun containsMouse(mousePosition: Offset): ConnectionContainmentResult {
-        val segmentsContainment = checkSegmentsForContainment(mousePosition)
-        when (segmentsContainment) {
-            is ConnectionContainmentResult.FirstSegment -> {
-                clearHighlight()
-                highlightedSegments.add(ConnectionSegment.FIRST)
-            }
-            is ConnectionContainmentResult.SecondSegment -> {
-                clearHighlight()
-                highlightedSegments.add(ConnectionSegment.SECOND)
-            }
-            is ConnectionContainmentResult.ThirdSegment -> {
-                clearHighlight()
-                highlightedSegments.add(ConnectionSegment.THIRD)
-            }
-            else -> {
-                clearHighlight()
-            }
-        }
-
-        return segmentsContainment
-    }
-
-    fun clearHighlight() {
-        highlightedSegments.clear()
-    }
-
-    private fun drawSimpleConnection(drawScope: DrawScope) {
         val startOffsets = startRef.getOffsets()
         val endOffsets = endRef.getOffsets()
-
-        cachedType = type
 
         calculatedFrom = when (relativePosition) {
             RelativePosition.LEFT -> startRef.ref.position.copy(
@@ -237,13 +215,54 @@ data class UMLClassConnection(
             from = calculatedFrom,
             to = calculatedTo,
             color = Color(ARROW_COLOR),
-            type = when (relativePosition) {
-                RelativePosition.LEFT, RelativePosition.RIGHT -> Type.HVH
-                RelativePosition.TOP, RelativePosition.BOTTOM -> Type.VHV
-            },
+            relativePosition = relativePosition,
             middleOffset = middleOffset,
-            highlightedSegments = highlightedSegments
+            highlightedSegments = highlightedSegments,
+            arrowType = arrowType,
+            startArrowHead = startArrowHead,
+            endArrowHead = endArrowHead
         )
+
+        drawScope.drawSquareArrowTexts(
+            textMeasurer = textMeasurer,
+            from = calculatedFrom,
+            to = calculatedTo,
+            color = Color(ARROW_COLOR),
+            relativePosition = relativePosition,
+            middleOffset = middleOffset,
+            highlightedSegments = highlightedSegments,
+            startText = startText,
+            name = name,
+            endText = endText,
+            textStyle = textStyle
+        )
+    }
+
+    fun containsMouse(mousePosition: Offset): ConnectionContainmentResult {
+        val segmentsContainment = checkSegmentsForContainment(mousePosition)
+        when (segmentsContainment) {
+            is ConnectionContainmentResult.FirstSegment -> {
+                clearHighlight()
+                highlightedSegments.add(ConnectionSegment.FIRST)
+            }
+            is ConnectionContainmentResult.SecondSegment -> {
+                clearHighlight()
+                highlightedSegments.add(ConnectionSegment.SECOND)
+            }
+            is ConnectionContainmentResult.ThirdSegment -> {
+                clearHighlight()
+                highlightedSegments.add(ConnectionSegment.THIRD)
+            }
+            else -> {
+                clearHighlight()
+            }
+        }
+
+        return segmentsContainment
+    }
+
+    fun clearHighlight() {
+        highlightedSegments.clear()
     }
 
     private fun defineRelativePosition(): RelativePosition {

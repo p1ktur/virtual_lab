@@ -12,6 +12,18 @@ val defaultTextStyle = TextStyle(
 )
 
 val Typography = Typography(
+    labelSmall = defaultTextStyle.copy(
+        fontSize = 8.sp,
+        lineHeight = 12.sp
+    ),
+    labelMedium = defaultTextStyle.copy(
+        fontSize = 10.sp,
+        lineHeight = 14.sp
+    ),
+    labelLarge = defaultTextStyle.copy(
+        fontSize = 12.sp,
+        lineHeight = 16.sp
+    ),
     bodySmall = defaultTextStyle.copy(
         fontSize = 12.sp,
         lineHeight = 16.sp

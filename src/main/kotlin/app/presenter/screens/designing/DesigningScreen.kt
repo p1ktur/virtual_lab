@@ -7,17 +7,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.*
-import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.*
-import app.domain.umlDiagram.editing.*
-import app.domain.umlDiagram.model.components.*
-import app.domain.umlDiagram.model.connections.*
-import app.domain.umlDiagram.mouse.*
-import app.domain.util.geometry.*
 import app.presenter.screens.designing.components.*
-import kotlin.random.*
 import app.domain.viewModels.designing.*
+import app.presenter.screens.designing.components.componentData.*
+import app.presenter.screens.designing.components.connectionData.*
 
 const val ICON_BACKGROUND_COLOR = 0xFFDDEEDD
 const val ICON_BACKGROUND_COLOR_HIGHLIGHTED = 0xFFDDDDFF
@@ -41,17 +36,34 @@ fun DesigningScreen(
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            ClassComponentDetailsColumn(
-                modifier = Modifier
-                    .fillMaxWidth(0.2f)
-                    .fillMaxHeight()
-                    .clip(RoundedCornerShape(12f))
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-                    .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f))
-                    .padding(4.dp),
-                uiState = uiState,
-                onUiAction = onUiAction
-            )
+            uiState.focusUiState.focusedComponent?.let { ref ->
+                ClassComponentDetailsColumn(
+                    modifier = Modifier
+                        .fillMaxWidth(0.25f)
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(12f))
+                        .background(Color.White)
+                        .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f))
+                        .padding(4.dp),
+                    reference = ref,
+                    commonCounter = uiState.commonCounter,
+                    onUiAction = onUiAction
+                )
+            }
+            if (uiState.focusUiState.focusedComponent == null) uiState.focusUiState.focusedConnection?.let { ref ->
+                ClassConnectionDetailsColumn(
+                    modifier = Modifier
+                        .fillMaxWidth(0.25f)
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(12f))
+                        .background(Color.White)
+                        .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f))
+                        .padding(4.dp),
+                    reference = ref,
+                    commonCounter = uiState.commonCounter,
+                    onUiAction = onUiAction
+                )
+            }
             Column(
                 modifier = Modifier
                     .fillMaxWidth()

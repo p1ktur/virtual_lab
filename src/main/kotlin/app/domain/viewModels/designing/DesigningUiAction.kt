@@ -3,6 +3,8 @@ package app.domain.viewModels.designing
 import androidx.compose.ui.geometry.*
 import androidx.compose.ui.input.pointer.*
 import app.domain.umlDiagram.editing.*
+import app.domain.umlDiagram.model.component.*
+import app.domain.umlDiagram.model.connection.*
 import app.domain.umlDiagram.mouse.*
 
 sealed interface DesigningUiAction {
@@ -12,11 +14,13 @@ sealed interface DesigningUiAction {
     // Components
     data class ClickOnComponent(val index: Int, val containment: ComponentContainmentResult) : DesigningUiAction
     data object AddComponent : DesigningUiAction
+    data class UpdateComponentData(val updater: UMLClassComponent.() -> Unit) : DesigningUiAction
 
     // Connections
     data class ClickOnConnection(val index: Int, val containment: ConnectionContainmentResult) : DesigningUiAction
     data class StartConnectionOn(val index: Int) : DesigningUiAction
     data class CreateConnectionOn(val index: Int) : DesigningUiAction
+    data class UpdateConnectionData(val updater: UMLClassConnection.() -> Unit) : DesigningUiAction
 
     // Edit mode
     data class UpdateEditMode(val editMode: EditMode) : DesigningUiAction

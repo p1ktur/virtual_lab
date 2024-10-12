@@ -11,8 +11,8 @@ import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.layout.*
 import androidx.compose.ui.text.*
 import app.domain.umlDiagram.editing.*
-import app.domain.umlDiagram.model.components.*
-import app.domain.umlDiagram.model.connections.*
+import app.domain.umlDiagram.model.component.*
+import app.domain.umlDiagram.model.connection.*
 import app.domain.umlDiagram.mouse.*
 import app.domain.util.geometry.*
 import app.domain.util.list.*
@@ -28,7 +28,9 @@ fun DiagramCanvas(
     onUiAction: (DesigningUiAction) -> Unit
 ) {
     val textMeasurer = rememberTextMeasurer()
-    val umlClassTextStyle = MaterialTheme.typography.bodyMedium
+    val umlComponentNameTextStyle = MaterialTheme.typography.bodyMedium
+    val umlComponentContentTextStyle = MaterialTheme.typography.bodySmall
+    val umlConnectionTextStyle = MaterialTheme.typography.bodySmall
 
     fun Offset.scaledAndTranslated(): Offset = unZoom(uiState.canvasUiState.center, uiState.canvasUiState.zoom) - uiState.canvasUiState.offset
 
@@ -282,7 +284,9 @@ fun DiagramCanvas(
 
                     uiState.classConnections.forEach {
                         it.drawOn(
-                            drawScope = this@Canvas
+                            drawScope = this@Canvas,
+                            textMeasurer = textMeasurer,
+                            textStyle = umlConnectionTextStyle
                         )
                     }
 
@@ -290,7 +294,8 @@ fun DiagramCanvas(
                         it.drawOn(
                             drawScope = this@Canvas,
                             textMeasurer = textMeasurer,
-                            textStyle = umlClassTextStyle
+                            nameTextStyle = umlComponentNameTextStyle,
+                            contentTextStyle = umlComponentContentTextStyle
                         )
                     }
 

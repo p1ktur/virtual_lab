@@ -35,6 +35,14 @@ fun FunctionsChooseList(
     ) {
         componentRef.functions.forEachIndexed { index, functions ->
             key(commonCounter) {
+                val isChosen = remember(commonCounter) {
+                    (if (isStart) reference.startRef else reference.endRef).run {
+                        ((this as? RefConnection.ReferencedConnection)?.refType as? RefType.Field)?.let {
+                            it.index == index
+                        } ?: false
+                    }
+                }
+
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -61,6 +69,7 @@ fun FunctionsChooseList(
                                 onUiAction(DesigningUiAction.UpdateConnectionEndRef(newConnection))
                             }
                         }
+                        .background(if (isChosen) Color.LightGray else Color.Transparent)
                         .padding(4.dp),
                     text = functions.toString(),
                     style = MaterialTheme.typography.labelMedium,

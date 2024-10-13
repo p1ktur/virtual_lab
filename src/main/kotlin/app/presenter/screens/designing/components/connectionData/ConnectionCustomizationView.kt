@@ -8,8 +8,8 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.*
 import app.domain.umlDiagram.model.connection.*
 import app.domain.viewModels.designing.*
-import app.presenter.canvas.*
-import app.presenter.canvas.ArrowHead.Companion.ARROW_HEAD_LENGTH
+import app.presenter.canvas.arrows.ArrowHead.Companion.ARROW_HEAD_LENGTH
+import app.presenter.canvas.arrows.*
 import app.presenter.components.common.*
 
 @Composable

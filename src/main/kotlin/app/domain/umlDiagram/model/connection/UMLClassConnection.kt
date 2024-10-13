@@ -7,10 +7,10 @@ import androidx.compose.ui.text.*
 import app.domain.umlDiagram.mouse.*
 import app.domain.util.geometry.*
 import app.domain.util.numbers.*
-import app.presenter.canvas.*
+import app.presenter.canvas.arrows.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import org.w3c.dom.Text
+import kotlin.math.*
 
 @Serializable
 data class UMLClassConnection(
@@ -25,6 +25,7 @@ data class UMLClassConnection(
     var arrowType: ArrowType = ArrowType.SOLID,
     // Graphics
     @Transient var middleOffset: Float = 0.5f,
+    @Transient var middleArchOffset: Float = 0.5f,
     @Transient var forcedType: Type? = null,
     @Transient val highlightedSegments: MutableList<ConnectionSegment> = mutableListOf()
 ) {
@@ -67,6 +68,9 @@ data class UMLClassConnection(
         RelativePosition.BOTTOM -> Type.VHV
     }
 
+    @Transient
+    var drawnAsArch: Boolean = false
+
     fun setSegmentOffset(
         connectionSegment: ConnectionSegment,
         coefficient: Float
@@ -83,7 +87,7 @@ data class UMLClassConnection(
                 }
             }
             ConnectionSegment.SECOND -> {
-                middleOffset = coefficient
+                if (drawnAsArch) middleArchOffset = coefficient else middleOffset = coefficient
             }
             ConnectionSegment.THIRD -> {
                 (endRef as? RefConnection.SimpleConnection)?.offset?.apply {
@@ -120,7 +124,21 @@ data class UMLClassConnection(
                 }
             }
             ConnectionSegment.SECOND -> {
-                if (type == Type.HVH) {
+                if (drawnAsArch) {
+                    val middleX = if (cachedRelativePosition == RelativePosition.LEFT) {
+                        -ARCH_SAMPLE * middleOffset + min(calculatedFrom.x, calculatedTo.x) - ARCH_MINIMUM
+                    } else {
+                        ARCH_SAMPLE * middleOffset + max(calculatedFrom.x, calculatedTo.x) + ARCH_MINIMUM
+                    }
+
+                    val offsetX = mousePosition.x - middleX
+
+                    if (cachedRelativePosition == RelativePosition.LEFT) {
+                        max(0f, middleOffset - offsetX / ARCH_SAMPLE)
+                    } else {
+                        max(0f, middleOffset + offsetX / ARCH_SAMPLE)
+                    }
+                } else if (type == Type.HVH) {
                     val relativeMousePositionX = mousePosition.x.relativeLimit(
                         bound1 = calculatedFrom.x,
                         bound2 = calculatedTo.x
@@ -190,6 +208,18 @@ data class UMLClassConnection(
             endRef.ref.getDrawOffsetOf(it, textMeasurer, componentNameTextStyle, componentContentTextStyle)
         }
 
+        val forcedPosition = if (startForcedOffset != null || endForcedOffset != null) when {
+            endRef.ref.position.x + endRef.ref.size.width / 2 >= startRef.ref.position.x + startRef.ref.size.width / 2 -> RelativePosition.RIGHT
+            else -> RelativePosition.LEFT
+        } else null
+
+        drawnAsArch = when {
+            forcedPosition == null -> false
+            forcedPosition == RelativePosition.LEFT && endRef.ref.position.x + endRef.ref.size.width >= startRef.ref.position.x -> true
+            forcedPosition == RelativePosition.RIGHT && endRef.ref.position.x <= startRef.ref.position.x + startRef.ref.size.width -> true
+            else -> false
+        }
+
         calculatedFrom = startForcedOffset?.let { offset ->
             when (relativePosition) {
                 RelativePosition.LEFT -> startRef.ref.position.copy(
@@ -218,13 +248,14 @@ data class UMLClassConnection(
             )
         }
 
-        calculatedTo = endForcedOffset?.let { offset ->
+        calculatedTo = (endForcedOffset?.let { offset ->
             when (relativePosition) {
                 RelativePosition.LEFT -> endRef.ref.position.copy(
                     x = endRef.ref.position.x + endRef.ref.size.width,
                     y = endRef.ref.position.y + offset.y
                 )
                 RelativePosition.RIGHT -> endRef.ref.position.copy(
+                    x = endRef.ref.position.x,
                     y = endRef.ref.position.y + offset.y
                 )
                 else -> endRef.ref.position
@@ -244,53 +275,89 @@ data class UMLClassConnection(
             RelativePosition.BOTTOM -> endRef.ref.position.copy(
                 x = endRef.ref.position.x + endRef.ref.size.width * (endOffsets?.top ?: 0.5f)
             )
+        }).run {
+            copy(
+                x = this.x + if (drawnAsArch) {
+                    when (relativePosition) {
+                        RelativePosition.LEFT -> -endRef.ref.size.width
+                        RelativePosition.RIGHT -> endRef.ref.size.width
+                        else -> 0f
+                    }
+                } else 0f
+            )
         }
 
-        drawScope.drawSquareArrowFromTo(
-            from = calculatedFrom,
-            to = calculatedTo,
-            color = Color(ARROW_COLOR),
-            relativePosition = relativePosition,
-            middleOffset = middleOffset,
-            highlightedSegments = highlightedSegments,
-            arrowType = arrowType,
-            startArrowHead = startArrowHead,
-            endArrowHead = endArrowHead
-        )
+        if (drawnAsArch) {
+            drawScope.drawSquareArchArrowFromTo(
+                from = calculatedFrom,
+                to = calculatedTo,
+                color = Color(ARROW_COLOR),
+                relativePosition = relativePosition,
+                middleArchOffset = middleArchOffset,
+                highlightedSegments = highlightedSegments,
+                arrowType = arrowType,
+                startArrowHead = startArrowHead,
+                endArrowHead = endArrowHead
+            )
 
-        drawScope.drawSquareArrowTexts(
-            textMeasurer = textMeasurer,
-            from = calculatedFrom,
-            to = calculatedTo,
-            color = Color(ARROW_COLOR),
-            relativePosition = relativePosition,
-            middleOffset = middleOffset,
-            highlightedSegments = highlightedSegments,
-            startText = startText,
-            name = name,
-            endText = endText,
-            textStyle = textStyle
-        )
+            drawScope.drawSquareArchArrowTexts(
+                textMeasurer = textMeasurer,
+                from = calculatedFrom,
+                to = calculatedTo,
+                color = Color(ARROW_COLOR),
+                relativePosition = relativePosition,
+                middleArchOffset = middleArchOffset,
+                highlightedSegments = highlightedSegments,
+                startText = startText,
+                name = name,
+                endText = endText,
+                textStyle = textStyle
+            )
+        } else {
+            drawScope.drawSquareArrowFromTo(
+                from = calculatedFrom,
+                to = calculatedTo,
+                color = Color(ARROW_COLOR),
+                relativePosition = relativePosition,
+                middleOffset = middleOffset,
+                highlightedSegments = highlightedSegments,
+                arrowType = arrowType,
+                startArrowHead = startArrowHead,
+                endArrowHead = endArrowHead
+            )
+
+            drawScope.drawSquareArrowTexts(
+                textMeasurer = textMeasurer,
+                from = calculatedFrom,
+                to = calculatedTo,
+                color = Color(ARROW_COLOR),
+                relativePosition = relativePosition,
+                middleOffset = middleOffset,
+                highlightedSegments = highlightedSegments,
+                startText = startText,
+                name = name,
+                endText = endText,
+                textStyle = textStyle
+            )
+        }
     }
 
     fun containsMouse(mousePosition: Offset): ConnectionContainmentResult {
         val segmentsContainment = checkSegmentsForContainment(mousePosition)
         when (segmentsContainment) {
             is ConnectionContainmentResult.FirstSegment -> {
-                if (startRef !is RefConnection.ReferencedConnection) {
-                    clearHighlight()
-                    highlightedSegments.add(ConnectionSegment.FIRST)
-                } else return ConnectionContainmentResult.Whole
+                clearHighlight()
+                highlightedSegments.add(ConnectionSegment.FIRST)
+                if (startRef is RefConnection.ReferencedConnection) return ConnectionContainmentResult.Whole
             }
             is ConnectionContainmentResult.SecondSegment -> {
                 clearHighlight()
                 highlightedSegments.add(ConnectionSegment.SECOND)
             }
             is ConnectionContainmentResult.ThirdSegment -> {
-                if (endRef !is RefConnection.ReferencedConnection) {
-                    clearHighlight()
-                    highlightedSegments.add(ConnectionSegment.THIRD)
-                } else return ConnectionContainmentResult.Whole
+                clearHighlight()
+                highlightedSegments.add(ConnectionSegment.THIRD)
+                if (endRef is RefConnection.ReferencedConnection) return ConnectionContainmentResult.Whole
             }
             else -> {
                 clearHighlight()
@@ -305,38 +372,25 @@ data class UMLClassConnection(
     }
 
     private fun defineRelativePosition(): RelativePosition {
-        return when (forcedType) {
-            Type.HVH -> {
-                if (endRef.ref.position.x >= startRef.ref.position.x) {
-                    RelativePosition.RIGHT
-                } else {
-                    RelativePosition.LEFT
-                }
-            }
-            Type.VHV -> {
-                if (endRef.ref.position.y >= startRef.ref.position.y) {
-                    RelativePosition.BOTTOM
-                } else {
-                    RelativePosition.TOP
-                }
-            }
-            null -> {
-                val topLeft = startRef.ref.position
-                val bottomRight = startRef.ref.position + Offset(startRef.ref.size.width, startRef.ref.size.height)
-                val slope = (bottomRight.y - topLeft.y) / (bottomRight.x - topLeft.x)
-                val b = topLeft.y - slope * topLeft.x
+        return if (forcedType != null) when {
+            endRef.ref.position.x + endRef.ref.size.width / 2 >= startRef.ref.position.x + startRef.ref.size.width / 2 -> RelativePosition.RIGHT
+            else -> RelativePosition.LEFT
+        } else {
+            val topLeft = startRef.ref.position
+            val bottomRight = startRef.ref.position + Offset(startRef.ref.size.width, startRef.ref.size.height)
+            val slope = (bottomRight.y - topLeft.y) / (bottomRight.x - topLeft.x)
+            val b = topLeft.y - slope * topLeft.x
 
-                val x0 = endRef.ref.position.x + endRef.ref.size.width / 2
-                val y0 = endRef.ref.position.y + endRef.ref.size.height / 2
-                val x1 = (y0 - b) / slope
-                val x2 = ((topLeft.y * 2 + startRef.ref.size.height - y0) - b) / slope
+            val x0 = endRef.ref.position.x + endRef.ref.size.width / 2
+            val y0 = endRef.ref.position.y + endRef.ref.size.height / 2
+            val x1 = (y0 - b) / slope
+            val x2 = ((topLeft.y * 2 + startRef.ref.size.height - y0) - b) / slope
 
-                when {
-                    x0 < x1 && x0 < x2 -> RelativePosition.LEFT
-                    x0 > x1 && x0 < x2 -> RelativePosition.TOP
-                    x0 > x1 && x0 > x2 -> RelativePosition.RIGHT
-                    else -> RelativePosition.BOTTOM
-                }
+            when {
+                x0 < x1 && x0 < x2 -> RelativePosition.LEFT
+                x0 > x1 && x0 < x2 -> RelativePosition.TOP
+                x0 > x1 && x0 > x2 -> RelativePosition.RIGHT
+                else -> RelativePosition.BOTTOM
             }
         }
     }

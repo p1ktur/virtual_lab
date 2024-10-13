@@ -35,6 +35,14 @@ fun FieldsChooseList(
     ) {
         componentRef.fields.forEachIndexed { index, field ->
             key(commonCounter) {
+                val isChosen = remember(commonCounter) {
+                    (if (isStart) reference.startRef else reference.endRef).run {
+                        ((this as? RefConnection.ReferencedConnection)?.refType as? RefType.Field)?.let {
+                            it.index == index
+                        } ?: false
+                    }
+                }
+
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -61,14 +69,11 @@ fun FieldsChooseList(
                                 onUiAction(DesigningUiAction.UpdateConnectionEndRef(newConnection))
                             }
                         }
+                        .background(if (isChosen) Color.LightGray else Color.Transparent)
                         .padding(4.dp),
                     text = field.toString(),
                     style = MaterialTheme.typography.labelMedium,
-                    color = (if (isStart) reference.startRef else reference.endRef).run {
-                        ((this as? RefConnection.ReferencedConnection)?.refType as? RefType.Field)?.let {
-                            if (it.index == index) Color.Blue else Color.Black
-                        } ?: Color.Black
-                    },
+                    color = Color.Black,
                     textDecoration = if (field.isStatic) TextDecoration.Underline else null
                 )
             }

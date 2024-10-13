@@ -1,4 +1,4 @@
-package app.presenter.canvas
+package app.presenter.canvas.arrows
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -11,7 +11,6 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
 import androidx.compose.ui.unit.*
 import app.domain.umlDiagram.model.connection.*
-import app.domain.umlDiagram.model.connection.UMLClassConnection.Companion.ARROW_COLOR
 
 const val THICKNESS = 0.4f
 

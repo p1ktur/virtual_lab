@@ -18,6 +18,7 @@ import app.domain.util.geometry.*
 import app.domain.util.list.*
 import app.domain.viewModels.designing.*
 import app.presenter.canvas.*
+import app.presenter.canvas.arrows.*
 import java.awt.*
 
 @OptIn(ExperimentalComposeUiApi::class)

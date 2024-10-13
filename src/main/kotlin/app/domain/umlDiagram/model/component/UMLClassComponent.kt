@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.drawscope.*
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.unit.*
+import app.domain.serialization.*
 import app.domain.umlDiagram.model.*
 import app.domain.umlDiagram.model.connection.*
 import app.domain.umlDiagram.mouse.*
@@ -21,8 +22,8 @@ data class UMLClassComponent(
     var functions: MutableList<Function> = mutableListOf(),
     var isInterface: Boolean = false,
     // Graphics
-    @Transient var position: Offset = Offset(100f, 100f),
-    @Transient var size: Size = Size(MIN_WIDTH, MIN_HEIGHT),
+    @Serializable(with = OffsetSerializer::class) var position: Offset = Offset(100f, 100f),
+    @Serializable(with = SizeSerializer::class) var size: Size = Size(MIN_WIDTH, MIN_HEIGHT),
     @Transient var isHighlighted: Boolean = false,
     @Transient val highlightedSides: MutableList<SideDirection> = mutableListOf(),
     @Transient val highlightedVertices: MutableList<VertexDirection> = mutableListOf()
@@ -340,6 +341,19 @@ data class UMLClassComponent(
         highlightedVertices.clear()
     }
 
+    fun equalsTo(other: UMLClassComponent): Boolean {
+        return this.name == other.name &&
+                this.fields.mapIndexed { index, field ->
+                    field.toString() == other.fields[index].toString()
+                }.all { it } &&
+                this.functions.mapIndexed { index, function ->
+                    function.toString() == other.functions[index].toString()
+                }.all { it } &&
+                this.isInterface == other.isInterface &&
+                this.position == other.position &&
+                this.size == other.size
+    }
+
     private fun SideDirection.getSide(): Side {
         return when (this) {
             SideDirection.LEFT -> Side(
@@ -368,5 +382,15 @@ data class UMLClassComponent(
             VertexDirection.BOTTOM_LEFT -> Vertex(Offset(position.x, position.y + size.height))
             VertexDirection.BOTTOM_RIGHT -> Vertex(Offset(position.x + size.width, position.y + size.height))
         }
+    }
+
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + fields.hashCode()
+        result = 31 * result + functions.hashCode()
+        result = 31 * result + isInterface.hashCode()
+        result = 31 * result + position.hashCode()
+        result = 31 * result + size.hashCode()
+        return result
     }
 }

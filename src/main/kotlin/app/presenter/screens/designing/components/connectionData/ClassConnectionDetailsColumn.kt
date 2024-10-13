@@ -138,6 +138,7 @@ fun ClassConnectionDetailsColumn(
                     onUiAction = onUiAction
                 )
             }
+            Spacer(modifier = Modifier.height(48.dp))
         }
         if (canScroll) {
             VerticalScrollbar(

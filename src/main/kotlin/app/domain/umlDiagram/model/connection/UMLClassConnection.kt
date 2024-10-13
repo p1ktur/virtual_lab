@@ -4,6 +4,7 @@ import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
 import androidx.compose.ui.text.*
+import app.domain.umlDiagram.model.component.*
 import app.domain.umlDiagram.mouse.*
 import app.domain.util.geometry.*
 import app.domain.util.numbers.*
@@ -11,6 +12,8 @@ import app.presenter.canvas.arrows.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlin.math.*
+
+// TODO upon deserialization connection refers to different reference of component
 
 @Serializable
 data class UMLClassConnection(
@@ -24,9 +27,9 @@ data class UMLClassConnection(
     var endArrowHead: ArrowHead = ArrowHead.ASSOCIATION,
     var arrowType: ArrowType = ArrowType.SOLID,
     // Graphics
-    @Transient var middleOffset: Float = 0.5f,
-    @Transient var middleArchOffset: Float = 0.5f,
-    @Transient var forcedType: Type? = null,
+    var middleOffset: Float = 0.5f,
+    var middleArchOffset: Float = 0.5f,
+    var forcedType: Type? = null,
     @Transient val highlightedSegments: MutableList<ConnectionSegment> = mutableListOf()
 ) {
     enum class Type {
@@ -41,6 +44,7 @@ data class UMLClassConnection(
         BOTTOM
     }
 
+    @Serializable
     data class ConnectionOffset(
         var left: Float = 0.5f,
         var top: Float = 0.5f,
@@ -59,7 +63,7 @@ data class UMLClassConnection(
     private val relativePosition: RelativePosition get() = defineRelativePosition().apply {
         cachedRelativePosition = this
     }
-    var cachedRelativePosition: RelativePosition = relativePosition
+    @Transient var cachedRelativePosition: RelativePosition = relativePosition
 
     private val type: Type get() = when (relativePosition) {
         RelativePosition.LEFT -> Type.HVH
@@ -68,8 +72,7 @@ data class UMLClassConnection(
         RelativePosition.BOTTOM -> Type.VHV
     }
 
-    @Transient
-    var drawnAsArch: Boolean = false
+    @Transient var drawnAsArch: Boolean = false
 
     fun setSegmentOffset(
         connectionSegment: ConnectionSegment,
@@ -369,6 +372,22 @@ data class UMLClassConnection(
 
     fun clearHighlight() {
         highlightedSegments.clear()
+    }
+
+    fun findAndApplyCorrectReferences(references: List<UMLClassComponent>) {
+        for (index in references.indices) {
+            if (references[index].equalsTo(startRef.ref)) {
+                startRef.ref = references[index]
+                break
+            }
+        }
+
+        for (index in references.indices) {
+            if (references[index].equalsTo(endRef.ref) && !references[index].equalsTo(startRef.ref)) {
+                endRef.ref = references[index]
+                break
+            }
+        }
     }
 
     private fun defineRelativePosition(): RelativePosition {

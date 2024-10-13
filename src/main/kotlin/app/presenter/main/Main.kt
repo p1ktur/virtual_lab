@@ -6,14 +6,39 @@ import androidx.compose.ui.*
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.*
 import app.domain.di.*
+import app.domain.umlDiagram.model.component.*
+import app.domain.umlDiagram.model.connection.*
 import app.presenter.components.window.*
 import app.presenter.navigation.*
 import app.presenter.theme.*
 import com.virtual.lab.virtuallaboratory.generated.resources.*
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
 import moe.tlaster.precompose.*
 import org.jetbrains.compose.resources.*
 import org.koin.core.context.*
 import java.awt.*
+import java.awt.SystemColor.*
+
+fun testSerialization() {
+    val json = Json {
+        prettyPrint = true
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+    }
+    val component = UMLClassComponent()
+    val connection = UMLClassConnection(
+        startRef = RefConnection.SimpleConnection(component),
+        endRef = RefConnection.ReferencedConnection(component, RefType.Field(0)),
+    )
+    val encodedComponent = json.encodeToString(component)
+    val encodedConnection = json.encodeToString(connection)
+
+    println(encodedComponent)
+    println(encodedConnection)
+    println(json.decodeFromString<UMLClassComponent>(encodedComponent).toString())
+    println(json.decodeFromString<UMLClassConnection>(encodedConnection).toString())
+}
 
 fun main() {
     startKoin {
@@ -21,6 +46,8 @@ fun main() {
             mainKoinModule
         )
     }
+
+//    testSerialization()
 
     application {
         val windowState = rememberWindowState(

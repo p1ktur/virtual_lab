@@ -12,7 +12,6 @@ import androidx.compose.ui.graphics.vector.*
 import androidx.compose.ui.unit.*
 import app.domain.umlDiagram.editing.*
 import app.presenter.components.tooltip.*
-import app.presenter.screens.designing.*
 
 @Composable
 fun EditModeButton(

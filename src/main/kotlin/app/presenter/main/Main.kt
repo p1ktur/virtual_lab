@@ -18,7 +18,6 @@ import moe.tlaster.precompose.*
 import org.jetbrains.compose.resources.*
 import org.koin.core.context.*
 import java.awt.*
-import java.awt.SystemColor.*
 
 fun testSerialization() {
     val json = Json {

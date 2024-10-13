@@ -66,7 +66,7 @@ private fun UMLClassConnection.checkSimpleSegmentsForContainment(mousePosition: 
 
     val middleOffset = this.middleOffset.limit(0f, 1f)
 
-    return when (cachedRelativePosition) {
+    when (cachedRelativePosition) {
         RelativePosition.LEFT -> {
             val midX = (higherX - lowerX) * (1f - middleOffset) + lowerX
 

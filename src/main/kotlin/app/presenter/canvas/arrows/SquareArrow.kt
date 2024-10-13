@@ -5,7 +5,6 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
 import androidx.compose.ui.text.*
 import androidx.compose.ui.unit.*
-import androidx.compose.ui.window.WindowPosition.PlatformDefault.y
 import app.domain.umlDiagram.model.connection.*
 import app.presenter.canvas.arrows.ArrowType.Companion.DASHED_LENGTH
 import app.presenter.canvas.arrows.ArrowType.Companion.DASHED_STEP

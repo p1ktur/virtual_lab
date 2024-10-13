@@ -135,7 +135,7 @@ fun DrawnArrowHead(
     onClick: () -> Unit
 ) {
     val color = if (isHighlighted) Color(UMLClassConnection.HIGHLIGHT_COLOR) else Color.Black
-    val offsetLength = if (arrowHead.lengthsToDraw() == 2) {
+    val offsetLength = if (arrowHead.takesTwoLengthToDraw()) {
         modifierSize.height.value
     } else {
         modifierSize.height.div(2).value

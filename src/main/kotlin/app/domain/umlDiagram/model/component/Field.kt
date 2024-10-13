@@ -1,4 +1,4 @@
-package app.domain.umlDiagram.model.component;
+package app.domain.umlDiagram.model.component
 
 import kotlinx.serialization.Serializable
 

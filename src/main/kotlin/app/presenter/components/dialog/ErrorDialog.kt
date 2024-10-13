@@ -1,7 +1,6 @@
 package app.presenter.components.dialog
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -10,7 +9,6 @@ import androidx.compose.ui.input.key.*
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.*
 import app.presenter.components.window.*
-import kotlinx.serialization.json.JsonNull.content
 
 @Composable
 fun ErrorDialog(

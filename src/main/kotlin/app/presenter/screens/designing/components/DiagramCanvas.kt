@@ -85,7 +85,7 @@ fun DiagramCanvas(
     LaunchedEffect(uiState.componentInFocus, uiState.connectionInFocus, uiState.canvasUiState.mouseMoveEvent) {
         when (uiState.editMode) {
             EditMode.SELECTOR -> uiState.canvasUiState.mouseMoveEvent?.let { event ->
-                if (uiState.canvasUiState.mouseClickEvent != null) uiState.canvasUiState.mouseClickEvent?.let { clickEvent ->
+                if (uiState.canvasUiState.mouseClickEvent != null) uiState.canvasUiState.mouseClickEvent.let { clickEvent ->
                     // MOUSE CLICK AND MOVE
                     when {
                         uiState.componentInFocus && uiState.classComponents.isNotEmpty() -> when {

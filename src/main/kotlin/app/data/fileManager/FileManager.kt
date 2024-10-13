@@ -1,8 +1,6 @@
 package app.data.fileManager
 
 import androidx.compose.runtime.*
-import app.domain.umlDiagram.model.component.*
-import app.domain.umlDiagram.model.connection.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*

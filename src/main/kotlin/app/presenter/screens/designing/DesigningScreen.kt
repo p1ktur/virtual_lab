@@ -15,13 +15,6 @@ import app.domain.viewModels.designing.*
 import app.presenter.screens.designing.components.componentData.*
 import app.presenter.screens.designing.components.connectionData.*
 
-const val ICON_BACKGROUND_COLOR = 0xFFDDEEDD
-const val ICON_BACKGROUND_COLOR_HIGHLIGHTED = 0xFFDDDDFF
-const val EDIT_ICON_IMAGE_COLOR = 0xFF8899DD
-const val EDIT_ICON_IMAGE_COLOR_HIGHLIGHTED = 0xFFAAAAFF
-const val ACTION_ICON_IMAGE_COLOR = 0xFFDD9988
-const val ACTION_ICON_IMAGE_COLOR_HIGHLIGHTED = 0xFFFFAAAA
-
 @Composable
 fun DesigningScreen(
     uiState: DesigningUiState,
@@ -38,7 +31,7 @@ fun DesigningScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             when {
-                uiState.focusUiState.focusedComponent != null -> uiState.focusUiState.focusedComponent?.let { ref ->
+                uiState.focusUiState.focusedComponent != null -> uiState.focusUiState.focusedComponent.let { ref ->
                     ClassComponentDetailsColumn(
                         modifier = Modifier
                             .fillMaxWidth(0.25f)
@@ -53,7 +46,7 @@ fun DesigningScreen(
                         onUiAction = onUiAction
                     )
                 }
-                uiState.focusUiState.focusedConnection != null -> uiState.focusUiState.focusedConnection?.let { ref ->
+                uiState.focusUiState.focusedConnection != null -> uiState.focusUiState.focusedConnection.let { ref ->
                     ClassConnectionDetailsColumn(
                         modifier = Modifier
                             .fillMaxWidth(0.25f)

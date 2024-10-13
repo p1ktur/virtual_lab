@@ -1,4 +1,4 @@
-package app.domain.util.fileManager
+package app.data.fileManager
 
 import androidx.compose.runtime.*
 import app.domain.umlDiagram.model.component.*

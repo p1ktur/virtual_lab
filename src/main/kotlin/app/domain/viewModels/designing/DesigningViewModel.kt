@@ -2,11 +2,11 @@ package app.domain.viewModels.designing
 
 import androidx.compose.ui.geometry.*
 import androidx.compose.ui.input.pointer.*
+import app.data.fileManager.*
 import app.domain.umlDiagram.editing.*
 import app.domain.umlDiagram.model.component.*
 import app.domain.umlDiagram.model.connection.*
 import app.domain.umlDiagram.mouse.*
-import app.domain.util.fileManager.*
 import app.domain.util.list.*
 import app.domain.util.numbers.*
 import kotlinx.coroutines.*

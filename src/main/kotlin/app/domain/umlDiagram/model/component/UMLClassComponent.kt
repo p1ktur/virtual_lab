@@ -8,6 +8,7 @@ import androidx.compose.ui.text.style.*
 import androidx.compose.ui.unit.*
 import app.domain.serialization.*
 import app.domain.umlDiagram.model.*
+import app.domain.umlDiagram.model.component.function.Function
 import app.domain.umlDiagram.model.connection.*
 import app.domain.umlDiagram.mouse.*
 import app.domain.util.geometry.*
@@ -386,11 +387,23 @@ data class UMLClassComponent(
 
     override fun hashCode(): Int {
         var result = name.hashCode()
-        result = 31 * result + fields.hashCode()
-        result = 31 * result + functions.hashCode()
+        result = 31 * result + fields.toTypedArray().contentHashCode()
+        result = 31 * result + functions.toTypedArray().contentHashCode()
         result = 31 * result + isInterface.hashCode()
-        result = 31 * result + position.hashCode()
-        result = 31 * result + size.hashCode()
         return result
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as UMLClassComponent
+
+        if (name != other.name) return false
+        if (!fields.containsAll(other.fields)) return false
+        if (!functions.containsAll(other.functions)) return false
+        if (isInterface != other.isInterface) return false
+
+        return true
     }
 }

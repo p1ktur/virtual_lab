@@ -4,7 +4,6 @@ import androidx.compose.ui.geometry.*
 import androidx.compose.ui.input.pointer.*
 import app.domain.umlDiagram.editing.*
 import app.domain.umlDiagram.model.component.*
-import app.domain.umlDiagram.model.component.Function
 import app.domain.umlDiagram.model.connection.*
 import app.domain.umlDiagram.mouse.*
 import java.awt.*

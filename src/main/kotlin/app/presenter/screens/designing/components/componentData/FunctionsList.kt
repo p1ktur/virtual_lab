@@ -14,7 +14,8 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.unit.*
 import app.domain.umlDiagram.model.component.*
-import app.domain.umlDiagram.model.component.Function
+import app.domain.umlDiagram.model.component.function.*
+import app.domain.umlDiagram.model.component.function.Function
 import app.domain.util.list.*
 import app.domain.util.numbers.*
 import app.domain.viewModels.designing.*
@@ -343,7 +344,7 @@ private fun FunctionView(
                 backgroundShown = false,
                 onClick = {
                     onUpdateValue {
-                        function.params += Function.Param()
+                        function.params += Param()
                     }
                 }
             )

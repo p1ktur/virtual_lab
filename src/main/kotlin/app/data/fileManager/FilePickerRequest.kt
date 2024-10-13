@@ -1,4 +1,4 @@
-package app.domain.util.fileManager
+package app.data.fileManager
 
 data class FilePickerRequest(
     val action: FileManager.Action,

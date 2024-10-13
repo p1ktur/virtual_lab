@@ -13,8 +13,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlin.math.*
 
-// TODO upon deserialization connection refers to different reference of component
-
 @Serializable
 data class UMLClassConnection(
     // Data
@@ -412,5 +410,35 @@ data class UMLClassConnection(
                 else -> RelativePosition.BOTTOM
             }
         }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as UMLClassConnection
+
+        if (name != other.name) return false
+        if (startText != other.startText) return false
+        if (endText != other.endText) return false
+        if (startRef != other.startRef) return false
+        if (endRef != other.endRef) return false
+        if (startArrowHead != other.startArrowHead) return false
+        if (endArrowHead != other.endArrowHead) return false
+        if (arrowType != other.arrowType) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + startText.hashCode()
+        result = 31 * result + endText.hashCode()
+        result = 31 * result + startRef.hashCode()
+        result = 31 * result + endRef.hashCode()
+        result = 31 * result + startArrowHead.hashCode()
+        result = 31 * result + endArrowHead.hashCode()
+        result = 31 * result + arrowType.hashCode()
+        return result
     }
 }

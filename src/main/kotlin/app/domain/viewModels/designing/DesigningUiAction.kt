@@ -15,12 +15,18 @@ sealed interface DesigningUiAction {
     data class ClickOnComponent(val index: Int, val containment: ComponentContainmentResult) : DesigningUiAction
     data object AddComponent : DesigningUiAction
     data class UpdateComponentData(val updater: UMLClassComponent.() -> Unit) : DesigningUiAction
+    data class DeleteComponent(val index: Int) : DesigningUiAction
+    data class DeleteField(val index: Int) : DesigningUiAction
+    data class DeleteFunction(val index: Int) : DesigningUiAction
 
     // Connections
     data class ClickOnConnection(val index: Int, val containment: ConnectionContainmentResult) : DesigningUiAction
     data class StartConnectionOn(val index: Int) : DesigningUiAction
     data class CreateConnectionOn(val index: Int) : DesigningUiAction
     data class UpdateConnectionData(val updater: UMLClassConnection.() -> Unit) : DesigningUiAction
+    data class UpdateConnectionStartRef(val refConnection: RefConnection) : DesigningUiAction
+    data class UpdateConnectionEndRef(val refConnection: RefConnection) : DesigningUiAction
+    data class DeleteConnection(val index: Int) : DesigningUiAction
 
     // Edit mode
     data class UpdateEditMode(val editMode: EditMode) : DesigningUiAction

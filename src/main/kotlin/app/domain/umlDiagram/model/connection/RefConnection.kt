@@ -10,9 +10,9 @@ sealed class RefConnection(open val ref: UMLClassComponent) {
     data class ReferencedConnection(override val ref: UMLClassComponent, val refType: RefType) : RefConnection(ref)
 }
 
-sealed interface RefType {
-    data class Field(val index: Int) : RefType
-    data class Function(val index: Int) : RefType
+sealed class RefType(open val index: Int) {
+    data class Field(override val index: Int) : RefType(index)
+    data class Function(override val index: Int) : RefType(index)
 }
 
 fun RefConnection.getOffsets(): ConnectionOffset? {

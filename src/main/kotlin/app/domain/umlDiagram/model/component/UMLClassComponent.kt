@@ -4,15 +4,13 @@ import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
 import androidx.compose.ui.text.*
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.unit.*
 import app.domain.umlDiagram.model.*
+import app.domain.umlDiagram.model.connection.*
 import app.domain.umlDiagram.mouse.*
 import app.domain.util.geometry.*
 import kotlinx.serialization.*
-import kotlinx.serialization.Transient
-import org.jetbrains.skia.paragraph.*
 import kotlin.math.*
 
 @Serializable
@@ -94,8 +92,8 @@ data class UMLClassComponent(
 
         val fieldTextLayouts = fields.map {
             textMeasurer.measure(
-                text = "${it.visibility.symbol}${it.name}" + if (it.type.isNotBlank()) ": ${it.type}" else "",
-                style = contentTextStyle.copy(textAlign = TextAlign.Start),
+                text = it.toString(),
+                style = contentTextStyle,
                 constraints = Constraints(maxWidth = maxTextWidth.toInt())
             ).apply {
                 contentHeightSum += size.height
@@ -104,12 +102,9 @@ data class UMLClassComponent(
         if (fieldTextLayouts.isNotEmpty()) contentHeightSum += DRAW_PADDING * 2
 
         val functionTextLayouts = functions.map {
-            val paramsText = it.params.joinToString { p ->
-                p.name + if (p.type.isNotBlank()) ": ${p.type}" else ""
-            }
             textMeasurer.measure(
-                text = "${it.visibility.symbol}" + (if (it.name.isNotBlank()) "${it.name}($paramsText)" else "") + (if (it.returnType.isNotBlank()) ": ${it.returnType}" else ""),
-                style = contentTextStyle.copy(textAlign = TextAlign.Start),
+                text = it.toString(),
+                style = contentTextStyle,
                 constraints = Constraints(maxWidth = maxTextWidth.toInt())
             ).apply {
                 contentHeightSum += size.height
@@ -118,7 +113,7 @@ data class UMLClassComponent(
         if (functionTextLayouts.isNotEmpty()) contentHeightSum += DRAW_PADDING * 2
 
         if (size.height != contentHeightSum + DRAW_PADDING * 2) {
-            size = size.copy(height = max(size.height, contentHeightSum + DRAW_PADDING * 2))
+            size = size.copy(height = max(MIN_HEIGHT, contentHeightSum + DRAW_PADDING * 2))
         }
 
         drawScope.drawRect(
@@ -207,6 +202,98 @@ data class UMLClassComponent(
                     textDecoration = if (functions[index].isStatic) TextDecoration.Underline else null
                 )
                 currentPosition += Offset(0f, layout.size.height.toFloat())
+            }
+        }
+    }
+
+    fun getDrawOffsetOf(
+        refType: RefType,
+        textMeasurer: TextMeasurer,
+        nameTextStyle: TextStyle,
+        contentTextStyle: TextStyle
+    ): Offset {
+        val maxTextWidth = size.width - DRAW_PADDING * 2
+
+        return when (refType) {
+            is RefType.Field -> {
+                val indexTarget = refType.index
+
+                val nameTextLayout = textMeasurer.measure(
+                    text = if (isInterface) "«interface» $name" else name,
+                    style = nameTextStyle.copy(textAlign = TextAlign.Center),
+                    constraints = Constraints(maxWidth = maxTextWidth.toInt())
+                )
+
+                val fieldTextLayouts = fields.map {
+                    textMeasurer.measure(
+                        text = it.toString(),
+                        style = contentTextStyle,
+                        constraints = Constraints(maxWidth = maxTextWidth.toInt())
+                    )
+                }
+
+                var currentHeight = 0f
+                currentHeight += nameTextLayout.size.height.toFloat() + DRAW_PADDING * 3
+
+                for (index in fieldTextLayouts.indices) {
+                    val layout = fieldTextLayouts[index]
+                    if (index != indexTarget) {
+                        currentHeight += layout.size.height.toFloat()
+                    } else {
+                        currentHeight += layout.size.height / 2f
+                        break
+                    }
+                }
+
+                Offset(0f, currentHeight)
+            }
+            is RefType.Function -> {
+                val indexTarget = refType.index
+
+                val nameTextLayout = textMeasurer.measure(
+                    text = if (isInterface) "«interface» $name" else name,
+                    style = nameTextStyle.copy(textAlign = TextAlign.Center),
+                    constraints = Constraints(maxWidth = maxTextWidth.toInt())
+                )
+
+                val fieldTextLayouts = fields.map {
+                    textMeasurer.measure(
+                        text = it.toString(),
+                        style = contentTextStyle,
+                        constraints = Constraints(maxWidth = maxTextWidth.toInt())
+                    )
+                }
+
+                val functionTextLayouts = functions.map {
+                    textMeasurer.measure(
+                        text = it.toString(),
+                        style = contentTextStyle,
+                        constraints = Constraints(maxWidth = maxTextWidth.toInt())
+                    )
+                }
+
+                var currentHeight = 0f
+                currentHeight += nameTextLayout.size.height.toFloat() + DRAW_PADDING * 3
+
+                fieldTextLayouts.forEachIndexed { index, layout ->
+                    currentHeight += layout.size.height.toFloat()
+                }
+
+                currentHeight += DRAW_PADDING * 2
+
+                if (functionTextLayouts.isNotEmpty()) {
+                    for (index in functionTextLayouts.indices) {
+                        val layout = functionTextLayouts[index]
+                        if (index != indexTarget) {
+                            currentHeight += layout.size.height.toFloat()
+                        } else {
+                            currentHeight += layout.size.height / 2f
+                            break
+                        }
+                    }
+                }
+
+                Offset(0f, currentHeight)
             }
         }
     }

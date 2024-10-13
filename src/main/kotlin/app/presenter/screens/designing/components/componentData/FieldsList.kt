@@ -13,6 +13,8 @@ import androidx.compose.ui.draw.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.*
 import app.domain.umlDiagram.model.component.*
+import app.domain.util.list.*
+import app.domain.util.numbers.*
 import app.domain.viewModels.designing.*
 import app.presenter.components.buttons.*
 import app.presenter.components.common.*
@@ -52,11 +54,21 @@ fun FieldsList(
                 FieldView(
                     modifier = Modifier.fillMaxWidth(),
                     index = index,
+                    totalFields = reference.fields.size,
                     field = field,
                     commonCounter = commonCounter,
                     onUpdateValue = { updater ->
                         onUiAction(DesigningUiAction.UpdateComponentData {
                             fields[index].apply(updater)
+                        })
+                    },
+                    onDelete = { id ->
+                        onUiAction(DesigningUiAction.DeleteField(id))
+                    },
+                    onMoveField = { amount ->
+                        val where = (index + amount).limit(0, reference.fields.size - 1)
+                        onUiAction(DesigningUiAction.UpdateComponentData {
+                            fields.swap(index, where)
                         })
                     }
                 )
@@ -66,6 +78,7 @@ fun FieldsList(
                     modifier = Modifier.size(24.dp),
                     icon = Icons.Default.Add,
                     actionText = "Add Field",
+                    backgroundShown = false,
                     onClick = {
                         onUiAction(DesigningUiAction.UpdateComponentData {
                             fields += Field()
@@ -100,99 +113,134 @@ fun FieldsList(
 private fun FieldView(
     modifier: Modifier = Modifier,
     index: Int,
+    totalFields: Int,
     field: Field,
     commonCounter: Int,
     onUpdateValue: (Field.() -> Unit) -> Unit,
+    onDelete: (Int) -> Unit,
+    onMoveField: (Int) -> Unit
 ) {
-    Box(
+    Column(
         modifier = modifier
+            .clip(RoundedCornerShape(8f))
+            .background(Color.White)
+            .padding(vertical = 4.dp)
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
-                .clip(RoundedCornerShape(8f))
-                .background(Color.White)
-                .padding(vertical = 4.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            DefaultTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                startValue = field.name,
-                label = "Name:",
-                onValueChange = { newValue ->
-                    onUpdateValue {
-                        name = newValue
-                    }
-                },
-                maxLength = 48,
-                showEditIcon = false,
-                textStyle = MaterialTheme.typography.bodySmall,
-                labelTextStyle = MaterialTheme.typography.labelSmall,
-                textColor = Color.Black
+            Text(
+                text = "(${index + 1})",
+                style = MaterialTheme.typography.labelSmall,
+                color = Color.Black
             )
-            DefaultTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                startValue = field.type,
-                label = "Type:",
-                onValueChange = { newValue ->
-                    onUpdateValue {
-                        type = newValue
-                    }
-                },
-                maxLength = 48,
-                showEditIcon = false,
-                textStyle = MaterialTheme.typography.bodySmall,
-                labelTextStyle = MaterialTheme.typography.labelSmall,
-                textColor = Color.Black
-            )
-            key(commonCounter) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp, horizontal = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = "Visibility:",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Black
+            Row {
+                if (index == 0) {
+                    Spacer(modifier = Modifier.size(16.dp))
+                } else {
+                    ActionButton(
+                        modifier = Modifier.size(16.dp),
+                        icon = Icons.Default.KeyboardArrowUp,
+                        actionText = "Move Field Up",
+                        backgroundShown = false,
+                        onClick = { onMoveField(-1) }
                     )
-                    Visibility.entries.forEach { visibility ->
-                        VisibilityButton(
-                            visibility = visibility,
-                            isHighlighted = field.visibility == visibility,
-                            onClick = {
-                                onUpdateValue {
-                                    this.visibility = visibility
-                                }
+                }
+                if (index == totalFields - 1) {
+                    Spacer(modifier = Modifier.size(16.dp))
+                } else {
+                    ActionButton(
+                        modifier = Modifier.size(16.dp),
+                        icon = Icons.Default.KeyboardArrowDown,
+                        actionText = "Move Field Down",
+                        backgroundShown = false,
+                        onClick = { onMoveField(1) }
+                    )
+                }
+            }
+            ActionButton(
+                modifier = Modifier.size(16.dp),
+                icon = Icons.Default.Delete,
+                actionText = "Delete Field",
+                backgroundShown = false,
+                onClick = { onDelete(index) }
+            )
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        DefaultTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            startValue = field.name,
+            label = "Name:",
+            onValueChange = { newValue ->
+                onUpdateValue {
+                    name = newValue
+                }
+            },
+            maxLength = 48,
+            showEditIcon = false,
+            textStyle = MaterialTheme.typography.bodySmall,
+            labelTextStyle = MaterialTheme.typography.labelSmall,
+            textColor = Color.Black
+        )
+        DefaultTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            startValue = field.type,
+            label = "Type:",
+            onValueChange = { newValue ->
+                onUpdateValue {
+                    type = newValue
+                }
+            },
+            maxLength = 48,
+            showEditIcon = false,
+            textStyle = MaterialTheme.typography.bodySmall,
+            labelTextStyle = MaterialTheme.typography.labelSmall,
+            textColor = Color.Black
+        )
+        key(commonCounter) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp, horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Visibility:",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Black
+                )
+                Visibility.entries.forEach { visibility ->
+                    VisibilityButton(
+                        visibility = visibility,
+                        isHighlighted = field.visibility == visibility,
+                        onClick = {
+                            onUpdateValue {
+                                this.visibility = visibility
                             }
-                        )
+                        }
+                    )
+                }
+            }
+            Checker(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
+                label = "Static:",
+                isChecked = field.isStatic,
+                onChecked = { newValue ->
+                    onUpdateValue {
+                        isStatic = newValue
                     }
                 }
-                Checker(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 4.dp),
-                    label = "Static:",
-                    isChecked = field.isStatic,
-                    onChecked = { newValue ->
-                        onUpdateValue {
-                            isStatic = newValue
-                        }
-                    }
-                )
-            }
+            )
         }
-        Text(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(top = 1.dp, end = 4.dp),
-            text = "(${index + 1})",
-            style = MaterialTheme.typography.labelSmall,
-            color = Color.Black
-        )
     }
 }

@@ -8,4 +8,8 @@ data class Field(
     var type: String = "",
     var visibility: Visibility = Visibility.PUBLIC,
     var isStatic: Boolean = false
-)
+) {
+    override fun toString(): String {
+        return "${visibility.symbol}${name}" + if (type.isNotBlank()) ": $type" else ""
+    }
+}

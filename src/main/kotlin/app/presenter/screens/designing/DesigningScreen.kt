@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.*
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.text.style.*
 import androidx.compose.ui.unit.*
 import app.presenter.screens.designing.components.*
 import app.domain.viewModels.designing.*
@@ -36,33 +37,56 @@ fun DesigningScreen(
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            uiState.focusUiState.focusedComponent?.let { ref ->
-                ClassComponentDetailsColumn(
-                    modifier = Modifier
-                        .fillMaxWidth(0.25f)
-                        .fillMaxHeight()
-                        .clip(RoundedCornerShape(12f))
-                        .background(Color.White)
-                        .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f))
-                        .padding(4.dp),
-                    reference = ref,
-                    commonCounter = uiState.commonCounter,
-                    onUiAction = onUiAction
-                )
-            }
-            if (uiState.focusUiState.focusedComponent == null) uiState.focusUiState.focusedConnection?.let { ref ->
-                ClassConnectionDetailsColumn(
-                    modifier = Modifier
-                        .fillMaxWidth(0.25f)
-                        .fillMaxHeight()
-                        .clip(RoundedCornerShape(12f))
-                        .background(Color.White)
-                        .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f))
-                        .padding(4.dp),
-                    reference = ref,
-                    commonCounter = uiState.commonCounter,
-                    onUiAction = onUiAction
-                )
+            when {
+                uiState.focusUiState.focusedComponent != null -> uiState.focusUiState.focusedComponent?.let { ref ->
+                    ClassComponentDetailsColumn(
+                        modifier = Modifier
+                            .fillMaxWidth(0.25f)
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(12f))
+                            .background(Color.White)
+                            .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f))
+                            .padding(4.dp),
+                        index = uiState.classComponents.indexOf(ref),
+                        reference = ref,
+                        commonCounter = uiState.commonCounter,
+                        onUiAction = onUiAction
+                    )
+                }
+                uiState.focusUiState.focusedConnection != null -> uiState.focusUiState.focusedConnection?.let { ref ->
+                    ClassConnectionDetailsColumn(
+                        modifier = Modifier
+                            .fillMaxWidth(0.25f)
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(12f))
+                            .background(Color.White)
+                            .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f))
+                            .padding(4.dp),
+                        index = uiState.classConnections.indexOf(ref),
+                        reference = ref,
+                        commonCounter = uiState.commonCounter,
+                        onUiAction = onUiAction
+                    )
+                }
+                else -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(0.25f)
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(12f))
+                            .background(Color.White)
+                            .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f))
+                            .padding(4.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Select component or connection",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
             }
             Column(
                 modifier = Modifier

@@ -10,6 +10,7 @@ import app.domain.util.numbers.*
 import app.presenter.canvas.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import org.w3c.dom.Text
 
 @Serializable
 data class UMLClassConnection(
@@ -17,14 +18,14 @@ data class UMLClassConnection(
     var name: String = "",
     var startText: String = "",
     var endText: String = "",
-    val startRef: RefConnection,
-    val endRef: RefConnection,
+    var startRef: RefConnection,
+    var endRef: RefConnection,
     var startArrowHead: ArrowHead = ArrowHead.ASSOCIATION,
     var endArrowHead: ArrowHead = ArrowHead.ASSOCIATION,
     var arrowType: ArrowType = ArrowType.SOLID,
     // Graphics
     @Transient var middleOffset: Float = 0.5f,
-    @Transient val forcedType: Type? = null,
+    @Transient var forcedType: Type? = null,
     @Transient val highlightedSegments: MutableList<ConnectionSegment> = mutableListOf()
 ) {
     enum class Type {
@@ -172,12 +173,35 @@ data class UMLClassConnection(
     fun drawOn(
         drawScope: DrawScope,
         textMeasurer: TextMeasurer,
-        textStyle: TextStyle
+        textStyle: TextStyle,
+        componentNameTextStyle: TextStyle,
+        componentContentTextStyle: TextStyle
     ) {
         val startOffsets = startRef.getOffsets()
         val endOffsets = endRef.getOffsets()
 
-        calculatedFrom = when (relativePosition) {
+        val forcedStartOn: RefType? = (startRef as? RefConnection.ReferencedConnection).let { it?.refType }
+        val forcedEndOn: RefType? = (endRef as? RefConnection.ReferencedConnection).let { it?.refType }
+
+        val startForcedOffset = forcedStartOn?.let {
+            startRef.ref.getDrawOffsetOf(it, textMeasurer, componentNameTextStyle, componentContentTextStyle)
+        }
+        val endForcedOffset = forcedEndOn?.let {
+            endRef.ref.getDrawOffsetOf(it, textMeasurer, componentNameTextStyle, componentContentTextStyle)
+        }
+
+        calculatedFrom = startForcedOffset?.let { offset ->
+            when (relativePosition) {
+                RelativePosition.LEFT -> startRef.ref.position.copy(
+                    y = startRef.ref.position.y + offset.y
+                )
+                RelativePosition.RIGHT -> startRef.ref.position.copy(
+                    x = startRef.ref.position.x + startRef.ref.size.width,
+                    y = startRef.ref.position.y + offset.y
+                )
+                else -> startRef.ref.position
+            }
+        } ?: when (relativePosition) {
             RelativePosition.LEFT -> startRef.ref.position.copy(
                 y = startRef.ref.position.y + startRef.ref.size.height * (startOffsets?.left ?: 0.5f)
             )
@@ -194,7 +218,18 @@ data class UMLClassConnection(
             )
         }
 
-        calculatedTo = when (relativePosition) {
+        calculatedTo = endForcedOffset?.let { offset ->
+            when (relativePosition) {
+                RelativePosition.LEFT -> endRef.ref.position.copy(
+                    x = endRef.ref.position.x + endRef.ref.size.width,
+                    y = endRef.ref.position.y + offset.y
+                )
+                RelativePosition.RIGHT -> endRef.ref.position.copy(
+                    y = endRef.ref.position.y + offset.y
+                )
+                else -> endRef.ref.position
+            }
+        } ?: when (relativePosition) {
             RelativePosition.LEFT -> endRef.ref.position.copy(
                 x = endRef.ref.position.x + endRef.ref.size.width,
                 y = endRef.ref.position.y + endRef.ref.size.height * (endOffsets?.right ?: 0.5f)
@@ -242,16 +277,20 @@ data class UMLClassConnection(
         val segmentsContainment = checkSegmentsForContainment(mousePosition)
         when (segmentsContainment) {
             is ConnectionContainmentResult.FirstSegment -> {
-                clearHighlight()
-                highlightedSegments.add(ConnectionSegment.FIRST)
+                if (startRef !is RefConnection.ReferencedConnection) {
+                    clearHighlight()
+                    highlightedSegments.add(ConnectionSegment.FIRST)
+                } else return ConnectionContainmentResult.Whole
             }
             is ConnectionContainmentResult.SecondSegment -> {
                 clearHighlight()
                 highlightedSegments.add(ConnectionSegment.SECOND)
             }
             is ConnectionContainmentResult.ThirdSegment -> {
-                clearHighlight()
-                highlightedSegments.add(ConnectionSegment.THIRD)
+                if (endRef !is RefConnection.ReferencedConnection) {
+                    clearHighlight()
+                    highlightedSegments.add(ConnectionSegment.THIRD)
+                } else return ConnectionContainmentResult.Whole
             }
             else -> {
                 clearHighlight()

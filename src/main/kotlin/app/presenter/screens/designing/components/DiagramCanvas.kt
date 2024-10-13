@@ -198,6 +198,9 @@ fun DiagramCanvas(
                             ConnectionContainmentResult.None -> {
                                 onUiAction(DesigningUiAction.UpdatePointerIcon(PointerIcon(Cursor(Cursor.DEFAULT_CURSOR))))
                             }
+                            ConnectionContainmentResult.Whole -> {
+                                onUiAction(DesigningUiAction.UpdatePointerIcon(PointerIcon(Cursor(Cursor.DEFAULT_CURSOR))))
+                            }
                             is ConnectionContainmentResult.FirstSegment -> {
                                 if (containment.direction == SegmentDirection.VERTICAL) {
                                     onUiAction(DesigningUiAction.UpdatePointerIcon(PointerIcon(Cursor(Cursor.E_RESIZE_CURSOR))))
@@ -286,7 +289,9 @@ fun DiagramCanvas(
                         it.drawOn(
                             drawScope = this@Canvas,
                             textMeasurer = textMeasurer,
-                            textStyle = umlConnectionTextStyle
+                            textStyle = umlConnectionTextStyle,
+                            componentNameTextStyle = umlComponentNameTextStyle,
+                            componentContentTextStyle = umlComponentContentTextStyle
                         )
                     }
 

@@ -39,12 +39,18 @@ class DesigningViewModel : ViewModel() {
                 is DesigningUiAction.ClickOnComponent -> clickOnComponent(action.index, action.containment)
                 DesigningUiAction.AddComponent -> addComponent()
                 is DesigningUiAction.UpdateComponentData -> updateComponent(action.updater)
+                is DesigningUiAction.DeleteComponent -> deleteComponent(action.index)
+                is DesigningUiAction.DeleteField -> deleteComponentField(action.index)
+                is DesigningUiAction.DeleteFunction -> deleteComponentFunction(action.index)
 
                 // Connections
                 is DesigningUiAction.ClickOnConnection -> clickOnConnection(action.index, action.containment)
                 is DesigningUiAction.StartConnectionOn -> startConnectionOn(action.index)
                 is DesigningUiAction.CreateConnectionOn -> createConnectionOn(action.index)
                 is DesigningUiAction.UpdateConnectionData -> updateConnection(action.updater)
+                is DesigningUiAction.UpdateConnectionStartRef -> updateConnectionStartRef(action.refConnection)
+                is DesigningUiAction.UpdateConnectionEndRef -> updateConnectionEndRef(action.refConnection)
+                is DesigningUiAction.DeleteConnection -> deleteConnection(action.index)
 
                 // Edit mode
                 is DesigningUiAction.UpdateEditMode -> updateEditMode(action.editMode)
@@ -134,6 +140,53 @@ class DesigningViewModel : ViewModel() {
         updateCommonCounter()
     }
 
+    private fun deleteComponent(index: Int) {
+        val componentToDelete = uiState.value.classComponents[index]
+
+        _uiState.update {
+            it.copy(
+                focusUiState = it.focusUiState.copy(
+                    focusedComponent = if (index == uiState.value.classComponents.lastIndex) null else it.focusUiState.focusedComponent
+                ),
+                classComponents = it.classComponents.toMutableList().apply { removeAt(index) },
+                classConnections = it.classConnections.filterNot { con ->
+                    con.startRef.ref == componentToDelete || con.endRef.ref == componentToDelete
+                }
+            )
+        }
+
+        updateCommonCounter()
+    }
+
+    private fun deleteComponentField(index: Int) {
+        uiState.value.classComponents.last().fields.removeAt(index)
+
+        uiState.value.classConnections.forEach { con ->
+            if (((con.startRef as? RefConnection.ReferencedConnection)?.refType as? RefType.Field)?.index == index) {
+                con.startRef = RefConnection.SimpleConnection(con.startRef.ref)
+            } else if (((con.endRef as? RefConnection.ReferencedConnection)?.refType as? RefType.Field)?.index == index) {
+                con.endRef = RefConnection.SimpleConnection(con.endRef.ref)
+            }
+        }
+
+        updateCommonCounter()
+    }
+
+    private fun deleteComponentFunction(index: Int) {
+        uiState.value.classComponents.last().functions.removeAt(index)
+
+        uiState.value.classConnections.forEach { con ->
+            if (((con.startRef as? RefConnection.ReferencedConnection)?.refType as? RefType.Function)?.index == index) {
+                con.startRef = RefConnection.SimpleConnection(con.startRef.ref)
+            } else if (((con.endRef as? RefConnection.ReferencedConnection)?.refType as? RefType.Function)?.index == index) {
+                con.endRef = RefConnection.SimpleConnection(con.endRef.ref)
+            }
+        }
+
+        updateCommonCounter()
+    }
+
+
     private fun clickOnConnection(index: Int, containment: ConnectionContainmentResult) {
         _uiState.update {
             it.copy(
@@ -150,6 +203,7 @@ class DesigningViewModel : ViewModel() {
                 connectionInFocus = true,
                 connectionSegmentInFocus = when (containment) {
                     ConnectionContainmentResult.None -> null
+                    ConnectionContainmentResult.Whole -> null
                     is ConnectionContainmentResult.FirstSegment -> ConnectionSegment.FIRST
                     is ConnectionContainmentResult.SecondSegment -> ConnectionSegment.SECOND
                     is ConnectionContainmentResult.ThirdSegment -> ConnectionSegment.THIRD
@@ -209,6 +263,37 @@ class DesigningViewModel : ViewModel() {
                 focusUiState = it.focusUiState.copy(
                     focusedConnection = it.classConnections.last().copy()
                 )
+            )
+        }
+
+        updateCommonCounter()
+    }
+
+    private fun updateConnectionStartRef(refConnection: RefConnection) {
+        updateConnection {
+            startRef = refConnection
+            forcedType = if (refConnection is RefConnection.ReferencedConnection) {
+                UMLClassConnection.Type.HVH
+            } else null
+        }
+    }
+
+    private fun updateConnectionEndRef(refConnection: RefConnection) {
+        updateConnection {
+            endRef = refConnection
+            forcedType = if (refConnection is RefConnection.ReferencedConnection) {
+                UMLClassConnection.Type.HVH
+            } else null
+        }
+    }
+
+    private fun deleteConnection(index: Int) {
+        _uiState.update {
+            it.copy(
+                focusUiState = it.focusUiState.copy(
+                    focusedConnection = if (index == uiState.value.classConnections.lastIndex) null else it.focusUiState.focusedConnection
+                ),
+                classConnections = it.classConnections.toMutableList().apply { removeAt(index) }
             )
         }
 

@@ -3,6 +3,8 @@ package app.presenter.screens.designing.components.componentData
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.*
+import androidx.compose.material.icons.*
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -17,6 +19,7 @@ import app.presenter.components.common.*
 @Composable
 fun ClassComponentDetailsColumn(
     modifier: Modifier = Modifier,
+    index: Int,
     reference: UMLClassComponent,
     commonCounter: Int,
     onUiAction: (DesigningUiAction) -> Unit
@@ -29,7 +32,7 @@ fun ClassComponentDetailsColumn(
     }
 
     Box(
-        modifier = modifier,
+        modifier = modifier
     ) {
         Column(
             modifier = Modifier
@@ -39,6 +42,21 @@ fun ClassComponentDetailsColumn(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ActionButton(
+                    modifier = Modifier.size(24.dp),
+                    icon = Icons.Default.Delete,
+                    actionText = "Delete Component",
+                    backgroundShown = false,
+                    onClick = {
+                        onUiAction(DesigningUiAction.DeleteComponent(index))
+                    }
+                )
+            }
             DefaultTextField(
                 modifier = Modifier
                     .fillMaxWidth()

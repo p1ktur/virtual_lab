@@ -15,7 +15,7 @@ import app.presenter.components.tooltip.*
 import app.presenter.screens.designing.*
 
 @Composable
-fun ModeButton(
+fun EditModeButton(
     modifier: Modifier,
     icon: ImageVector,
     editMode: EditMode,
@@ -31,16 +31,22 @@ fun ModeButton(
         Box(
             modifier = modifier
                 .clip(CircleShape)
-                .background(Color(if (editMode == connectedEditMode) ICON_BACKGROUND_COLOR_HIGHLIGHTED else ICON_BACKGROUND_COLOR))
-                .border(1.dp, Color(if (editMode == connectedEditMode) EDIT_ICON_IMAGE_COLOR_HIGHLIGHTED else EDIT_ICON_IMAGE_COLOR), CircleShape)
-                .clickable(onClick = onClick),
+                .background(Color.White)
+                .clickable(onClick = onClick)
+                .run {
+                    if (editMode == connectedEditMode) {
+                        border(0.5.dp, Color.Black, CircleShape)
+                    } else this
+                }
+                .padding(3.dp)
+                .border(0.5.dp, Color.Black, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(12.dp),
                 imageVector = icon,
                 contentDescription = "Edit mode button",
-                tint = Color(if (editMode == connectedEditMode) EDIT_ICON_IMAGE_COLOR_HIGHLIGHTED else EDIT_ICON_IMAGE_COLOR)
+                tint = Color.Black
             )
         }
     }

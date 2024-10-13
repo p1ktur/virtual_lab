@@ -6,10 +6,10 @@ import app.domain.umlDiagram.editing.*
 import app.domain.umlDiagram.model.component.*
 import app.domain.umlDiagram.model.connection.*
 import app.domain.umlDiagram.mouse.*
+import app.domain.util.fileManager.*
 import app.domain.util.list.*
 import app.domain.util.numbers.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.*
 import kotlinx.coroutines.flow.*
 import moe.tlaster.precompose.viewmodel.*
 
@@ -74,6 +74,29 @@ class DesigningViewModel : ViewModel() {
         }
     }
 
+    fun getSaveData(): SaveData {
+        return SaveData(
+            components = uiState.value.classComponents,
+            connections = uiState.value.classConnections
+        )
+    }
+
+    fun applySaveData(saveData: SaveData) {
+        _uiState.update {
+            it.copy(
+                classComponents = saveData.components,
+                classConnections = saveData.connections
+            )
+        }
+
+        uiState.value.classConnections.forEach {
+            it.findAndApplyCorrectReferences(uiState.value.classComponents)
+        }
+
+        updateCommonCounter()
+    }
+
+    //ACTIONS
     private fun updateCommonCounter() {
         _uiState.update {
             it.copy(

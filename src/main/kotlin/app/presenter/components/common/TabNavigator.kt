@@ -12,6 +12,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.*
 import app.domain.tabNavigator.*
 import moe.tlaster.precompose.navigation.*
@@ -54,6 +55,7 @@ fun TabNavigator(
         if (onLogOut != null) list.add(
             MenuOption(
                 text = "Log out",
+                enabled = mutableStateOf(true),
                 onClick = {
                     onLogOut.invoke()
                     navController.clearBackStack()
@@ -77,7 +79,7 @@ fun TabNavigator(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp)
+                .height(32.dp)
                 .background(MaterialTheme.colorScheme.primary)
         ) {
             Row(
@@ -133,7 +135,7 @@ fun TabNavigator(
             if (localMenuOptions.isNotEmpty()) {
                 Icon(
                     modifier = Modifier
-                        .size(48.dp)
+                        .size(32.dp)
                         .clickable(onClick = {
                             isMenuExpanded = true
                         })
@@ -158,7 +160,7 @@ fun TabNavigator(
             if (canNavControllerGoBack) {
                 Icon(
                     modifier = Modifier
-                        .size(56.dp)
+                        .size(32.dp)
                         .align(Alignment.TopStart)
                         .clickable(onClick = {
                             navController.goBack()
@@ -173,7 +175,7 @@ fun TabNavigator(
                 ExposedDropdownMenuBox(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .width(200.dp),
+                        .width(168.dp),
                     expanded = isMenuExpanded,
                     onExpandedChange = { newValue ->
                         isMenuExpanded = newValue
@@ -190,6 +192,7 @@ fun TabNavigator(
                     ) {
                         localMenuOptions.forEach { option ->
                             DropdownMenuItem(
+                                enabled = option.enabled.value,
                                 onClick = {
                                     if (navigationAllowed) {
                                         option.onClick()
@@ -199,8 +202,12 @@ fun TabNavigator(
                             ) {
                                 Text(
                                     text = option.text,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = if (option.enabled.value) {
+                                        MaterialTheme.colorScheme.onSecondaryContainer
+                                    } else {
+                                        Color.LightGray
+                                    },
                                 )
                             }
                         }

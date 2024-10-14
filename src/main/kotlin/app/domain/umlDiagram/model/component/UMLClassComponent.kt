@@ -38,7 +38,7 @@ data class UMLClassComponent(
         const val DRAW_POINTS_RADIUS = 8f
         const val DRAW_PADDING = 5f
 
-        const val HIGHLIGHT_COLOR = 0xFFBB4499
+        const val HIGHLIGHT_COLOR = 0xFFEB9E34
     }
 
     @Transient private var containedClickPosition: Offset? = null

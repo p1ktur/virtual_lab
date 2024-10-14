@@ -52,7 +52,7 @@ data class UMLClassConnection(
 
     companion object {
         const val ARROW_COLOR = 0xFF000000
-        const val HIGHLIGHT_COLOR = 0xFFBB4499
+        const val HIGHLIGHT_COLOR = 0xFFEB9E34
     }
 
     @Transient var calculatedFrom: Offset = Offset.Zero
@@ -387,6 +387,8 @@ data class UMLClassConnection(
             }
         }
     }
+
+    fun getLongerName(): String = "$name ${startRef.ref.hashCode()} ${endRef.ref.hashCode()}"
 
     private fun defineRelativePosition(): RelativePosition {
         return if (forcedType != null) when {

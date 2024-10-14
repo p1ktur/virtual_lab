@@ -7,6 +7,6 @@ data class Mark(
     val connectionAccordance: Float
 ) {
     fun value(maxMark: Float): Float {
-        return maxMark * 0.25f * (componentPresence + connectionPresence) * (componentAccordance + connectionAccordance)
+        return maxMark * 0.25f * (componentPresence + connectionPresence + componentAccordance + connectionAccordance)
     }
 }

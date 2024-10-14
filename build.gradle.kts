@@ -48,6 +48,10 @@ dependencies {
 
     // Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+
+    // Testing
+    implementation(kotlin("test-junit"))
+    implementation("junit:junit:4.13.2")
 }
 
 compose.desktop {

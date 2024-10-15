@@ -60,7 +60,7 @@ fun FieldsChooseList(
                                 onUiAction(DesigningUiAction.UpdateConnectionStartRef(newConnection))
                             } else {
                                 val endRef = reference.endRef
-                                val newConnection = if (endRef is RefConnection.ReferencedConnection && endRef.refType.index == index) {
+                                val newConnection = if (endRef is RefConnection.ReferencedConnection && endRef.refType.getTypeIndex() == index) {
                                     RefConnection.SimpleConnection(componentRef)
                                 } else {
                                     RefConnection.ReferencedConnection(componentRef, RefType.Field(index))

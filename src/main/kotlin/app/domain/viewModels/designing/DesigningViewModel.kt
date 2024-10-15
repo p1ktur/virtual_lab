@@ -18,17 +18,6 @@ class DesigningViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(DesigningUiState())
     val uiState = _uiState.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            delay(1000)
-            addComponent()
-            addComponent()
-            startConnectionOn(0)
-            createConnectionOn(0)
-            updateCommonCounter()
-        }
-    }
-
     fun onUiAction(action: DesigningUiAction) {
         viewModelScope.launch {
             when (action) {
@@ -109,13 +98,8 @@ class DesigningViewModel : ViewModel() {
         _uiState.update {
             it.copy(
                 classComponents = it.classComponents.toMutableList().swapWithLast(index),
-            )
-        }
-
-        _uiState.update {
-            it.copy(
                 focusUiState = it.focusUiState.copy(
-                    focusedComponent = it.classComponents.last(),
+                    focusedComponent = it.classComponents[index],
                     focusedConnection = null
                 ),
                 componentInFocus = true,
@@ -173,7 +157,7 @@ class DesigningViewModel : ViewModel() {
                 ),
                 classComponents = it.classComponents.toMutableList().apply { removeAt(index) },
                 classConnections = it.classConnections.filterNot { con ->
-                    con.startRef.ref == componentToDelete || con.endRef.ref == componentToDelete
+                    con.startRef.getRefClass() == componentToDelete || con.endRef.getRefClass() == componentToDelete
                 }
             )
         }
@@ -186,9 +170,9 @@ class DesigningViewModel : ViewModel() {
 
         uiState.value.classConnections.forEach { con ->
             if (((con.startRef as? RefConnection.ReferencedConnection)?.refType as? RefType.Field)?.index == index) {
-                con.startRef = RefConnection.SimpleConnection(con.startRef.ref)
+                con.startRef = RefConnection.SimpleConnection(con.startRef.getRefClass())
             } else if (((con.endRef as? RefConnection.ReferencedConnection)?.refType as? RefType.Field)?.index == index) {
-                con.endRef = RefConnection.SimpleConnection(con.endRef.ref)
+                con.endRef = RefConnection.SimpleConnection(con.endRef.getRefClass())
             }
         }
 
@@ -200,9 +184,9 @@ class DesigningViewModel : ViewModel() {
 
         uiState.value.classConnections.forEach { con ->
             if (((con.startRef as? RefConnection.ReferencedConnection)?.refType as? RefType.Function)?.index == index) {
-                con.startRef = RefConnection.SimpleConnection(con.startRef.ref)
+                con.startRef = RefConnection.SimpleConnection(con.startRef.getRefClass())
             } else if (((con.endRef as? RefConnection.ReferencedConnection)?.refType as? RefType.Function)?.index == index) {
-                con.endRef = RefConnection.SimpleConnection(con.endRef.ref)
+                con.endRef = RefConnection.SimpleConnection(con.endRef.getRefClass())
             }
         }
 
@@ -211,17 +195,14 @@ class DesigningViewModel : ViewModel() {
 
 
     private fun clickOnConnection(index: Int, containment: ConnectionContainmentResult) {
-        _uiState.update {
-            it.copy(
-                classConnections = it.classConnections.toMutableList().swapWithLast(index),
-            )
-        }
+
 
         _uiState.update {
             it.copy(
+                classConnections = it.classConnections.toMutableList().swapWithLast(index),
                 focusUiState = it.focusUiState.copy(
                     focusedComponent = null,
-                    focusedConnection = it.classConnections.last()
+                    focusedConnection = it.classConnections[index]
                 ),
                 connectionInFocus = true,
                 connectionSegmentInFocus = when (containment) {
@@ -255,19 +236,14 @@ class DesigningViewModel : ViewModel() {
     private fun createConnectionOn(index: Int) {
         val startRef = uiState.value.classComponents.last()
 
-        _uiState.update {
-            it.copy(
-                classComponents = it.classComponents.toMutableList().swapWithLast(index),
-            )
-        }
-
         val newClassConnection = UMLClassConnection(
             startRef = RefConnection.SimpleConnection(ref = startRef),
-            endRef = RefConnection.SimpleConnection(ref = uiState.value.classComponents.last())
+            endRef = RefConnection.SimpleConnection(ref = uiState.value.classComponents[index])
         )
 
         _uiState.update {
             it.copy(
+                classComponents = it.classComponents.toMutableList().swapWithLast(index),
                 classConnections = it.classConnections + newClassConnection,
                 componentInFocus = true,
                 creatingConnection = false,

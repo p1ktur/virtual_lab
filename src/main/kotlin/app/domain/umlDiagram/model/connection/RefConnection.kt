@@ -5,27 +5,41 @@ import app.domain.umlDiagram.model.connection.UMLClassConnection.*
 import kotlinx.serialization.*
 
 @Serializable
-sealed class RefConnection(open var ref: UMLClassComponent) {
+sealed interface RefConnection {
 
     @Serializable
-    data class SimpleConnection(
-        @SerialName("simpleRef") override var ref: UMLClassComponent,
-        val offset: ConnectionOffset = ConnectionOffset()
-    ) : RefConnection(ref)
-
+    data class SimpleConnection(var ref: UMLClassComponent, val offset: ConnectionOffset = ConnectionOffset()) : RefConnection
     @Serializable
-    data class ReferencedConnection(
-        @SerialName("referencedRef") override var ref: UMLClassComponent,
-        val refType: RefType
-    ) : RefConnection(ref)
+    data class ReferencedConnection(var ref: UMLClassComponent, val refType: RefType) : RefConnection
+
+    fun getRefClass(): UMLClassComponent {
+        return when (this) {
+            is ReferencedConnection -> this.ref
+            is SimpleConnection -> this.ref
+        }
+    }
+
+    fun setRefClass(ref: UMLClassComponent) {
+        when (this) {
+            is ReferencedConnection -> this.ref = ref
+            is SimpleConnection -> this.ref = ref
+        }
+    }
 }
 
 @Serializable
-sealed class RefType(open val index: Int) {
+sealed interface RefType {
     @Serializable
-    data class Field(@SerialName("fieldId") override val index: Int) : RefType(index)
+    data class Field(val index: Int) : RefType
     @Serializable
-    data class Function(@SerialName("functionId") override val index: Int) : RefType(index)
+    data class Function(val index: Int) : RefType
+
+    fun getTypeIndex(): Int {
+        return when (this) {
+            is Field -> this.index
+            is Function -> this.index
+        }
+    }
 }
 
 fun RefConnection.getOffsets(): ConnectionOffset? {

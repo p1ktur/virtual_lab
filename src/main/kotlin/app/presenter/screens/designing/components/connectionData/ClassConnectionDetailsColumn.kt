@@ -82,7 +82,7 @@ fun ClassConnectionDetailsColumn(
                 commonCounter = commonCounter,
                 onUiAction = onUiAction
             )
-            if (reference.startRef.ref.fields.isNotEmpty() || reference.startRef.ref.functions.isNotEmpty()) {
+            if (reference.startRef.getRefClass().fields.isNotEmpty() || reference.startRef.getRefClass().functions.isNotEmpty()) {
                 HorizontalDivider(
                     color = Color.Black,
                     fillMaxWidth = 1f
@@ -97,20 +97,20 @@ fun ClassConnectionDetailsColumn(
                 )
                 FieldsChooseList(
                     reference = reference,
-                    componentRef = reference.startRef.ref,
+                    componentRef = reference.startRef.getRefClass(),
                     isStart = true,
                     commonCounter = commonCounter,
                     onUiAction = onUiAction
                 )
                 FunctionsChooseList(
                     reference = reference,
-                    componentRef = reference.startRef.ref,
+                    componentRef = reference.startRef.getRefClass(),
                     isStart = true,
                     commonCounter = commonCounter,
                     onUiAction = onUiAction
                 )
             }
-            if (reference.endRef.ref.fields.isNotEmpty() || reference.endRef.ref.functions.isNotEmpty()) {
+            if (reference.endRef.getRefClass().fields.isNotEmpty() || reference.endRef.getRefClass().functions.isNotEmpty()) {
                 HorizontalDivider(
                     color = Color.Black,
                     fillMaxWidth = 1f
@@ -125,14 +125,14 @@ fun ClassConnectionDetailsColumn(
                 )
                 FieldsChooseList(
                     reference = reference,
-                    componentRef = reference.endRef.ref,
+                    componentRef = reference.endRef.getRefClass(),
                     isStart = false,
                     commonCounter = commonCounter,
                     onUiAction = onUiAction
                 )
                 FunctionsChooseList(
                     reference = reference,
-                    componentRef = reference.endRef.ref,
+                    componentRef = reference.endRef.getRefClass(),
                     isStart = false,
                     commonCounter = commonCounter,
                     onUiAction = onUiAction

@@ -168,7 +168,7 @@ private fun UMLClassConnection.checkArchSegmentsForContainment(mousePosition: Of
     val yAxisIsCorrect = calculatedTo.y >= calculatedFrom.y
 
     val relativePosition = when {
-        calculatedTo.x + endRef.ref.size.width / 2 >= calculatedFrom.x + startRef.ref.size.width / 2 -> RelativePosition.RIGHT
+        calculatedTo.x + endRef.getRefClass().size.width / 2 >= calculatedFrom.x + startRef.getRefClass().size.width / 2 -> RelativePosition.RIGHT
         else -> RelativePosition.LEFT
     }
 

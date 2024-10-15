@@ -140,10 +140,16 @@ class UMLDiagramComparer {
         for (index in presentConnections.indices) {
             if (index >= tConnections.size) break
             var currentAccordance = 0f
-            val total = 6
+            val total = 8
 
             val s = presentConnections[index]
             val t = tConnections[index]
+
+            val ssRef = s.startRef
+            val tsRef = t.startRef
+
+            val seRef = s.endRef
+            val teRef = t.endRef
 
             if (s.name == t.name) currentAccordance++
             if (s.startText == t.startText) currentAccordance++
@@ -151,6 +157,24 @@ class UMLDiagramComparer {
             if (s.startArrowHead == t.startArrowHead) currentAccordance++
             if (s.endArrowHead == t.endArrowHead) currentAccordance++
             if (s.arrowType == t.arrowType) currentAccordance++
+
+            when (ssRef) {
+                is RefConnection.ReferencedConnection -> {
+                    if (tsRef is RefConnection.ReferencedConnection && ssRef.refType.getTypeIndex() == tsRef.refType.getTypeIndex()) {
+                        currentAccordance++
+                    }
+                }
+                is RefConnection.SimpleConnection -> if (tsRef is RefConnection.SimpleConnection) currentAccordance++
+            }
+
+            when (seRef) {
+                is RefConnection.ReferencedConnection -> {
+                    if (teRef is RefConnection.ReferencedConnection && seRef.refType.getTypeIndex() == teRef.refType.getTypeIndex()) {
+                        currentAccordance++
+                    }
+                }
+                is RefConnection.SimpleConnection -> if (teRef is RefConnection.SimpleConnection) currentAccordance++
+            }
 
             accordance += currentAccordance / total
         }

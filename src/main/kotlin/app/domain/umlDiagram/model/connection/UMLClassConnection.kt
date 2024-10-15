@@ -107,18 +107,18 @@ data class UMLClassConnection(
         return when (connectionSegment) {
             ConnectionSegment.FIRST -> {
                 if (type == Type.HVH) {
-                    val total = startRef.ref.size.height
+                    val total = startRef.getRefClass().size.height
                     val relativeMousePositionY = mousePosition.y.relativeLimit(
-                        bound1 = startRef.ref.position.y,
-                        bound2 = startRef.ref.position.y + startRef.ref.size.height
+                        bound1 = startRef.getRefClass().position.y,
+                        bound2 = startRef.getRefClass().position.y + startRef.getRefClass().size.height
                     )
 
                     relativeMousePositionY / total
                 } else {
-                    val total = startRef.ref.size.width
+                    val total = startRef.getRefClass().size.width
                     val relativeMousePositionX = mousePosition.x.relativeLimit(
-                        bound1 = startRef.ref.position.x,
-                        bound2 = startRef.ref.position.x + startRef.ref.size.width
+                        bound1 = startRef.getRefClass().position.x,
+                        bound2 = startRef.getRefClass().position.x + startRef.getRefClass().size.width
                     )
 
                     relativeMousePositionX / total
@@ -169,18 +169,18 @@ data class UMLClassConnection(
             }
             ConnectionSegment.THIRD -> {
                 if (type == Type.HVH) {
-                    val total = endRef.ref.size.height
+                    val total = endRef.getRefClass().size.height
                     val relativeMousePositionY = mousePosition.y.relativeLimit(
-                        bound1 = endRef.ref.position.y,
-                        bound2 = endRef.ref.position.y + endRef.ref.size.height
+                        bound1 = endRef.getRefClass().position.y,
+                        bound2 = endRef.getRefClass().position.y + endRef.getRefClass().size.height
                     )
 
                     relativeMousePositionY / total
                 } else {
-                    val total = endRef.ref.size.width
+                    val total = endRef.getRefClass().size.width
                     val relativeMousePositionX = mousePosition.x.relativeLimit(
-                        bound1 = endRef.ref.position.x,
-                        bound2 = endRef.ref.position.x + endRef.ref.size.width
+                        bound1 = endRef.getRefClass().position.x,
+                        bound2 = endRef.getRefClass().position.x + endRef.getRefClass().size.width
                     )
 
                     relativeMousePositionX / total
@@ -203,85 +203,85 @@ data class UMLClassConnection(
         val forcedEndOn: RefType? = (endRef as? RefConnection.ReferencedConnection).let { it?.refType }
 
         val startForcedOffset = forcedStartOn?.let {
-            startRef.ref.getDrawOffsetOf(it, textMeasurer, componentNameTextStyle, componentContentTextStyle)
+            startRef.getRefClass().getDrawOffsetOf(it, textMeasurer, componentNameTextStyle, componentContentTextStyle)
         }
         val endForcedOffset = forcedEndOn?.let {
-            endRef.ref.getDrawOffsetOf(it, textMeasurer, componentNameTextStyle, componentContentTextStyle)
+            endRef.getRefClass().getDrawOffsetOf(it, textMeasurer, componentNameTextStyle, componentContentTextStyle)
         }
 
         val forcedPosition = if (startForcedOffset != null || endForcedOffset != null) when {
-            endRef.ref.position.x + endRef.ref.size.width / 2 >= startRef.ref.position.x + startRef.ref.size.width / 2 -> RelativePosition.RIGHT
+            endRef.getRefClass().position.x + endRef.getRefClass().size.width / 2 >= startRef.getRefClass().position.x + startRef.getRefClass().size.width / 2 -> RelativePosition.RIGHT
             else -> RelativePosition.LEFT
         } else null
 
         drawnAsArch = when {
             forcedPosition == null -> false
-            forcedPosition == RelativePosition.LEFT && endRef.ref.position.x + endRef.ref.size.width >= startRef.ref.position.x -> true
-            forcedPosition == RelativePosition.RIGHT && endRef.ref.position.x <= startRef.ref.position.x + startRef.ref.size.width -> true
+            forcedPosition == RelativePosition.LEFT && endRef.getRefClass().position.x + endRef.getRefClass().size.width >= startRef.getRefClass().position.x -> true
+            forcedPosition == RelativePosition.RIGHT && endRef.getRefClass().position.x <= startRef.getRefClass().position.x + startRef.getRefClass().size.width -> true
             else -> false
         }
 
         calculatedFrom = startForcedOffset?.let { offset ->
             when (relativePosition) {
-                RelativePosition.LEFT -> startRef.ref.position.copy(
-                    y = startRef.ref.position.y + offset.y
+                RelativePosition.LEFT -> startRef.getRefClass().position.copy(
+                    y = startRef.getRefClass().position.y + offset.y
                 )
-                RelativePosition.RIGHT -> startRef.ref.position.copy(
-                    x = startRef.ref.position.x + startRef.ref.size.width,
-                    y = startRef.ref.position.y + offset.y
+                RelativePosition.RIGHT -> startRef.getRefClass().position.copy(
+                    x = startRef.getRefClass().position.x + startRef.getRefClass().size.width,
+                    y = startRef.getRefClass().position.y + offset.y
                 )
-                else -> startRef.ref.position
+                else -> startRef.getRefClass().position
             }
         } ?: when (relativePosition) {
-            RelativePosition.LEFT -> startRef.ref.position.copy(
-                y = startRef.ref.position.y + startRef.ref.size.height * (startOffsets?.left ?: 0.5f)
+            RelativePosition.LEFT -> startRef.getRefClass().position.copy(
+                y = startRef.getRefClass().position.y + startRef.getRefClass().size.height * (startOffsets?.left ?: 0.5f)
             )
-            RelativePosition.TOP -> startRef.ref.position.copy(
-                x = startRef.ref.position.x + startRef.ref.size.width * (startOffsets?.top ?: 0.5f)
+            RelativePosition.TOP -> startRef.getRefClass().position.copy(
+                x = startRef.getRefClass().position.x + startRef.getRefClass().size.width * (startOffsets?.top ?: 0.5f)
             )
-            RelativePosition.RIGHT -> startRef.ref.position.copy(
-                x = startRef.ref.position.x + startRef.ref.size.width,
-                y = startRef.ref.position.y + startRef.ref.size.height * (startOffsets?.right ?: 0.5f)
+            RelativePosition.RIGHT -> startRef.getRefClass().position.copy(
+                x = startRef.getRefClass().position.x + startRef.getRefClass().size.width,
+                y = startRef.getRefClass().position.y + startRef.getRefClass().size.height * (startOffsets?.right ?: 0.5f)
             )
-            RelativePosition.BOTTOM -> startRef.ref.position.copy(
-                x = startRef.ref.position.x + startRef.ref.size.width * (startOffsets?.bottom ?: 0.5f),
-                y = startRef.ref.position.y + startRef.ref.size.height
+            RelativePosition.BOTTOM -> startRef.getRefClass().position.copy(
+                x = startRef.getRefClass().position.x + startRef.getRefClass().size.width * (startOffsets?.bottom ?: 0.5f),
+                y = startRef.getRefClass().position.y + startRef.getRefClass().size.height
             )
         }
 
         calculatedTo = (endForcedOffset?.let { offset ->
             when (relativePosition) {
-                RelativePosition.LEFT -> endRef.ref.position.copy(
-                    x = endRef.ref.position.x + endRef.ref.size.width,
-                    y = endRef.ref.position.y + offset.y
+                RelativePosition.LEFT -> endRef.getRefClass().position.copy(
+                    x = endRef.getRefClass().position.x + endRef.getRefClass().size.width,
+                    y = endRef.getRefClass().position.y + offset.y
                 )
-                RelativePosition.RIGHT -> endRef.ref.position.copy(
-                    x = endRef.ref.position.x,
-                    y = endRef.ref.position.y + offset.y
+                RelativePosition.RIGHT -> endRef.getRefClass().position.copy(
+                    x = endRef.getRefClass().position.x,
+                    y = endRef.getRefClass().position.y + offset.y
                 )
-                else -> endRef.ref.position
+                else -> endRef.getRefClass().position
             }
         } ?: when (relativePosition) {
-            RelativePosition.LEFT -> endRef.ref.position.copy(
-                x = endRef.ref.position.x + endRef.ref.size.width,
-                y = endRef.ref.position.y + endRef.ref.size.height * (endOffsets?.right ?: 0.5f)
+            RelativePosition.LEFT -> endRef.getRefClass().position.copy(
+                x = endRef.getRefClass().position.x + endRef.getRefClass().size.width,
+                y = endRef.getRefClass().position.y + endRef.getRefClass().size.height * (endOffsets?.right ?: 0.5f)
             )
-            RelativePosition.TOP -> endRef.ref.position.copy(
-                x = endRef.ref.position.x + endRef.ref.size.width * (endOffsets?.bottom ?: 0.5f),
-                y = endRef.ref.position.y + endRef.ref.size.height
+            RelativePosition.TOP -> endRef.getRefClass().position.copy(
+                x = endRef.getRefClass().position.x + endRef.getRefClass().size.width * (endOffsets?.bottom ?: 0.5f),
+                y = endRef.getRefClass().position.y + endRef.getRefClass().size.height
             )
-            RelativePosition.RIGHT -> endRef.ref.position.copy(
-                y = endRef.ref.position.y + endRef.ref.size.height * (endOffsets?.left ?: 0.5f)
+            RelativePosition.RIGHT -> endRef.getRefClass().position.copy(
+                y = endRef.getRefClass().position.y + endRef.getRefClass().size.height * (endOffsets?.left ?: 0.5f)
             )
-            RelativePosition.BOTTOM -> endRef.ref.position.copy(
-                x = endRef.ref.position.x + endRef.ref.size.width * (endOffsets?.top ?: 0.5f)
+            RelativePosition.BOTTOM -> endRef.getRefClass().position.copy(
+                x = endRef.getRefClass().position.x + endRef.getRefClass().size.width * (endOffsets?.top ?: 0.5f)
             )
         }).run {
             copy(
                 x = this.x + if (drawnAsArch) {
                     when (relativePosition) {
-                        RelativePosition.LEFT -> -endRef.ref.size.width
-                        RelativePosition.RIGHT -> endRef.ref.size.width
+                        RelativePosition.LEFT -> -endRef.getRefClass().size.width
+                        RelativePosition.RIGHT -> endRef.getRefClass().size.width
                         else -> 0f
                     }
                 } else 0f
@@ -374,36 +374,36 @@ data class UMLClassConnection(
 
     fun findAndApplyCorrectReferences(references: List<UMLClassComponent>) {
         for (index in references.indices) {
-            if (references[index].equalsTo(startRef.ref)) {
-                startRef.ref = references[index]
+            if (references[index].equalsTo(startRef.getRefClass())) {
+                startRef.setRefClass(references[index])
                 break
             }
         }
 
         for (index in references.indices) {
-            if (references[index].equalsTo(endRef.ref) && !references[index].equalsTo(startRef.ref)) {
-                endRef.ref = references[index]
+            if (references[index].equalsTo(endRef.getRefClass()) && !references[index].equalsTo(startRef.getRefClass())) {
+                endRef.setRefClass(references[index])
                 break
             }
         }
     }
 
-    fun getLongerName(): String = "$name ${startRef.ref.hashCode()} ${endRef.ref.hashCode()}"
+    fun getLongerName(): String = "$name ${startRef.getRefClass().hashCode()} ${endRef.getRefClass().hashCode()}"
 
     private fun defineRelativePosition(): RelativePosition {
         return if (forcedType != null) when {
-            endRef.ref.position.x + endRef.ref.size.width / 2 >= startRef.ref.position.x + startRef.ref.size.width / 2 -> RelativePosition.RIGHT
+            endRef.getRefClass().position.x + endRef.getRefClass().size.width / 2 >= startRef.getRefClass().position.x + startRef.getRefClass().size.width / 2 -> RelativePosition.RIGHT
             else -> RelativePosition.LEFT
         } else {
-            val topLeft = startRef.ref.position
-            val bottomRight = startRef.ref.position + Offset(startRef.ref.size.width, startRef.ref.size.height)
+            val topLeft = startRef.getRefClass().position
+            val bottomRight = startRef.getRefClass().position + Offset(startRef.getRefClass().size.width, startRef.getRefClass().size.height)
             val slope = (bottomRight.y - topLeft.y) / (bottomRight.x - topLeft.x)
             val b = topLeft.y - slope * topLeft.x
 
-            val x0 = endRef.ref.position.x + endRef.ref.size.width / 2
-            val y0 = endRef.ref.position.y + endRef.ref.size.height / 2
+            val x0 = endRef.getRefClass().position.x + endRef.getRefClass().size.width / 2
+            val y0 = endRef.getRefClass().position.y + endRef.getRefClass().size.height / 2
             val x1 = (y0 - b) / slope
-            val x2 = ((topLeft.y * 2 + startRef.ref.size.height - y0) - b) / slope
+            val x2 = ((topLeft.y * 2 + startRef.getRefClass().size.height - y0) - b) / slope
 
             when {
                 x0 < x1 && x0 < x2 -> RelativePosition.LEFT

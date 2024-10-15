@@ -99,6 +99,8 @@ fun NavigationScreen() {
                     fileManager.onDeliverSaveData = { saveData ->
                         viewModel.applySaveData(saveData)
                     }
+
+                    fileManager.load(File("C:\\class_diagrams\\class_diagram_changed.json"))
                 }
 
                 DesigningScreen(

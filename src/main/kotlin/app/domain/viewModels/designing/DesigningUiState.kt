@@ -43,8 +43,8 @@ data class DesigningUiState(
 
     data class FocusUiState(
         // Component
-        val focusedComponent: UMLClassComponent? = null,
+        val focusedComponent: Pair<UMLClassComponent, Int>? = null,
         // Connection
-        val focusedConnection: UMLClassConnection? = null
+        val focusedConnection: Pair<UMLClassConnection, Int>? = null
     )
 }

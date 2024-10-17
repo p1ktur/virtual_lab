@@ -99,7 +99,7 @@ class DesigningViewModel : ViewModel() {
             it.copy(
                 classComponents = it.classComponents.toMutableList().swapWithLast(index),
                 focusUiState = it.focusUiState.copy(
-                    focusedComponent = it.classComponents[index],
+                    focusedComponent = it.classComponents[index] to it.classComponents.lastIndex,
                     focusedConnection = null
                 ),
                 componentInFocus = true,
@@ -139,7 +139,7 @@ class DesigningViewModel : ViewModel() {
         _uiState.update {
             it.copy(
                 focusUiState = it.focusUiState.copy(
-                    focusedComponent = it.classComponents.last().copy()
+                    focusedComponent = it.classComponents.last().copy() to it.classComponents.lastIndex
                 )
             )
         }
@@ -195,14 +195,12 @@ class DesigningViewModel : ViewModel() {
 
 
     private fun clickOnConnection(index: Int, containment: ConnectionContainmentResult) {
-
-
         _uiState.update {
             it.copy(
                 classConnections = it.classConnections.toMutableList().swapWithLast(index),
                 focusUiState = it.focusUiState.copy(
                     focusedComponent = null,
-                    focusedConnection = it.classConnections[index]
+                    focusedConnection = it.classConnections[index] to it.classConnections.lastIndex
                 ),
                 connectionInFocus = true,
                 connectionSegmentInFocus = when (containment) {
@@ -260,7 +258,7 @@ class DesigningViewModel : ViewModel() {
         _uiState.update {
             it.copy(
                 focusUiState = it.focusUiState.copy(
-                    focusedConnection = it.classConnections.last().copy()
+                    focusedConnection = it.classConnections.last().copy() to it.classComponents.lastIndex
                 )
             )
         }

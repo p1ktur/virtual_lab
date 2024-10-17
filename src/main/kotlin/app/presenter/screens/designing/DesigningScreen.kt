@@ -31,7 +31,7 @@ fun DesigningScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             when {
-                uiState.focusUiState.focusedComponent != null -> uiState.focusUiState.focusedComponent.let { ref ->
+                uiState.focusUiState.focusedComponent != null -> uiState.focusUiState.focusedComponent.let { (ref, index) ->
                     ClassComponentDetailsColumn(
                         modifier = Modifier
                             .fillMaxWidth(0.25f)
@@ -40,13 +40,13 @@ fun DesigningScreen(
                             .background(Color.White)
                             .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f))
                             .padding(4.dp),
-                        index = uiState.classComponents.indexOf(ref),
+                        index = index,
                         reference = ref,
                         commonCounter = uiState.commonCounter,
                         onUiAction = onUiAction
                     )
                 }
-                uiState.focusUiState.focusedConnection != null -> uiState.focusUiState.focusedConnection.let { ref ->
+                uiState.focusUiState.focusedConnection != null -> uiState.focusUiState.focusedConnection.let { (ref, index) ->
                     ClassConnectionDetailsColumn(
                         modifier = Modifier
                             .fillMaxWidth(0.25f)
@@ -55,7 +55,7 @@ fun DesigningScreen(
                             .background(Color.White)
                             .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f))
                             .padding(4.dp),
-                        index = uiState.classConnections.indexOf(ref),
+                        index = index,
                         reference = ref,
                         commonCounter = uiState.commonCounter,
                         onUiAction = onUiAction

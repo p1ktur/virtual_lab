@@ -1,25 +1,9 @@
-import ComparerTest.Companion.MAX_MARK
-import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.geometry.*
-import androidx.compose.ui.platform.*
-import androidx.compose.ui.semantics.*
 import androidx.compose.ui.test.*
-import androidx.compose.ui.unit.*
-import app.data.fileManager.*
-import app.domain.di.*
-import app.domain.umlDiagram.comparing.*
 import app.domain.umlDiagram.editing.*
 import app.domain.viewModels.designing.*
 import app.presenter.screens.designing.*
-import app.presenter.screens.designing.components.*
-import kotlinx.coroutines.*
-import kotlinx.serialization.json.*
 import org.junit.Test
-import org.koin.compose.*
-import org.koin.core.context.*
-import java.io.*
 import kotlin.test.*
 
 @OptIn(ExperimentalTestApi::class)

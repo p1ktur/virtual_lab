@@ -1,11 +1,7 @@
-import androidx.compose.runtime.*
-import androidx.compose.ui.test.*
 import app.data.fileManager.*
 import app.domain.umlDiagram.mouse.*
 import app.domain.viewModels.designing.*
-import app.presenter.screens.designing.*
 import kotlinx.coroutines.*
-import org.junit.*
 import org.junit.Test
 import java.io.*
 import kotlin.test.*

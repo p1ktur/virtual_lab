@@ -8,12 +8,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.unit.*
 import app.domain.umlDiagram.editing.*
 import app.domain.viewModels.designing.*
 import app.presenter.components.buttons.*
 import app.presenter.components.common.*
+import app.test.*
 
 @Composable
 fun ToolAndActionsBar(
@@ -27,7 +29,9 @@ fun ToolAndActionsBar(
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         ActionButton(
-            modifier = Modifier.size(28.dp),
+            modifier = Modifier
+                .size(28.dp)
+                .addTestTag("Add Component Button"),
             icon = Icons.Filled.Add,
             actionText = "Add Component",
             onClick = {
@@ -36,7 +40,9 @@ fun ToolAndActionsBar(
         )
         VerticalDivider(height = 32.dp)
         EditModeButton(
-            modifier = Modifier.size(32.dp),
+            modifier = Modifier
+                .size(32.dp)
+                .addTestTag("Selector Tool Button"),
             icon = Icons.Outlined.PanTool,
             editMode = uiState.editMode,
             connectedEditMode = EditMode.SELECTOR,
@@ -45,7 +51,9 @@ fun ToolAndActionsBar(
             }
         )
         EditModeButton(
-            modifier = Modifier.size(32.dp),
+            modifier = Modifier
+                .size(32.dp)
+                .addTestTag("Connector Tool Button"),
             icon = Icons.Filled.SyncAlt,
             editMode = uiState.editMode,
             connectedEditMode = EditMode.CONNECTOR,

@@ -8,12 +8,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.*
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.unit.*
 import app.presenter.screens.designing.components.*
 import app.domain.viewModels.designing.*
 import app.presenter.screens.designing.components.componentData.*
 import app.presenter.screens.designing.components.connectionData.*
+import app.test.*
 
 @Composable
 fun DesigningScreen(
@@ -94,7 +96,8 @@ fun DesigningScreen(
                         .clip(RoundedCornerShape(12f))
                         .background(Color.White)
                         .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f))
-                        .padding(4.dp),
+                        .padding(4.dp)
+                        .addTestTag("Tools and Actions Bar"),
                     uiState = uiState,
                     onUiAction = onUiAction
                 )

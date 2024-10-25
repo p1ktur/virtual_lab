@@ -24,11 +24,9 @@ class ComparerTest {
     fun `Two identical diagrams should return same mark`() {
         val testSaveData = readTestFile()
 
-        val mark = comparer.compare(testSaveData.toCompareData(), testSaveData.toCompareData()).apply {
-            println("${value(MAX_MARK)}: $this")
-        }.value(MAX_MARK)
+        val mark = comparer.compare(testSaveData.toCompareData(), testSaveData.toCompareData()).value(MAX_MARK)
 
-        assertEquals(mark, MAX_MARK)
+        assertEquals(MAX_MARK, mark)
     }
 
     @Test
@@ -36,11 +34,9 @@ class ComparerTest {
         val testSaveData = readTestFile()
         val changedTestSaveData = readChangedTestFile()
 
-        val mark = comparer.compare(testSaveData.toCompareData(), changedTestSaveData.toCompareData()).apply {
-            println("${value(MAX_MARK)}: $this")
-        }.value(MAX_MARK)
+        val mark = comparer.compare(testSaveData.toCompareData(), changedTestSaveData.toCompareData()).value(MAX_MARK)
 
-        assertNotEquals(mark, MAX_MARK)
+        assertNotEquals(MAX_MARK, mark)
     }
 
     private fun readTestFile(): SaveData {

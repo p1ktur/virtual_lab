@@ -40,7 +40,7 @@ fun ActionButton(
             Icon(
                 modifier = Modifier.size(16.dp),
                 imageVector = icon,
-                contentDescription = "Edit mode button",
+                contentDescription = "Action button",
                 tint = Color.Black
             )
         }

@@ -94,9 +94,9 @@ fun OptionsTextField(
         mutableStateOf(false)
     }
 
-    LaunchedEffect(key1 = options, block = {
+    LaunchedEffect(Unit) {
         if (!options.contains(text)) text = options.firstOrNull().toString()
-    })
+    }
 
     if (options.isEmpty()) {
         Row(

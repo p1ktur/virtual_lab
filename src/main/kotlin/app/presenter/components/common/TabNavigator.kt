@@ -67,11 +67,11 @@ fun TabNavigator(
         list
     }
 
-    LaunchedEffect(key1 = true, block = {
+    LaunchedEffect(Unit) {
         if (navOptions.isNotEmpty()) {
             navigationRouteStack.add(navOptions[0].route)
         }
-    })
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -113,7 +113,7 @@ fun TabNavigator(
                             )
                             .padding(8.dp),
                         text = tabNavOption.name,
-                        style = MaterialTheme.typography.titleSmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = if (firstCheck && secondCheck) {
                             MaterialTheme.colorScheme.onPrimaryContainer
                         } else {

@@ -19,6 +19,7 @@ import app.domain.util.list.*
 import app.domain.viewModels.designing.*
 import app.presenter.canvas.*
 import app.presenter.canvas.arrows.*
+import app.test.*
 import java.awt.*
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -273,6 +274,7 @@ fun DiagramCanvas(
             .onSizeChanged { size ->
                 onUiAction(DesigningUiAction.UpdateCanvasSize(Size(size.width.toFloat(), size.height.toFloat())))
             }
+            .addTestTag("Diagram Canvas")
     ) {
         uiState.commonCounter.let {
             drawGrid(

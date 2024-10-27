@@ -9,8 +9,9 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.*
-import app.domain.umlDiagram.model.component.*
+import app.domain.umlDiagram.classDiagram.component.*
 import app.presenter.components.tooltip.*
+import java.awt.SystemColor.*
 
 @Composable
 fun VisibilityButton(
@@ -44,11 +45,19 @@ fun VisibilityButton(
                         Visibility.PACKAGE -> Color(0xFF888995)
                     }
                 )
-                .border(0.5.dp, Color.Black, CircleShape)
+                .border(0.5.dp, MaterialTheme.colorScheme.onTertiaryContainer, CircleShape)
                 .clickable(onClick = onClick),
             contentAlignment = Alignment.Center
         ) {
             Text(
+                modifier = Modifier.offset(
+                    y = when (visibility) {
+                        Visibility.PUBLIC -> (-2).dp
+                        Visibility.PRIVATE -> (-2).dp
+                        Visibility.PROTECTED -> 0.dp
+                        Visibility.PACKAGE -> (-2).dp
+                    }
+                ),
                 text = when (visibility) {
                     Visibility.PUBLIC -> "+"
                     Visibility.PRIVATE -> "-"

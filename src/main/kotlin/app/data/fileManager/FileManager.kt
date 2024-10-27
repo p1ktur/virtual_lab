@@ -21,6 +21,10 @@ class FileManager {
         explicitNulls = true
     }
 
+    companion object {
+        val saveExtensions = arrayOf("txt", "json")
+    }
+
     var openedSaveFile: MutableState<File?> = mutableStateOf(null)
 
     var onRequestSaveData: (() -> SaveData)? = null
@@ -64,6 +68,6 @@ class FileManager {
         try {
             val saveData = json.decodeFromString<SaveData>(saveDataJson)
             onDeliverSaveData?.invoke(saveData)
-        } catch (_: Exception) {}
+        } catch (_: Exception) { }
     }
 }

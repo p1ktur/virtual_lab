@@ -5,9 +5,10 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
 import androidx.compose.ui.text.*
 import androidx.compose.ui.unit.*
-import app.domain.umlDiagram.model.connection.*
+import app.domain.umlDiagram.classDiagram.connection.*
 import app.presenter.canvas.arrows.ArrowType.Companion.DASHED_LENGTH
 import app.presenter.canvas.arrows.ArrowType.Companion.DASHED_STEP
+import app.presenter.theme.*
 
 fun DrawScope.drawSquareArrowFromTo(
     from: Offset,
@@ -25,8 +26,6 @@ fun DrawScope.drawSquareArrowFromTo(
     } else {
         null
     }
-
-    val highlightColor = Color(UMLClassConnection.HIGHLIGHT_COLOR)
 
     when (relativePosition) {
         UMLClassConnection.RelativePosition.LEFT, UMLClassConnection.RelativePosition.RIGHT -> {
@@ -129,7 +128,6 @@ fun DrawScope.drawSquareArrowTexts(
     endText: String,
     textStyle: TextStyle
 ) {
-    val highlightColor = Color(UMLClassConnection.HIGHLIGHT_COLOR)
     val textPadding = 4f
 
     val startTextLayout = textMeasurer.measure(

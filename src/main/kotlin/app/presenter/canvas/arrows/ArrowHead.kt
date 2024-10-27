@@ -10,7 +10,8 @@ import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
 import androidx.compose.ui.unit.*
-import app.domain.umlDiagram.model.connection.*
+import app.domain.umlDiagram.classDiagram.connection.*
+import app.presenter.theme.*
 
 const val THICKNESS = 0.4f
 
@@ -132,9 +133,11 @@ fun DrawnArrowHead(
     arrowHead: ArrowHead = ArrowHead.ASSOCIATION,
     lookingUp: Boolean = true,
     isHighlighted: Boolean = false,
+    mainColor: Color,
+    backgroundColor: Color,
     onClick: () -> Unit
 ) {
-    val color = if (isHighlighted) Color(UMLClassConnection.HIGHLIGHT_COLOR) else Color.Black
+    val color = if (isHighlighted) highlightColor else mainColor
     val offsetLength = if (arrowHead.takesTwoLengthToDraw()) {
         modifierSize.height.value
     } else {
@@ -145,10 +148,10 @@ fun DrawnArrowHead(
         modifier = modifier
             .size(modifierSize)
             .clip(RoundedCornerShape(4f))
-            .background(Color.White)
+            .background(backgroundColor)
             .border(1.dp, color, RoundedCornerShape(4f))
             .clickable(onClick = onClick)
-            .padding(4.dp),
+            .padding(6.dp),
     ) {
         if (arrowHead == ArrowHead.ASSOCIATION) {
             drawRoundRect(

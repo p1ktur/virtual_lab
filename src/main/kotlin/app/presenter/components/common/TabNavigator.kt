@@ -1,29 +1,33 @@
 package app.presenter.components.common
 
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.ripple.*
 import androidx.compose.material3.*
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.*
-import app.domain.tabNavigator.*
+import app.domain.actionTab.*
+import app.domain.actionTab.options.*
 import moe.tlaster.precompose.navigation.*
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TabNavigator(
     navOptions: List<TabNavOption>,
+    actionOptions: List<TabActionOption>,
     menuOptions: List<MenuOption> = emptyList(),
     isLoading: Boolean = false,
     navigationAllowed: Boolean = true,
+    onNavOptionClick: ((TabNavOption) -> Unit)? = null,
     onLogOut: (() -> Unit)? = null,
     content: @Composable BoxScope.(NavController) -> Unit
 ) {
@@ -50,20 +54,20 @@ fun TabNavigator(
 
     var isMenuExpanded by remember { mutableStateOf(false) }
     val localMenuOptions = remember(menuOptions, onLogOut, currentEntry) {
-        val list = menuOptions.filter { !it.showOnlyOnWelcomeScreen || (currentEntry?.route?.route == "/welcome") }.toMutableStateList()
+        val list = menuOptions.filter { it.associatedRoutes.contains(currentEntry?.route?.route) }.toMutableStateList()
 
-        if (onLogOut != null) list.add(
-            MenuOption(
-                text = "Log out",
-                enabled = mutableStateOf(true),
-                onClick = {
-                    onLogOut.invoke()
-                    navController.clearBackStack()
-
-                    if (navigationRouteStack.size > 1) navigationRouteStack.removeRange(1, navigationRouteStack.size)
-                }
-            )
-        )
+//        if (onLogOut != null) list.add(
+//            MenuOption(
+//                text = "Log out",
+//                enabled = mutableStateOf(true),
+//                onClick = {
+//                    onLogOut.invoke()
+//                    navController.clearBackStack()
+//
+//                    if (navigationRouteStack.size > 1) navigationRouteStack.removeRange(1, navigationRouteStack.size)
+//                }
+//            )
+//        )
         list
     }
 
@@ -82,18 +86,23 @@ fun TabNavigator(
                 .height(32.dp)
                 .background(MaterialTheme.colorScheme.primary)
         ) {
+            val rowScrollState = rememberScrollState()
             Row(
                 modifier = Modifier
                     .weight(1f)
-                    .horizontalScroll(rememberScrollState()),
+                    .horizontalScroll(rowScrollState),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 navOptions.forEachIndexed { index, tabNavOption ->
-                    val firstCheck = navController.compareRoutes(currentRoute, tabNavOption.route)
-                    val secondCheck = navOptions.any { option ->
-                        currentEntry?.route?.route?.let {
-                            navController.compareRoutes(it, option.route)
-                        } ?: false
+                    val firstCheck = remember(currentRoute, currentEntry) {
+                        navController.compareRoutes(currentRoute, tabNavOption.route)
+                    }
+                    val secondCheck = remember(currentRoute, currentEntry) {
+                        navOptions.any { option ->
+                            currentEntry?.route?.route?.let {
+                                navController.compareRoutes(it, option.route)
+                            } ?: false
+                        }
                     }
 
                     Text(
@@ -102,6 +111,7 @@ fun TabNavigator(
                                 if (navigationAllowed && !navController.compareRoutes(currentRoute, tabNavOption.route)) {
                                     currentRoute = tabNavOption.route
                                     navController.navigate(tabNavOption.route)
+                                    onNavOptionClick?.invoke(tabNavOption)
                                 }
                             })
                             .then(
@@ -113,7 +123,7 @@ fun TabNavigator(
                             )
                             .padding(8.dp),
                         text = tabNavOption.name,
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodySmall,
                         color = if (firstCheck && secondCheck) {
                             MaterialTheme.colorScheme.onPrimaryContainer
                         } else {
@@ -121,13 +131,51 @@ fun TabNavigator(
                         }
                     )
                     if (index != navOptions.size - 1) {
-                        Divider(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .width(1.dp)
-                                .padding(vertical = 4.dp),
-                            thickness = 1.dp,
-                            color = MaterialTheme.colorScheme.onPrimary
+                        VerticalDivider(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fillMaxHeight = 1f,
+                            verticalPadding = 4.dp
+                        )
+                    }
+                }
+                if (navOptions.isNotEmpty() && actionOptions.isNotEmpty() && (rowScrollState.canScrollForward || rowScrollState.canScrollBackward)) {
+                    Spacer(modifier = Modifier.width(64.dp))
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                actionOptions.forEachIndexed { index, tabActionOption ->
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+
+                    Text(
+                        modifier = Modifier
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = rememberRipple(),
+                                onClick = {
+                                    tabActionOption.action(tabActionOption.param)
+                                }
+                            )
+                            .then(
+                                if (isPressed) {
+                                    Modifier.background(MaterialTheme.colorScheme.primaryContainer)
+                                } else {
+                                    Modifier
+                                }
+                            )
+                            .padding(8.dp),
+                        text = tabActionOption.name,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (isPressed) {
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.onPrimary
+                        }
+                    )
+                    if (index != actionOptions.size - 1 || localMenuOptions.isNotEmpty()) {
+                        VerticalDivider(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fillMaxHeight = 1f,
+                            verticalPadding = 4.dp
                         )
                     }
                 }
@@ -175,7 +223,7 @@ fun TabNavigator(
                 ExposedDropdownMenuBox(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .width(168.dp),
+                        .width(108.dp),
                     expanded = isMenuExpanded,
                     onExpandedChange = { newValue ->
                         isMenuExpanded = newValue
@@ -192,6 +240,7 @@ fun TabNavigator(
                     ) {
                         localMenuOptions.forEach { option ->
                             DropdownMenuItem(
+                                modifier = Modifier.height(24.dp),
                                 enabled = option.enabled.value,
                                 onClick = {
                                     if (navigationAllowed) {
@@ -202,7 +251,7 @@ fun TabNavigator(
                             ) {
                                 Text(
                                     text = option.text,
-                                    style = MaterialTheme.typography.bodyMedium,
+                                    style = MaterialTheme.typography.labelMedium,
                                     color = if (option.enabled.value) {
                                         MaterialTheme.colorScheme.onSecondaryContainer
                                     } else {

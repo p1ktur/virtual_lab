@@ -1,9 +1,9 @@
 package app.domain.util.geometry
 
 import androidx.compose.ui.geometry.*
-import app.domain.umlDiagram.model.component.*
-import app.domain.umlDiagram.model.connection.*
-import app.domain.umlDiagram.model.connection.UMLClassConnection.*
+import app.domain.umlDiagram.classDiagram.component.*
+import app.domain.umlDiagram.classDiagram.connection.*
+import app.domain.umlDiagram.classDiagram.connection.UMLClassConnection.*
 import app.domain.umlDiagram.mouse.*
 import app.domain.util.numbers.*
 import app.presenter.canvas.arrows.*

@@ -11,7 +11,8 @@ import androidx.compose.ui.unit.*
 fun HorizontalDivider(
     width: Dp = 32.dp,
     color: Color = Color.LightGray,
-    fillMaxWidth: Float = 0f
+    fillMaxWidth: Float = 0f,
+    horizontalPadding: Dp = 0.dp
 ) {
     Box(
         modifier = Modifier
@@ -23,26 +24,29 @@ fun HorizontalDivider(
                     width(width)
                 }
             }
+            .padding(horizontal = horizontalPadding)
             .background(color)
     )
 }
 
 @Composable
 fun VerticalDivider(
-    height: Dp,
+    height: Dp = 32.dp,
     color: Color = Color.LightGray,
-    fillMaxHeight: Boolean = false
+    fillMaxHeight: Float = 0f,
+    verticalPadding: Dp = 0.dp
 ) {
     Box(
         modifier = Modifier
             .width(1.dp)
             .run {
-                if (fillMaxHeight) {
+                if (fillMaxHeight != 0f && fillMaxHeight in 0f..1f) {
                     fillMaxHeight()
                 } else {
                     height(height)
                 }
             }
+            .padding(vertical = verticalPadding)
             .background(color)
     )
 }

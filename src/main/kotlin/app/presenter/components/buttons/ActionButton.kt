@@ -17,7 +17,8 @@ fun ActionButton(
     modifier: Modifier,
     icon: ImageVector,
     actionText: String,
-    backgroundShown: Boolean = true,
+    color: Color = MaterialTheme.colorScheme.onBackground,
+    backgroundColor: Color = Color.Transparent,
     onClick: () -> Unit
 ) {
     TooltipOn(
@@ -27,9 +28,9 @@ fun ActionButton(
             modifier = modifier
                 .clip(CircleShape)
                 .run {
-                    if (backgroundShown) {
-                        this.background(Color.White)
-                            .border(0.5.dp, Color.Black, CircleShape)
+                    if (backgroundColor != Color.Transparent) {
+                        this.background(backgroundColor)
+                            .border(0.5.dp, color, CircleShape)
                     } else {
                         this
                     }
@@ -41,7 +42,7 @@ fun ActionButton(
                 modifier = Modifier.size(16.dp),
                 imageVector = icon,
                 contentDescription = "Action button",
-                tint = Color.Black
+                tint = color
             )
         }
     }

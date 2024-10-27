@@ -10,9 +10,10 @@ import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
 import androidx.compose.ui.unit.*
-import app.domain.umlDiagram.model.connection.*
+import app.domain.umlDiagram.classDiagram.connection.*
 import app.presenter.canvas.arrows.ArrowType.Companion.DASHED_LENGTH
 import app.presenter.canvas.arrows.ArrowType.Companion.DASHED_STEP
+import app.presenter.theme.*
 import kotlin.math.*
 
 enum class ArrowType {
@@ -33,17 +34,19 @@ fun DrawnArrow(
     endArrowHead: ArrowHead = ArrowHead.ASSOCIATION,
     lookingUp: Boolean = false,
     isHighlighted: Boolean = false,
+    mainColor: Color,
+    backgroundColor: Color,
     onClick: () -> Unit
 ) {
-    val color = if (isHighlighted) Color(UMLClassConnection.HIGHLIGHT_COLOR) else Color.Black
+    val color = if (isHighlighted) highlightColor else mainColor
 
     Canvas(
         modifier = modifier
             .clip(RoundedCornerShape(4f))
-            .background(Color.White)
+            .background(backgroundColor)
             .border(1.dp, color, RoundedCornerShape(4f))
             .clickable(onClick = onClick)
-            .padding(4.dp),
+            .padding(6.dp),
     ) {
         drawLine(
             color = color,

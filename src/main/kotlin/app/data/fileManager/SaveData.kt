@@ -1,8 +1,8 @@
 package app.data.fileManager
 
 import app.domain.umlDiagram.comparing.*
-import app.domain.umlDiagram.model.component.*
-import app.domain.umlDiagram.model.connection.*
+import app.domain.umlDiagram.classDiagram.component.*
+import app.domain.umlDiagram.classDiagram.connection.*
 import kotlinx.serialization.Serializable
 
 @Serializable

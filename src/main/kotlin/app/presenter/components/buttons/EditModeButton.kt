@@ -19,6 +19,8 @@ fun EditModeButton(
     icon: ImageVector,
     editMode: EditMode,
     connectedEditMode: EditMode,
+    color: Color = MaterialTheme.colorScheme.onBackground,
+    backgroundColor: Color = Color.Transparent,
     onClick: () -> Unit
 ) {
     TooltipOn(
@@ -30,22 +32,22 @@ fun EditModeButton(
         Box(
             modifier = modifier
                 .clip(CircleShape)
-                .background(Color.White)
+                .background(backgroundColor)
                 .clickable(onClick = onClick)
                 .run {
                     if (editMode == connectedEditMode) {
-                        border(0.5.dp, Color.Black, CircleShape)
+                        this.border(0.5.dp, color, CircleShape)
                     } else this
                 }
-                .padding(3.dp)
-                .border(0.5.dp, Color.Black, CircleShape),
+                .padding(4.dp)
+                .border(0.5.dp, color, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                modifier = Modifier.size(12.dp),
+                modifier = Modifier.size(14.dp),
                 imageVector = icon,
                 contentDescription = "Edit mode button",
-                tint = Color.Black
+                tint = color
             )
         }
     }

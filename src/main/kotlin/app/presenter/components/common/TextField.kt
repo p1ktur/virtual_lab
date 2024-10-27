@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.*
+import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.style.*
@@ -23,6 +24,7 @@ fun DefaultTextField(
     startValue: String,
     label: String,
     onValueChange: (String) -> Unit,
+    showFrame: Boolean = true,
     showEditIcon: Boolean = true,
     multiLine: Boolean = false,
     maxLength: Int = 72,
@@ -35,18 +37,26 @@ fun DefaultTextField(
     Column(
         modifier = modifier
     ) {
-        Text(
-            text = label,
-            style = labelTextStyle,
-            color = textColor
-        )
-        Spacer(modifier = Modifier.width(4.dp))
+        if (showFrame) {
+            Text(
+                text = label,
+                style = labelTextStyle,
+                color = textColor
+            )
+        }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(6f))
-                .border(1.dp, textColor, RoundedCornerShape(6f))
-                .padding(4.dp)
+                .run {
+                    if (showFrame) {
+                        this.clip(RoundedCornerShape(6f))
+                            .border(1.dp, textColor, RoundedCornerShape(6f))
+                            .padding(4.dp)
+                    } else {
+                        this.padding(vertical = 4.dp)
+                    }
+                },
+            verticalAlignment = Alignment.CenterVertically
         ) {
             if (showEditIcon) {
                 androidx.compose.material3.Icon(
@@ -57,8 +67,31 @@ fun DefaultTextField(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
             }
+            if (!showFrame) {
+                Text(
+                    text = label,
+                    style = labelTextStyle,
+                    color = textColor
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+            }
             BasicTextField(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .run {
+                        if (showFrame) {
+                            this
+                        } else {
+                            this.drawBehind {
+                                drawLine(
+                                    color = textColor,
+                                    start = Offset(0f, size.height),
+                                    end = Offset(size.width, size.height),
+                                    strokeWidth = 0.8f
+                                )
+                            }
+                        }
+                    },
                 value = text,
                 onValueChange = { newValue ->
                     if (newValue.length <= maxLength) {

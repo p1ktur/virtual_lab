@@ -1,8 +1,8 @@
 import androidx.compose.runtime.*
 import androidx.compose.ui.test.*
 import app.domain.umlDiagram.editing.*
-import app.domain.viewModels.designing.*
-import app.presenter.screens.designing.*
+import app.domain.viewModels.diagrams.classDiagram.*
+import app.presenter.screens.classDiagram.*
 import org.junit.Test
 import kotlin.test.*
 
@@ -11,18 +11,18 @@ class DiagramCanvasTest {
 
     @Test
     fun `Test new Diagram appears on click`() = runComposeUiTest {
-        val designingViewModel = DesigningViewModel()
+        val classDiagramViewModel = ClassDiagramViewModel()
 
         setContent {
-            val uiState = designingViewModel.uiState.collectAsState()
+            val uiState = classDiagramViewModel.uiState.collectAsState()
 
-            DesigningScreen(
+            ClassDiagramScreen(
                 uiState = uiState.value,
-                onUiAction = designingViewModel::onUiAction
+                onUiAction = classDiagramViewModel::onUiAction
             )
         }
 
-        val uiState = designingViewModel.uiState
+        val uiState = classDiagramViewModel.uiState
 
         assertTrue(uiState.value.classComponents.isEmpty())
         onNode(hasTestTag("Tools and Actions Bar")).assertExists()
@@ -33,18 +33,18 @@ class DiagramCanvasTest {
 
     @Test
     fun `Test how next Diagram appears on Click`() = runComposeUiTest {
-        val designingViewModel = DesigningViewModel()
+        val classDiagramViewModel = ClassDiagramViewModel()
 
         setContent {
-            val uiState = designingViewModel.uiState.collectAsState()
+            val uiState = classDiagramViewModel.uiState.collectAsState()
 
-            DesigningScreen(
+            ClassDiagramScreen(
                 uiState = uiState.value,
-                onUiAction = designingViewModel::onUiAction
+                onUiAction = classDiagramViewModel::onUiAction
             )
         }
 
-        val uiState = designingViewModel.uiState
+        val uiState = classDiagramViewModel.uiState
 
         assertTrue(uiState.value.classComponents.isEmpty())
         onNode(hasTestTag("Tools and Actions Bar")).assertExists()
@@ -65,18 +65,18 @@ class DiagramCanvasTest {
 
     @Test
     fun `Test how Edit Mode Changes`() = runComposeUiTest {
-        val designingViewModel = DesigningViewModel()
+        val classDiagramViewModel = ClassDiagramViewModel()
 
         setContent {
-            val uiState = designingViewModel.uiState.collectAsState()
+            val uiState = classDiagramViewModel.uiState.collectAsState()
 
-            DesigningScreen(
+            ClassDiagramScreen(
                 uiState = uiState.value,
-                onUiAction = designingViewModel::onUiAction
+                onUiAction = classDiagramViewModel::onUiAction
             )
         }
 
-        val uiState = designingViewModel.uiState
+        val uiState = classDiagramViewModel.uiState
 
         onNode(hasTestTag("Tools and Actions Bar")).assertExists()
         onNode(hasTestTag("Selector Tool Button")).assertExists()

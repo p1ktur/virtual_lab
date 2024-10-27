@@ -17,6 +17,9 @@ fun Checker(
     modifier: Modifier = Modifier,
     label: String,
     isChecked: Boolean,
+    textColor: Color = MaterialTheme.colorScheme.onBackground,
+    activeColor: Color = MaterialTheme.colorScheme.onBackground,
+    inactiveColor: Color = MaterialTheme.colorScheme.primary,
     onChecked: (Boolean) -> Unit
 ) {
     Row(
@@ -27,19 +30,19 @@ fun Checker(
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
-            color = Color.Black
+            color = textColor
         )
         Box(
             modifier = Modifier
                 .size(16.dp)
                 .clip(RoundedCornerShape(6.dp))
                 .background(
-                    color = if (isChecked) Color.Black else Color.White,
+                    color = if (isChecked) activeColor else inactiveColor,
                     shape = RoundedCornerShape(6.dp)
                 )
                 .border(
                     width = 1.dp,
-                    color = if (isChecked) Color.Black else Color.DarkGray,
+                    color = if (isChecked) activeColor else inactiveColor,
                     shape = RoundedCornerShape(6.dp)
                 )
                 .clickable { onChecked(!isChecked) }
@@ -49,7 +52,7 @@ fun Checker(
                     modifier = Modifier.fillMaxSize(),
                     imageVector = Icons.Default.Done,
                     contentDescription = "Checker state",
-                    tint = Color.White
+                    tint = inactiveColor
                 )
             }
         }

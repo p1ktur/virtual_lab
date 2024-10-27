@@ -1,7 +1,7 @@
 package app.domain.umlDiagram.comparing
 
-import app.domain.umlDiagram.model.component.*
-import app.domain.umlDiagram.model.connection.*
+import app.domain.umlDiagram.classDiagram.component.*
+import app.domain.umlDiagram.classDiagram.connection.*
 
 data class CompareData(
     val components: List<UMLClassComponent>,

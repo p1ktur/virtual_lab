@@ -5,13 +5,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.geometry.*
-import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
 import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.layout.*
 import androidx.compose.ui.text.*
 import app.domain.umlDiagram.editing.*
-import app.domain.umlDiagram.classDiagram.component.*
 import app.domain.umlDiagram.classDiagram.connection.*
 import app.domain.umlDiagram.mouse.*
 import app.domain.util.geometry.*
@@ -34,6 +32,17 @@ fun ClassDiagramCanvas(
     val umlComponentNameTextStyle = MaterialTheme.typography.bodyMedium
     val umlComponentContentTextStyle = MaterialTheme.typography.bodySmall
     val umlConnectionTextStyle = MaterialTheme.typography.bodySmall
+
+    // Canvas
+    val highlightColor = MaterialTheme.colorScheme.highlightColor
+    val backgroundColor = MaterialTheme.colorScheme.surfaceVariant
+    val gridColor = MaterialTheme.colorScheme.onSurfaceVariant
+    // Component
+    val frameColor = MaterialTheme.colorScheme.onSurface
+    val containerColor = MaterialTheme.colorScheme.primaryContainer
+    val componentTextColor = MaterialTheme.colorScheme.onPrimaryContainer
+    // Arrows
+    val arrowsColor = MaterialTheme.colorScheme.onSurface
 
     fun Offset.scaledAndTranslated(): Offset = unZoom(uiState.canvasUiState.center, uiState.canvasUiState.zoom) - uiState.canvasUiState.offset
 
@@ -282,12 +291,15 @@ fun ClassDiagramCanvas(
             drawGrid(
                 step = 24f * uiState.canvasUiState.zoom,
                 canvasZoom = uiState.canvasUiState.zoom,
-                canvasOffset = uiState.canvasUiState.offset
+                canvasOffset = uiState.canvasUiState.offset,
+                backgroundColor = backgroundColor,
+                gridColor = gridColor.copy(alpha = 0.6f)
             )
             scale(uiState.canvasUiState.zoom) {
                 translate(uiState.canvasUiState.offset.x, uiState.canvasUiState.offset.y) {
                     drawCenterHelper(
-                        squareSize = 24f / uiState.canvasUiState.zoom
+                        squareSize = 24f / uiState.canvasUiState.zoom,
+                        gridColor = gridColor
                     )
 
                     uiState.classConnections.forEach {
@@ -296,7 +308,9 @@ fun ClassDiagramCanvas(
                             textMeasurer = textMeasurer,
                             textStyle = umlConnectionTextStyle,
                             componentNameTextStyle = umlComponentNameTextStyle,
-                            componentContentTextStyle = umlComponentContentTextStyle
+                            componentContentTextStyle = umlComponentContentTextStyle,
+                            color = arrowsColor,
+                            highlightColor = highlightColor
                         )
                     }
 
@@ -305,7 +319,11 @@ fun ClassDiagramCanvas(
                             drawScope = this@Canvas,
                             textMeasurer = textMeasurer,
                             nameTextStyle = umlComponentNameTextStyle,
-                            contentTextStyle = umlComponentContentTextStyle
+                            contentTextStyle = umlComponentContentTextStyle,
+                            frameColor = frameColor,
+                            containerColor = containerColor,
+                            textColor = componentTextColor,
+                            highlightColor = highlightColor
                         )
                     }
 

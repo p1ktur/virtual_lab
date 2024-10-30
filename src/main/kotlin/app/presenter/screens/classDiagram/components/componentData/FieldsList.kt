@@ -124,7 +124,7 @@ private fun FieldView(
         modifier = modifier
             .shadow(2.dp, RoundedCornerShape(8f))
             .clip(RoundedCornerShape(8f))
-            .background(MaterialTheme.colorScheme.tertiaryContainer)
+            .background(MaterialTheme.colorScheme.secondaryContainer)
             .padding(vertical = 4.dp)
     ) {
         Row(
@@ -136,7 +136,7 @@ private fun FieldView(
             Text(
                 text = "(${index + 1})",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onTertiaryContainer
+                color = MaterialTheme.colorScheme.onSecondaryContainer
             )
             Row {
                 if (index == 0) {
@@ -146,7 +146,7 @@ private fun FieldView(
                         modifier = Modifier.size(16.dp),
                         icon = Icons.Default.KeyboardArrowUp,
                         actionText = "Move Field Up",
-                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                         onClick = { onMoveField(-1) }
                     )
                 }
@@ -157,7 +157,7 @@ private fun FieldView(
                         modifier = Modifier.size(16.dp),
                         icon = Icons.Default.KeyboardArrowDown,
                         actionText = "Move Field Down",
-                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                         onClick = { onMoveField(1) }
                     )
                 }
@@ -166,7 +166,7 @@ private fun FieldView(
                 modifier = Modifier.size(16.dp),
                 icon = Icons.Default.Delete,
                 actionText = "Delete Field",
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
                 onClick = { onDelete(index) }
             )
         }
@@ -187,7 +187,7 @@ private fun FieldView(
             showEditIcon = false,
             textStyle = MaterialTheme.typography.bodySmall,
             labelTextStyle = MaterialTheme.typography.bodySmall,
-            textColor = MaterialTheme.colorScheme.onTertiaryContainer
+            textColor = MaterialTheme.colorScheme.onSecondaryContainer
         )
         DefaultTextField(
             modifier = Modifier
@@ -205,7 +205,7 @@ private fun FieldView(
             showEditIcon = false,
             textStyle = MaterialTheme.typography.bodySmall,
             labelTextStyle = MaterialTheme.typography.bodySmall,
-            textColor = MaterialTheme.colorScheme.onTertiaryContainer
+            textColor = MaterialTheme.colorScheme.onSecondaryContainer
         )
         key(commonCounter) {
             Row(
@@ -218,7 +218,7 @@ private fun FieldView(
                 Text(
                     text = "Visibility:",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
                 Visibility.entries.forEach { visibility ->
                     VisibilityButton(
@@ -238,9 +238,9 @@ private fun FieldView(
                     .padding(horizontal = 4.dp),
                 label = "Static:",
                 isChecked = field.isStatic,
-                textColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                activeColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                inactiveColor = MaterialTheme.colorScheme.secondary,
+                textColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                otherContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                iconColor = MaterialTheme.colorScheme.secondaryContainer,
                 onChecked = { newValue ->
                     onUpdateValue {
                         isStatic = newValue

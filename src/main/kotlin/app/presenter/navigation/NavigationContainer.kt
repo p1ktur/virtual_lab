@@ -147,19 +147,12 @@ fun NavigationScreen() {
                 val uiState by viewModel.uiState.collectAsState()
 
                 LaunchedEffect(Unit) {
-                    println(fileManager)
-                    println(fileManager.onRequestSaveData)
-                    println(fileManager.onDeliverSaveData)
-
                     fileManager.onRequestSaveData = {
                         viewModel.getSaveData()
                     }
                     fileManager.onDeliverSaveData = { saveData ->
                         viewModel.applySaveData(saveData)
                     }
-
-                    println(fileManager.onRequestSaveData)
-                    println(fileManager.onDeliverSaveData)
 
                     fileManager.load(File("C:\\class_diagrams\\class_diagram_changed.json"))
                 }

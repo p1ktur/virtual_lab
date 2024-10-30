@@ -193,7 +193,9 @@ data class UMLClassConnection(
         textMeasurer: TextMeasurer,
         textStyle: TextStyle,
         componentNameTextStyle: TextStyle,
-        componentContentTextStyle: TextStyle
+        componentContentTextStyle: TextStyle,
+        color: Color,
+        highlightColor: Color
     ) {
         val startOffsets = startRef.getOffsets()
         val endOffsets = endRef.getOffsets()
@@ -291,7 +293,8 @@ data class UMLClassConnection(
             drawScope.drawSquareArchArrowFromTo(
                 from = calculatedFrom,
                 to = calculatedTo,
-                color = Color(ARROW_COLOR),
+                color = color,
+                highlightColor = highlightColor,
                 relativePosition = relativePosition,
                 middleArchOffset = middleArchOffset,
                 highlightedSegments = highlightedSegments,
@@ -304,7 +307,8 @@ data class UMLClassConnection(
                 textMeasurer = textMeasurer,
                 from = calculatedFrom,
                 to = calculatedTo,
-                color = Color(ARROW_COLOR),
+                color = color,
+                highlightColor = highlightColor,
                 relativePosition = relativePosition,
                 middleArchOffset = middleArchOffset,
                 highlightedSegments = highlightedSegments,
@@ -317,7 +321,8 @@ data class UMLClassConnection(
             drawScope.drawSquareArrowFromTo(
                 from = calculatedFrom,
                 to = calculatedTo,
-                color = Color(ARROW_COLOR),
+                color = color,
+                highlightColor = highlightColor,
                 relativePosition = relativePosition,
                 middleOffset = middleOffset,
                 highlightedSegments = highlightedSegments,
@@ -330,7 +335,8 @@ data class UMLClassConnection(
                 textMeasurer = textMeasurer,
                 from = calculatedFrom,
                 to = calculatedTo,
-                color = Color(ARROW_COLOR),
+                color = color,
+                highlightColor = highlightColor,
                 relativePosition = relativePosition,
                 middleOffset = middleOffset,
                 highlightedSegments = highlightedSegments,
@@ -378,6 +384,7 @@ data class UMLClassConnection(
                 break
             }
         }
+
 
         for (index in references.indices) {
             if (references[index].equalsTo(endRef.getRefClass()) && !references[index].equalsTo(startRef.getRefClass())) {

@@ -11,7 +11,6 @@ import app.domain.umlDiagram.classDiagram.component.function.Function
 import app.domain.umlDiagram.classDiagram.connection.*
 import app.domain.umlDiagram.mouse.*
 import app.domain.util.geometry.*
-import app.presenter.theme.*
 import kotlinx.serialization.*
 import kotlin.math.*
 
@@ -76,9 +75,13 @@ data class UMLClassComponent(
         drawScope: DrawScope,
         textMeasurer: TextMeasurer,
         nameTextStyle: TextStyle,
-        contentTextStyle: TextStyle
+        contentTextStyle: TextStyle,
+        frameColor: Color,
+        containerColor: Color,
+        textColor: Color,
+        highlightColor: Color
     ) {
-        val color = if (isHighlighted) highlightColor else Color.Black
+        val color = if (isHighlighted) highlightColor else frameColor
 
         val maxTextWidth = size.width - DRAW_PADDING * 2
         var contentHeightSum = 0f
@@ -117,7 +120,7 @@ data class UMLClassComponent(
         }
 
         drawScope.drawRect(
-            color = Color.White,
+            color = containerColor,
             topLeft = position,
             size = size,
             style = Fill
@@ -155,7 +158,7 @@ data class UMLClassComponent(
         currentPosition += Offset(0f, DRAW_PADDING)
         drawScope.drawText(
             textLayoutResult = nameTextLayout,
-            color = Color.Black,
+            color = textColor,
             topLeft = Offset(
                 x = position.x + size.width / 2f - nameTextLayout.size.width / 2f,
                 y = currentPosition.y
@@ -176,7 +179,7 @@ data class UMLClassComponent(
             fieldTextLayouts.forEachIndexed { index, layout ->
                 drawScope.drawText(
                     textLayoutResult = layout,
-                    color = Color.Black,
+                    color = textColor,
                     topLeft = currentPosition,
                     textDecoration = if (fields[index].isStatic) TextDecoration.Underline else null
                 )
@@ -197,7 +200,7 @@ data class UMLClassComponent(
             functionTextLayouts.forEachIndexed { index, layout ->
                 drawScope.drawText(
                     textLayoutResult = layout,
-                    color = Color.Black,
+                    color = textColor,
                     topLeft = currentPosition,
                     textDecoration = if (functions[index].isStatic) TextDecoration.Underline else null
                 )
@@ -341,16 +344,20 @@ data class UMLClassComponent(
     }
 
     fun equalsTo(other: UMLClassComponent): Boolean {
-        return this.name == other.name &&
-                this.fields.mapIndexed { index, field ->
-                    field.toString() == other.fields[index].toString()
-                }.all { it } &&
-                this.functions.mapIndexed { index, function ->
-                    function.toString() == other.functions[index].toString()
-                }.all { it } &&
-                this.isInterface == other.isInterface &&
-                this.position == other.position &&
-                this.size == other.size
+        return try {
+            this.name == other.name &&
+                    this.fields.mapIndexed { index, field ->
+                        field.toString() == other.fields[index].toString()
+                    }.all { it } &&
+                    this.functions.mapIndexed { index, function ->
+                        function.toString() == other.functions[index].toString()
+                    }.all { it } &&
+                    this.isInterface == other.isInterface &&
+                    this.position == other.position &&
+                    this.size == other.size
+        } catch (_: Exception) {
+            false
+        }
     }
 
     private fun SideDirection.getSide(): Side {

@@ -43,6 +43,7 @@ fun FunctionsList(
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
+                .shadow(4.dp, RoundedCornerShape(8f))
                 .clip(RoundedCornerShape(8f))
                 .background(MaterialTheme.colorScheme.secondaryContainer)
                 .padding(6.dp)
@@ -124,8 +125,9 @@ private fun FunctionView(
 ) {
     Column(
         modifier = modifier
+            .shadow(2.dp, RoundedCornerShape(8f))
             .clip(RoundedCornerShape(8f))
-            .background(MaterialTheme.colorScheme.tertiaryContainer)
+            .background(MaterialTheme.colorScheme.secondaryContainer)
             .padding(vertical = 4.dp)
     ) {
         Row(
@@ -137,7 +139,7 @@ private fun FunctionView(
             Text(
                 text = "(${index + 1})",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onTertiaryContainer
+                color = MaterialTheme.colorScheme.onSecondaryContainer
             )
             Row {
                 if (index == 0) {
@@ -147,7 +149,7 @@ private fun FunctionView(
                         modifier = Modifier.size(16.dp),
                         icon = Icons.Default.KeyboardArrowUp,
                         actionText = "Move Function Up",
-                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                         onClick = { onMoveFunction(-1) }
                     )
                 }
@@ -158,7 +160,7 @@ private fun FunctionView(
                         modifier = Modifier.size(16.dp),
                         icon = Icons.Default.KeyboardArrowDown,
                         actionText = "Move Function Down",
-                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                         onClick = { onMoveFunction(1) }
                     )
                 }
@@ -167,7 +169,7 @@ private fun FunctionView(
                 modifier = Modifier.size(16.dp),
                 icon = Icons.Default.Delete,
                 actionText = "Delete Function",
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
                 onClick = { onDelete(index) }
             )
         }
@@ -188,7 +190,7 @@ private fun FunctionView(
             showEditIcon = false,
             textStyle = MaterialTheme.typography.bodySmall,
             labelTextStyle = MaterialTheme.typography.bodySmall,
-            textColor = MaterialTheme.colorScheme.onTertiaryContainer
+            textColor = MaterialTheme.colorScheme.onSecondaryContainer
         )
         DefaultTextField(
             modifier = Modifier
@@ -206,7 +208,7 @@ private fun FunctionView(
             showEditIcon = false,
             textStyle = MaterialTheme.typography.bodySmall,
             labelTextStyle = MaterialTheme.typography.bodySmall,
-            textColor = MaterialTheme.colorScheme.onTertiaryContainer
+            textColor = MaterialTheme.colorScheme.onSecondaryContainer
         )
         key(commonCounter) {
             Row(
@@ -219,7 +221,7 @@ private fun FunctionView(
                 Text(
                     text = "Visibility:",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
                 Visibility.entries.forEach { visibility ->
                     VisibilityButton(
@@ -239,9 +241,9 @@ private fun FunctionView(
                     .padding(horizontal = 4.dp),
                 label = "Static:",
                 isChecked = function.isStatic,
-                textColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                activeColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                inactiveColor = MaterialTheme.colorScheme.secondary,
+                textColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                otherContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                iconColor = MaterialTheme.colorScheme.secondaryContainer,
                 onChecked = { newValue ->
                     onUpdateValue {
                         isStatic = newValue
@@ -253,7 +255,7 @@ private fun FunctionView(
             if (function.params.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(4.dp))
                 HorizontalDivider(
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                     fillMaxWidth = 1f
                 )
                 Text(
@@ -262,7 +264,7 @@ private fun FunctionView(
                         .padding(horizontal = 8.dp),
                     text = "Parameters:",
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                     textAlign = TextAlign.Start
                 )
             }
@@ -289,7 +291,7 @@ private fun FunctionView(
                         showEditIcon = false,
                         textStyle = MaterialTheme.typography.labelMedium,
                         labelTextStyle = MaterialTheme.typography.labelSmall,
-                        textColor = MaterialTheme.colorScheme.onTertiaryContainer
+                        textColor = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                     DefaultTextField(
                         modifier = Modifier
@@ -307,7 +309,7 @@ private fun FunctionView(
                         showEditIcon = false,
                         textStyle = MaterialTheme.typography.labelMedium,
                         labelTextStyle = MaterialTheme.typography.labelSmall,
-                        textColor = MaterialTheme.colorScheme.onTertiaryContainer
+                        textColor = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                     ActionButton(
                         modifier = Modifier
@@ -315,7 +317,7 @@ private fun FunctionView(
                             .size(12.dp),
                         icon = Icons.Default.Delete,
                         actionText = "Delete Parameter",
-                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                         onClick = {
                             onUpdateValue {
                                 function.params.removeAt(index)
@@ -330,7 +332,7 @@ private fun FunctionView(
                         horizontalAlignment = Alignment.End
                     ) {
                         HorizontalDivider(
-                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
                             fillMaxWidth = 0.85f,
                         )
                     }
@@ -347,7 +349,7 @@ private fun FunctionView(
                 modifier = Modifier.size(24.dp),
                 icon = Icons.Default.Add,
                 actionText = "Add Parameter",
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
                 onClick = {
                     onUpdateValue {
                         function.params += Param()

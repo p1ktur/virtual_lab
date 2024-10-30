@@ -4,13 +4,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.*
 import app.domain.umlDiagram.classDiagram.connection.*
 import app.domain.viewModels.diagrams.classDiagram.*
 import app.presenter.canvas.arrows.ArrowHead.Companion.ARROW_HEAD_LENGTH
 import app.presenter.canvas.arrows.*
 import app.presenter.components.common.*
+import app.presenter.theme.*
 
 @Composable
 fun ConnectionCustomizationView(
@@ -52,6 +52,7 @@ fun ConnectionCustomizationView(
                     isHighlighted = reference.startArrowHead == head,
                     mainColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+                    highlightColor = MaterialTheme.colorScheme.highlightColor,
                     onClick = {
                         onUiAction(ClassDiagramUiAction.UpdateConnectionData {
                             startArrowHead = head
@@ -81,6 +82,7 @@ fun ConnectionCustomizationView(
                     isHighlighted = reference.arrowType == type,
                     mainColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+                    highlightColor = MaterialTheme.colorScheme.highlightColor,
                     onClick = {
                         onUiAction(ClassDiagramUiAction.UpdateConnectionData {
                             arrowType = type
@@ -107,6 +109,7 @@ fun ConnectionCustomizationView(
                     isHighlighted = reference.endArrowHead == head,
                     mainColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+                    highlightColor = MaterialTheme.colorScheme.highlightColor,
                     onClick = {
                         onUiAction(ClassDiagramUiAction.UpdateConnectionData {
                             endArrowHead = head

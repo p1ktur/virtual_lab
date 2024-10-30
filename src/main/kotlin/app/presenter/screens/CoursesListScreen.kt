@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.*
 import app.domain.model.*
 import app.domain.viewModels.courses.coursesList.*
 import app.presenter.components.common.*
-import java.awt.SystemColor.*
 
 @Composable
 fun CoursesListScreen(

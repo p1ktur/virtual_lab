@@ -11,7 +11,6 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.*
 import app.domain.umlDiagram.classDiagram.component.*
 import app.presenter.components.tooltip.*
-import java.awt.SystemColor.*
 
 @Composable
 fun VisibilityButton(

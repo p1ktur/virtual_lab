@@ -10,8 +10,6 @@ import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
 import androidx.compose.ui.unit.*
-import app.domain.umlDiagram.classDiagram.connection.*
-import app.presenter.theme.*
 
 const val THICKNESS = 0.4f
 
@@ -135,6 +133,7 @@ fun DrawnArrowHead(
     isHighlighted: Boolean = false,
     mainColor: Color,
     backgroundColor: Color,
+    highlightColor: Color,
     onClick: () -> Unit
 ) {
     val color = if (isHighlighted) highlightColor else mainColor

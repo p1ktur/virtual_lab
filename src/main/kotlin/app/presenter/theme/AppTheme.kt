@@ -10,8 +10,8 @@ fun AppTheme(
 ) {
     MaterialTheme(
         colorScheme = when (theme) {
-            Theme.LIGHT -> blueColorSchemeLight
-            Theme.DARK -> blueColorSchemeDark
+            Theme.LIGHT -> pinkColorSchemeLight
+            Theme.DARK -> pinkColorSchemeDark
         },
         typography = Typography,
         content = content

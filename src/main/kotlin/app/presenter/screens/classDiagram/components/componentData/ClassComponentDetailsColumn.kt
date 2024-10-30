@@ -86,8 +86,8 @@ fun ClassComponentDetailsColumn(
                     label = "Is Interface:",
                     isChecked = reference.isInterface,
                     textColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    activeColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    inactiveColor = MaterialTheme.colorScheme.primary,
+                    otherContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    iconColor = MaterialTheme.colorScheme.primaryContainer,
                     onChecked = { newValue ->
                         onUiAction(ClassDiagramUiAction.UpdateComponentData {
                             isInterface = newValue

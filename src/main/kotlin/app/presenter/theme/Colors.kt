@@ -3,72 +3,83 @@ package app.presenter.theme
 import androidx.compose.material3.*
 import androidx.compose.ui.graphics.*
 
-// Values
+fun Color.invert(): Color {
+    val red = (255 - (red * 255).toInt()).coerceIn(0, 255)
+    val green = (255 - (green * 255).toInt()).coerceIn(0, 255)
+    val blue = (255 - (blue * 255).toInt()).coerceIn(0, 255)
+    val alpha = (alpha * 255).toInt().coerceIn(0, 255)
 
-val highlightColor = Color(0xFFEB9E34)
+    return Color(red, green, blue, alpha)
+}
 
-// Schemes
+val ColorScheme.inverseToPrimary: Color get() = primary.invert()
+val ColorScheme.inverseToPrimaryContainer: Color get() = primaryContainer.invert()
+val ColorScheme.inverseToSecondary: Color get() = secondary.invert()
+val ColorScheme.inverseToSecondaryContainer: Color get() = secondaryContainer.invert()
+val ColorScheme.inverseToTertiary: Color get() = tertiary.invert()
+val ColorScheme.inverseToTertiaryContainer: Color get() = tertiaryContainer.invert()
+val ColorScheme.highlightColor: Color get() = inverseToPrimary.copy(green = 0.55f, blue = 0.95f)
 
 val defaultColorScheme = lightColorScheme()
 
-val blueColorSchemeLight by lazy {
+val pinkColorSchemeLight by lazy {
     defaultColorScheme.copy(
-        primary = Color(0xFFAFAFFF),
-        onPrimary = Color(0xFF444488),
-        primaryContainer = Color(0xFFB8B8FF),
-        onPrimaryContainer = Color(0xFF555599),
-        secondary = Color(0xFFBFBFFF),
-        onSecondary = Color(0xFF6666AA),
-        secondaryContainer = Color(0xFFC8C8FF),
-        onSecondaryContainer = Color(0xFF7777BB),
-        tertiary = Color(0xFFCFCFFF),
-        onTertiary = Color(0xFF8888CC),
-        tertiaryContainer = Color(0xFFD8D8FF),
-        onTertiaryContainer = Color(0xFF9999DD),
-        error = Color(0xFFFFB4AB),
-        onError = Color(0xFF690005),
-        errorContainer = Color(0xFF220041),
-        onErrorContainer = Color(0xFFFFDAD6),
-        background = Color(0xFFF0F0FF),
-        onBackground = Color(0xFF202040),
-        surface = Color(0xFFF7F9FF),
-        onSurface = Color(0xFF181C20),
-        surfaceVariant = Color(0xFFDDE3EA),
-        onSurfaceVariant = Color(0xFF41474D),
-        outline = Color(0xFF72787E),
-        inverseSurface = Color(0xFF2D3135),
-        inverseOnSurface = Color(0xFFEEF1F6),
-        inversePrimary = Color(0xFF95CDF8)
+        primary = Color(0xFF7F515F),
+        onPrimary = Color(0xFFFFFFFF),
+        primaryContainer = Color(0xFFEBB1C2),
+        onPrimaryContainer = Color(0xFF4D2633),
+        secondary = Color(0xFF70585E),
+        onSecondary = Color(0xFFFFFFFF),
+        secondaryContainer = Color(0xFFFBDCE3),
+        onSecondaryContainer = Color(0xFF594349),
+        tertiary = Color(0xFF7F5537),
+        onTertiary = Color(0xFFFFFFFF),
+        tertiaryContainer = Color(0xFFEDB592),
+        onTertiaryContainer = Color(0xFF4C2910),
+        error = Color(0xFFBA1A1A),
+        onError = Color(0xFFFFFFFF),
+        errorContainer = Color(0xFFFFDAD6),
+        onErrorContainer = Color(0xFF410002),
+        background = Color(0xFFFFF8F8),
+        onBackground = Color(0xFF1F1A1B),
+        surface = Color(0xFFFFF8F8),
+        onSurface = Color(0xFF1F1A1B),
+        surfaceVariant = Color(0xFFF1DEE1),
+        onSurfaceVariant = Color(0xFF504447),
+        outline = Color(0xFF827377),
+        inverseSurface = Color(0xFFD4C2C6),
+        inverseOnSurface = Color(0xFF342F30),
+        inversePrimary = Color(0xFFF9EEEF)
     )
 }
 
-val blueColorSchemeDark by lazy {
+val pinkColorSchemeDark by lazy {
     defaultColorScheme.copy(
-        primary = Color(0xFF444488),
-        onPrimary = Color(0xFFAFAFFF),
-        primaryContainer = Color(0xFF555599),
-        onPrimaryContainer = Color(0xFFB8B8FF),
-        secondary = Color(0xFF6666AA),
-        onSecondary = Color(0xFFBFBFFF),
-        secondaryContainer = Color(0xFF7777BB),
-        onSecondaryContainer = Color(0xFFC8C8FF),
-        tertiary = Color(0xFF8888CC),
-        onTertiary = Color(0xFFCFCFFF),
-        tertiaryContainer = Color(0xFF9999DD),
-        onTertiaryContainer = Color(0xFFD8D8FF),
-        error = Color(0xFFBA1A1A),
-        onError = Color(0xFFDDDDFF),
-        errorContainer = Color(0xFFFFD6EE),
-        onErrorContainer = Color(0xFF220041),
-        background = Color(0xFF202040),
-        onBackground = Color(0xFFF0F0FF),
-        surface = Color(0xFF101417),
-        onSurface = Color(0xFFE0E3E8),
-        surfaceVariant = Color(0xFF41474D),
-        onSurfaceVariant = Color(0xFFC1C7CE),
-        outline = Color(0xFF8B9198),
-        inverseSurface = Color(0xFFE0E3E8),
-        inverseOnSurface = Color(0xFF2D3135),
-        inversePrimary = Color(0xFF276389)
+        primary = Color(0xFFFFD0DC),
+        onPrimary = Color(0xFF4B2431),
+        primaryContainer = Color(0xFFDCA3B3),
+        onPrimaryContainer = Color(0xFF401B28),
+        secondary = Color(0xFFDDBFC6),
+        onSecondary = Color(0xFF3E2B31),
+        secondaryContainer = Color(0xFF4F3A40),
+        onSecondaryContainer = Color(0xFFECCDD4),
+        tertiary = Color(0xFFFFD3B9),
+        onTertiary = Color(0xFF4A280E),
+        tertiaryContainer = Color(0xFFDDA784),
+        onTertiaryContainer = Color(0xFF3F1F06),
+        error = Color(0xFFFFB4AB),
+        onError = Color(0xFF690005),
+        errorContainer = Color(0xFF93000A),
+        onErrorContainer = Color(0xFFFFDAD6),
+        background = Color(0xFF161213),
+        onBackground = Color(0xFFEAE0E1),
+        surface = Color(0xFF161213),
+        onSurface = Color(0xFFEAE0E1),
+        surfaceVariant = Color(0xFF504447),
+        onSurfaceVariant = Color(0xFFD4C2C6),
+        outline = Color(0xFF9D8D90),
+        inverseSurface = Color(0xFF504447),
+        inverseOnSurface = Color(0xFFEAE0E1),
+        inversePrimary = Color(0xFF342F30)
     )
 }

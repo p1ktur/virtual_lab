@@ -8,7 +8,6 @@ import androidx.compose.ui.unit.*
 import app.domain.umlDiagram.classDiagram.connection.*
 import app.presenter.canvas.arrows.ArrowType.Companion.DASHED_LENGTH
 import app.presenter.canvas.arrows.ArrowType.Companion.DASHED_STEP
-import app.presenter.theme.*
 import kotlin.math.*
 
 const val ARCH_SAMPLE = 64f
@@ -18,6 +17,7 @@ fun DrawScope.drawSquareArchArrowFromTo(
     from: Offset,
     to: Offset,
     color: Color,
+    highlightColor: Color,
     relativePosition: UMLClassConnection.RelativePosition,
     middleArchOffset: Float,
     highlightedSegments: List<ConnectionSegment>,
@@ -123,6 +123,7 @@ fun DrawScope.drawSquareArchArrowTexts(
     from: Offset,
     to: Offset,
     color: Color,
+    highlightColor: Color,
     relativePosition: UMLClassConnection.RelativePosition,
     middleArchOffset: Float,
     highlightedSegments: List<ConnectionSegment>,

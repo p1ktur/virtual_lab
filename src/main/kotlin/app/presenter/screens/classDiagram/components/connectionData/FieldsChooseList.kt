@@ -11,7 +11,6 @@ import androidx.compose.ui.unit.*
 import app.domain.umlDiagram.classDiagram.component.*
 import app.domain.umlDiagram.classDiagram.connection.*
 import app.domain.viewModels.diagrams.classDiagram.*
-import app.presenter.theme.*
 
 @Composable
 fun FieldsChooseList(
@@ -84,7 +83,7 @@ fun FieldsChooseList(
                     style = MaterialTheme.typography.labelMedium,
                     color = (if (isStart) reference.startRef else reference.endRef).run {
                         ((this as? RefConnection.ReferencedConnection)?.refType as? RefType.Field)?.let {
-                            if (it.index == index) highlightColor else Color.Black
+                            if (it.index == index) MaterialTheme.colorScheme.tertiary else Color.Black
                         } ?: Color.Black
                     },
                     textDecoration = if (field.isStatic) TextDecoration.Underline else null

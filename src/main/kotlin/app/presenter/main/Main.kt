@@ -29,7 +29,7 @@ fun main() {
             size = DpSize(1080.dp, 720.dp)
         )
 
-        val isSystemInDarkTheme = isSystemInDarkTheme()
+        val isSystemInDarkTheme = isSystemInDarkTheme() && false // TODO remove "&& false" or add settings feature to configure this
         var appTheme by remember { mutableStateOf(if (isSystemInDarkTheme) Theme.DARK else Theme.LIGHT) }
 
         var isMaximized by remember { mutableStateOf(false) }

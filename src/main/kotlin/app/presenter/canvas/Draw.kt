@@ -10,24 +10,33 @@ const val CENTER_HELPER_COLOR = 0xFF9999AA
 
 const val SMOOTHEN_VALUE = 4f
 
-fun DrawScope.drawCenterHelper(squareSize: Float) {
+fun DrawScope.drawCenterHelper(
+    squareSize: Float,
+    gridColor: Color
+) {
     drawLine(
-        color = Color(CENTER_HELPER_COLOR),
+        color = gridColor,
         start = Offset(size.width / 2 - squareSize / 2, size.height / 2),
         end = Offset(size.width / 2 + squareSize / 2, size.height / 2),
-        strokeWidth = 2f
+        strokeWidth = 1.5f
     )
     drawLine(
-        color = Color(CENTER_HELPER_COLOR),
+        color = gridColor,
         start = Offset(size.width / 2, size.height / 2 - squareSize / 2),
         end = Offset(size.width / 2, size.height / 2 + squareSize / 2),
         strokeWidth = 2f
     )
 }
 
-fun DrawScope.drawGrid(step: Float, canvasZoom: Float, canvasOffset: Offset) {
+fun DrawScope.drawGrid(
+    step: Float,
+    canvasZoom: Float,
+    canvasOffset: Offset,
+    backgroundColor: Color,
+    gridColor: Color
+) {
     drawRect(
-        color = Color(BACKGROUND_COLOR),
+        color = backgroundColor,
         topLeft = Offset.Zero,
         size = size
     )
@@ -40,7 +49,7 @@ fun DrawScope.drawGrid(step: Float, canvasZoom: Float, canvasOffset: Offset) {
 
     while (currentX <= size.width + step) {
         drawLine(
-            color = Color(GRID_COLOR),
+            color = gridColor,
             start = Offset(currentX + offsetX, 0f),
             end = Offset(currentX + offsetX, size.height),
             strokeWidth = 1f
@@ -49,11 +58,11 @@ fun DrawScope.drawGrid(step: Float, canvasZoom: Float, canvasOffset: Offset) {
         currentX += step
     }
 
-    currentX = size.width / 2
+    currentX = size.width / 2 - step
 
     while (currentX >= -step) {
         drawLine(
-            color = Color(GRID_COLOR),
+            color = gridColor,
             start = Offset(currentX + offsetX, 0f),
             end = Offset(currentX + offsetX, size.height),
             strokeWidth = 1f
@@ -64,7 +73,7 @@ fun DrawScope.drawGrid(step: Float, canvasZoom: Float, canvasOffset: Offset) {
 
     while (currentY <= size.height + step) {
         drawLine(
-            color = Color(GRID_COLOR),
+            color = gridColor,
             start = Offset(0f, currentY + offsetY),
             end = Offset(size.width, currentY + offsetY),
             strokeWidth = 1f
@@ -73,11 +82,11 @@ fun DrawScope.drawGrid(step: Float, canvasZoom: Float, canvasOffset: Offset) {
         currentY += step
     }
 
-    currentY = size.height / 2
+    currentY = size.height / 2 - step
 
     while (currentY >= -step) {
         drawLine(
-            color = Color(GRID_COLOR),
+            color = gridColor,
             start = Offset(0f, currentY + offsetY),
             end = Offset(size.width, currentY + offsetY),
             strokeWidth = 1f

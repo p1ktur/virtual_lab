@@ -2,17 +2,17 @@ package app.presenter.screens.classDiagram
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.*
 import androidx.compose.ui.text.style.*
-import androidx.compose.ui.unit.*
 import app.domain.viewModels.diagrams.classDiagram.*
+import app.presenter.components.common.*
 import app.presenter.screens.classDiagram.components.*
 import app.presenter.screens.classDiagram.components.componentData.*
 import app.presenter.screens.classDiagram.components.connectionData.*
+import app.presenter.theme.*
 import app.test.*
 
 @Composable
@@ -21,14 +21,11 @@ fun ClassDiagramScreen(
     onUiAction: (ClassDiagramUiAction) -> Unit
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(12.dp),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Row(
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.fillMaxSize()
         ) {
             when {
                 uiState.focusUiState.focusedComponent != null -> uiState.focusUiState.focusedComponent.let { (ref, index) ->
@@ -36,10 +33,7 @@ fun ClassDiagramScreen(
                         modifier = Modifier
                             .fillMaxWidth(0.25f)
                             .fillMaxHeight()
-                            .shadow(8.dp, RoundedCornerShape(12f))
-                            .clip(RoundedCornerShape(12f))
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                            .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f)),
+                            .background(LocalAppTheme.current.primaryScreenTwo),
                         index = index,
                         reference = ref,
                         commonCounter = uiState.commonCounter,
@@ -51,10 +45,7 @@ fun ClassDiagramScreen(
                         modifier = Modifier
                             .fillMaxWidth(0.25f)
                             .fillMaxHeight()
-                            .shadow(8.dp, RoundedCornerShape(12f))
-                            .clip(RoundedCornerShape(12f))
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                            .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f)),
+                            .background(LocalAppTheme.current.primaryScreenTwo),
                         index = index,
                         reference = ref,
                         commonCounter = uiState.commonCounter,
@@ -66,48 +57,45 @@ fun ClassDiagramScreen(
                         modifier = Modifier
                             .fillMaxWidth(0.25f)
                             .fillMaxHeight()
-                            .shadow(8.dp, RoundedCornerShape(12f))
-                            .clip(RoundedCornerShape(12f))
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                            .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f))
-                            .padding(4.dp),
+                            .background(LocalAppTheme.current.primaryScreenTwo),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "Select component or connection",
                             style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            color = LocalAppTheme.current.primaryScreenText,
                             textAlign = TextAlign.Center
                         )
                     }
                 }
             }
+            VerticalDivider(
+                fillMaxHeight = 1f,
+                color = LocalAppTheme.current.primaryScreenDivider,
+            )
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 ToolAndActionsBar(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .shadow(8.dp, RoundedCornerShape(12f))
-                        .clip(RoundedCornerShape(12f))
-                        .background(MaterialTheme.colorScheme.primaryContainer)
-                        .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f))
-                        .padding(4.dp)
+                        .background(LocalAppTheme.current.primaryScreenThree)
                         .addTestTag("Tools and Actions Bar"),
                     uiState = uiState,
                     onUiAction = onUiAction
                 )
+                HorizontalDivider(
+                    fillMaxWidth = 1f,
+                    color = LocalAppTheme.current.primaryScreenDivider,
+                )
                 ClassDiagramCanvas(
                     modifier = Modifier
                         .fillMaxSize()
-                        .shadow(8.dp, RoundedCornerShape(12f))
-                        .clip(RoundedCornerShape(12f))
-                        .background(MaterialTheme.colorScheme.primaryContainer)
-                        .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f)),
+                        .clipToBounds()
+                        .background(LocalAppTheme.current.primaryScreenThree),
                     uiState = uiState,
                     onUiAction = onUiAction
                 )

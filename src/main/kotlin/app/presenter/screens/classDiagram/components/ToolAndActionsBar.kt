@@ -13,6 +13,7 @@ import app.domain.umlDiagram.editing.*
 import app.domain.viewModels.diagrams.classDiagram.*
 import app.presenter.components.buttons.*
 import app.presenter.components.common.*
+import app.presenter.theme.*
 import app.test.*
 
 @Composable
@@ -22,7 +23,7 @@ fun ToolAndActionsBar(
     onUiAction: (ClassDiagramUiAction) -> Unit
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.padding(4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
@@ -32,13 +33,16 @@ fun ToolAndActionsBar(
                 .addTestTag("Add Component Button"),
             icon = Icons.Filled.Add,
             actionText = "Add Component",
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-            backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+            color = LocalAppTheme.current.primaryScreenText,
+            backgroundColor = LocalAppTheme.current.primaryScreenThree,
             onClick = {
                 onUiAction(ClassDiagramUiAction.AddComponent)
             }
         )
-        VerticalDivider(height = 32.dp)
+        VerticalDivider(
+            height = 32.dp,
+            color = LocalAppTheme.current.primaryScreenDivider
+        )
         EditModeButton(
             modifier = Modifier
                 .size(32.dp)
@@ -46,8 +50,8 @@ fun ToolAndActionsBar(
             icon = Icons.Outlined.PanTool,
             editMode = uiState.editMode,
             connectedEditMode = EditMode.SELECTOR,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-            backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+            color = LocalAppTheme.current.primaryScreenText,
+            backgroundColor = LocalAppTheme.current.primaryScreenThree,
             onClick = {
                 onUiAction(ClassDiagramUiAction.UpdateEditMode(EditMode.SELECTOR))
             }
@@ -59,8 +63,8 @@ fun ToolAndActionsBar(
             icon = Icons.Filled.SyncAlt,
             editMode = uiState.editMode,
             connectedEditMode = EditMode.CONNECTOR,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-            backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+            color = LocalAppTheme.current.primaryScreenText,
+            backgroundColor = LocalAppTheme.current.primaryScreenThree,
             onClick = {
                 onUiAction(ClassDiagramUiAction.UpdateEditMode(EditMode.CONNECTOR))
             }
@@ -75,7 +79,7 @@ fun ToolAndActionsBar(
             },
             style = MaterialTheme.typography.bodySmall,
             textAlign = TextAlign.End,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
+            color = LocalAppTheme.current.primaryScreenText
         )
     }
 }

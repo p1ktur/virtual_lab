@@ -34,15 +34,15 @@ fun ClassDiagramCanvas(
     val umlConnectionTextStyle = MaterialTheme.typography.bodySmall
 
     // Canvas
-    val highlightColor = MaterialTheme.colorScheme.highlightColor
-    val backgroundColor = MaterialTheme.colorScheme.surfaceVariant
-    val gridColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val highlightColor = LocalAppTheme.current.primaryScreenHighlightColor
+    val backgroundColor = LocalAppTheme.current.primaryCanvasBackground
+    val gridColor = LocalAppTheme.current.primaryCanvasGrid
     // Component
-    val frameColor = MaterialTheme.colorScheme.onSurface
-    val containerColor = MaterialTheme.colorScheme.primaryContainer
-    val componentTextColor = MaterialTheme.colorScheme.onPrimaryContainer
+    val frameColor = LocalAppTheme.current.primaryScreenText
+    val containerColor = LocalAppTheme.current.primaryScreenTextContainer
+    val componentTextColor = LocalAppTheme.current.primaryScreenText
     // Arrows
-    val arrowsColor = MaterialTheme.colorScheme.onSurface
+    val arrowsColor = LocalAppTheme.current.primaryScreenText
 
     fun Offset.scaledAndTranslated(): Offset = unZoom(uiState.canvasUiState.center, uiState.canvasUiState.zoom) - uiState.canvasUiState.offset
 
@@ -50,6 +50,8 @@ fun ClassDiagramCanvas(
     LaunchedEffect(uiState.editMode) {
         onUiAction(ClassDiagramUiAction.ClearAllFocuses)
     }
+
+    // TODO In every LaunchedEffect bring every interaction into uiAction and viewModel
 
     // MOUSE CLICK PROCESS
     LaunchedEffect(uiState.canvasUiState.mouseClickEvent) {
@@ -158,6 +160,7 @@ fun ClassDiagramCanvas(
                             else -> Unit
                         }
                         else -> {
+                            onUiAction(ClassDiagramUiAction.UpdatePointerIcon(PointerIcon(Cursor(Cursor.MOVE_CURSOR))))
                             onUiAction(
                                 ClassDiagramUiAction.UpdateCanvasOffset(
                                 offset = uiState.canvasUiState.cachedOffset + Offset(
@@ -298,8 +301,9 @@ fun ClassDiagramCanvas(
             scale(uiState.canvasUiState.zoom) {
                 translate(uiState.canvasUiState.offset.x, uiState.canvasUiState.offset.y) {
                     drawCenterHelper(
-                        squareSize = 24f / uiState.canvasUiState.zoom,
-                        gridColor = gridColor
+                        squareSize = 24f,
+                        gridColor = gridColor,
+                        strokeWidth = 1.5f / uiState.canvasUiState.zoom
                     )
 
                     uiState.classConnections.forEach {

@@ -7,7 +7,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.ripple.*
 import androidx.compose.material3.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -17,6 +16,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.*
 import app.domain.actionTab.*
 import app.domain.actionTab.options.*
+import app.presenter.theme.*
 import moe.tlaster.precompose.navigation.*
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -84,7 +84,7 @@ fun TabNavigator(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(32.dp)
-                .background(MaterialTheme.colorScheme.primary)
+                .background(LocalAppTheme.current.primaryScreenOne)
         ) {
             val rowScrollState = rememberScrollState()
             Row(
@@ -107,16 +107,16 @@ fun TabNavigator(
 
                     Text(
                         modifier = Modifier
-                            .clickable(onClick = {
+                            .clickable {
                                 if (navigationAllowed && !navController.compareRoutes(currentRoute, tabNavOption.route)) {
                                     currentRoute = tabNavOption.route
                                     navController.navigate(tabNavOption.route)
                                     onNavOptionClick?.invoke(tabNavOption)
                                 }
-                            })
+                            }
                             .then(
                                 if (firstCheck && secondCheck) {
-                                    Modifier.background(MaterialTheme.colorScheme.primaryContainer)
+                                    Modifier.background(LocalAppTheme.current.primaryScreenOneDimmed)
                                 } else {
                                     Modifier
                                 }
@@ -125,14 +125,14 @@ fun TabNavigator(
                         text = tabNavOption.name,
                         style = MaterialTheme.typography.bodySmall,
                         color = if (firstCheck && secondCheck) {
-                            MaterialTheme.colorScheme.onPrimaryContainer
+                            LocalAppTheme.current.primaryScreenText
                         } else {
-                            MaterialTheme.colorScheme.onPrimary
+                            LocalAppTheme.current.primaryScreenTextInverse
                         }
                     )
                     if (index != navOptions.size - 1) {
                         VerticalDivider(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = LocalAppTheme.current.primaryScreenDivider,
                             fillMaxHeight = 1f,
                             verticalPadding = 4.dp
                         )
@@ -143,37 +143,19 @@ fun TabNavigator(
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 actionOptions.forEachIndexed { index, tabActionOption ->
-                    val interactionSource = remember { MutableInteractionSource() }
-                    val isPressed by interactionSource.collectIsPressedAsState()
-
                     Text(
                         modifier = Modifier
-                            .clickable(
-                                interactionSource = interactionSource,
-                                indication = rememberRipple(),
-                                onClick = {
-                                    tabActionOption.action(tabActionOption.param)
-                                }
-                            )
-                            .then(
-                                if (isPressed) {
-                                    Modifier.background(MaterialTheme.colorScheme.primaryContainer)
-                                } else {
-                                    Modifier
-                                }
-                            )
+                            .clickable {
+                                tabActionOption.action(tabActionOption.param)
+                            }
                             .padding(8.dp),
                         text = tabActionOption.name,
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (isPressed) {
-                            MaterialTheme.colorScheme.onPrimaryContainer
-                        } else {
-                            MaterialTheme.colorScheme.onPrimary
-                        }
+                        color = LocalAppTheme.current.primaryScreenText
                     )
                     if (index != actionOptions.size - 1 || localMenuOptions.isNotEmpty()) {
                         VerticalDivider(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = LocalAppTheme.current.primaryScreenDivider,
                             fillMaxHeight = 1f,
                             verticalPadding = 4.dp
                         )
@@ -184,16 +166,20 @@ fun TabNavigator(
                 Icon(
                     modifier = Modifier
                         .size(32.dp)
-                        .clickable(onClick = {
+                        .clickable {
                             isMenuExpanded = true
-                        })
+                        }
                         .padding(8.dp),
                     imageVector = Icons.Default.Menu,
                     contentDescription = "Menu",
-                    tint = MaterialTheme.colorScheme.onPrimary
+                    tint = LocalAppTheme.current.primaryScreenText
                 )
             }
         }
+        HorizontalDivider(
+            fillMaxWidth = 1f,
+            color = LocalAppTheme.current.primaryScreenDivider
+        )
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -210,13 +196,13 @@ fun TabNavigator(
                     modifier = Modifier
                         .size(32.dp)
                         .align(Alignment.TopStart)
-                        .clickable(onClick = {
+                        .clickable {
                             navController.goBack()
-                        })
+                        }
                         .padding(8.dp),
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Go back",
-                    tint = MaterialTheme.colorScheme.onBackground
+                    tint = LocalAppTheme.current.primaryScreenText
                 )
             }
             if (localMenuOptions.isNotEmpty()) {
@@ -231,8 +217,8 @@ fun TabNavigator(
                 ) {
                     ExposedDropdownMenu(
                         modifier = Modifier
-                            .background(MaterialTheme.colorScheme.secondaryContainer)
-                            .border(2.dp, MaterialTheme.colorScheme.primary),
+                            .background(LocalAppTheme.current.primaryScreenTwo)
+                            .border(1.dp, LocalAppTheme.current.primaryScreenDivider),
                         expanded = isMenuExpanded,
                         onDismissRequest = {
                             isMenuExpanded = false
@@ -253,7 +239,7 @@ fun TabNavigator(
                                     text = option.text,
                                     style = MaterialTheme.typography.labelMedium,
                                     color = if (option.enabled.value) {
-                                        MaterialTheme.colorScheme.onSecondaryContainer
+                                        LocalAppTheme.current.primaryScreenText
                                     } else {
                                         Color.LightGray
                                     },

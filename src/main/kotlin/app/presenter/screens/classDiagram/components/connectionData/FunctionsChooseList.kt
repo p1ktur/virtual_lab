@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.*
 import app.domain.umlDiagram.classDiagram.component.*
 import app.domain.umlDiagram.classDiagram.connection.*
 import app.domain.viewModels.diagrams.classDiagram.*
+import app.presenter.theme.*
 
 @Composable
 fun FunctionsChooseList(
@@ -28,7 +29,7 @@ fun FunctionsChooseList(
             .padding(horizontal = 4.dp),
         text = "Functions",
         style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onPrimaryContainer
+        color = LocalAppTheme.current.primaryScreenText
     )
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -71,9 +72,9 @@ fun FunctionsChooseList(
                         }
                         .background(
                             if (isChosen) {
-                                Color.White.copy(alpha = 0.1f)
+                                LocalAppTheme.current.primaryScreenHighlightColor.copy(alpha = 0.1f)
                             } else if (index % 2 == 1) {
-                                Color.Black.copy(0.05f)
+                                Color.Black.copy(0.1f)
                             } else {
                                 Color.Transparent
                             }
@@ -82,9 +83,9 @@ fun FunctionsChooseList(
                     text = functions.toString(),
                     style = MaterialTheme.typography.labelMedium,
                     color = (if (isStart) reference.startRef else reference.endRef).run {
-                        ((this as? RefConnection.ReferencedConnection)?.refType as? RefType.Function)?.let {
-                            if (it.index == index) MaterialTheme.colorScheme.tertiary else Color.Black
-                        } ?: Color.Black
+                        ((this as? RefConnection.ReferencedConnection)?.refType as? RefType.Field)?.let {
+                            if (it.index == index) LocalAppTheme.current.primaryScreenHighlightColor else LocalAppTheme.current.primaryScreenText
+                        } ?: LocalAppTheme.current.primaryScreenText
                     },
                     textDecoration = if (functions.isStatic) TextDecoration.Underline else null
                 )

@@ -414,7 +414,12 @@ class ClassDiagramViewModel : ViewModel() {
             it.copy(
                 canvasUiState = it.canvasUiState.copy(
                     mouseClickEvent = null,
-                    mouseMoveEvent = null
+                    mouseMoveEvent = null,
+                    cursorPointerIcon = if (!it.connectionInFocus && !it.componentInFocus) {
+                        PointerIcon.Default
+                    } else {
+                        it.canvasUiState.cursorPointerIcon
+                    }
                 )
             )
         }
@@ -429,7 +434,7 @@ class ClassDiagramViewModel : ViewModel() {
         _uiState.update {
             it.copy(
                 canvasUiState = it.canvasUiState.copy(
-                   zoom = (it.canvasUiState.zoom - delta * 0.1f).limit(0.1f, 10f)
+                   zoom = (it.canvasUiState.zoom - delta * 0.1f).limit(0.1f, 5f)
                 )
             )
         }

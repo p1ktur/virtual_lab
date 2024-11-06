@@ -4,27 +4,24 @@ import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
 
-const val BACKGROUND_COLOR = 0xFFDDDDEE
-const val GRID_COLOR = 0xFFBBBBCC
-const val CENTER_HELPER_COLOR = 0xFF9999AA
-
 const val SMOOTHEN_VALUE = 4f
 
 fun DrawScope.drawCenterHelper(
     squareSize: Float,
-    gridColor: Color
+    gridColor: Color,
+    strokeWidth: Float
 ) {
     drawLine(
         color = gridColor,
         start = Offset(size.width / 2 - squareSize / 2, size.height / 2),
         end = Offset(size.width / 2 + squareSize / 2, size.height / 2),
-        strokeWidth = 1.5f
+        strokeWidth = strokeWidth
     )
     drawLine(
         color = gridColor,
         start = Offset(size.width / 2, size.height / 2 - squareSize / 2),
         end = Offset(size.width / 2, size.height / 2 + squareSize / 2),
-        strokeWidth = 2f
+        strokeWidth = strokeWidth
     )
 }
 

@@ -33,7 +33,7 @@ fun ConnectionCustomizationView(
         showEditIcon = false,
         textStyle = MaterialTheme.typography.bodySmall,
         labelTextStyle = MaterialTheme.typography.labelMedium,
-        textColor = MaterialTheme.colorScheme.onPrimaryContainer
+        textColor = LocalAppTheme.current.primaryScreenText
     )
     Row(
         modifier = Modifier
@@ -50,9 +50,9 @@ fun ConnectionCustomizationView(
                     arrowHead = head,
                     lookingUp = true,
                     isHighlighted = reference.startArrowHead == head,
-                    mainColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
-                    highlightColor = MaterialTheme.colorScheme.highlightColor,
+                    mainColor = LocalAppTheme.current.primaryScreenText,
+                    backgroundColor = LocalAppTheme.current.primaryScreenTextContainer,
+                    highlightColor = LocalAppTheme.current.primaryScreenHighlightColor,
                     onClick = {
                         onUiAction(ClassDiagramUiAction.UpdateConnectionData {
                             startArrowHead = head
@@ -80,9 +80,9 @@ fun ConnectionCustomizationView(
                     endArrowHead = reference.endArrowHead,
                     lookingUp = false,
                     isHighlighted = reference.arrowType == type,
-                    mainColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
-                    highlightColor = MaterialTheme.colorScheme.highlightColor,
+                    mainColor = LocalAppTheme.current.primaryScreenText,
+                    backgroundColor = LocalAppTheme.current.primaryScreenTextContainer,
+                    highlightColor = LocalAppTheme.current.primaryScreenHighlightColor,
                     onClick = {
                         onUiAction(ClassDiagramUiAction.UpdateConnectionData {
                             arrowType = type
@@ -107,9 +107,9 @@ fun ConnectionCustomizationView(
                     arrowHead = head,
                     lookingUp = false,
                     isHighlighted = reference.endArrowHead == head,
-                    mainColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
-                    highlightColor = MaterialTheme.colorScheme.highlightColor,
+                    mainColor = LocalAppTheme.current.primaryScreenText,
+                    backgroundColor = LocalAppTheme.current.primaryScreenTextContainer,
+                    highlightColor = LocalAppTheme.current.primaryScreenHighlightColor,
                     onClick = {
                         onUiAction(ClassDiagramUiAction.UpdateConnectionData {
                             endArrowHead = head
@@ -134,6 +134,6 @@ fun ConnectionCustomizationView(
         showEditIcon = false,
         textStyle = MaterialTheme.typography.bodySmall,
         labelTextStyle = MaterialTheme.typography.labelMedium,
-        textColor = MaterialTheme.colorScheme.onPrimaryContainer
+        textColor = LocalAppTheme.current.primaryScreenText
     )
 }

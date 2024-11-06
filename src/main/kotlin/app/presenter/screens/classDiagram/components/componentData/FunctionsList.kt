@@ -20,6 +20,7 @@ import app.domain.util.numbers.*
 import app.domain.viewModels.diagrams.classDiagram.*
 import app.presenter.components.buttons.*
 import app.presenter.components.common.*
+import app.presenter.theme.*
 
 @Composable
 fun FunctionsList(
@@ -45,7 +46,7 @@ fun FunctionsList(
                 .fillMaxWidth()
                 .shadow(4.dp, RoundedCornerShape(8f))
                 .clip(RoundedCornerShape(8f))
-                .background(MaterialTheme.colorScheme.secondaryContainer)
+                .background(LocalAppTheme.current.primaryScreenTextContainer)
                 .padding(6.dp)
                 .padding(end = if (canScroll) 12.dp else 0.dp)
                 .heightIn(0.dp, maxListHeight),
@@ -81,7 +82,7 @@ fun FunctionsList(
                     modifier = Modifier.size(24.dp),
                     icon = Icons.Default.Add,
                     actionText = "Add Function",
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    color = LocalAppTheme.current.primaryScreenText,
                     onClick = {
                         onUiAction(ClassDiagramUiAction.UpdateComponentData {
                             functions += Function()
@@ -95,7 +96,7 @@ fun FunctionsList(
                 modifier = Modifier
                     .height(maxListHeight)
                     .width(12.dp)
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                    .background(LocalAppTheme.current.primaryScreenTextContainer)
                     .padding(all = 4.dp)
                     .align(Alignment.CenterEnd),
                 adapter = rememberScrollbarAdapter(lazyColumnState),
@@ -104,8 +105,8 @@ fun FunctionsList(
                     thickness = 8.dp,
                     shape = RoundedCornerShape(4f),
                     hoverDurationMillis = 200,
-                    unhoverColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    hoverColor = MaterialTheme.colorScheme.primary
+                    unhoverColor = LocalAppTheme.current.primaryScreenTextDimmed,
+                    hoverColor = LocalAppTheme.current.primaryScreenTextDimmedInverse
                 )
             )
         }
@@ -127,7 +128,7 @@ private fun FunctionView(
         modifier = modifier
             .shadow(2.dp, RoundedCornerShape(8f))
             .clip(RoundedCornerShape(8f))
-            .background(MaterialTheme.colorScheme.secondaryContainer)
+            .background(LocalAppTheme.current.primaryScreenTextContainer)
             .padding(vertical = 4.dp)
     ) {
         Row(
@@ -139,7 +140,7 @@ private fun FunctionView(
             Text(
                 text = "(${index + 1})",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
+                color = LocalAppTheme.current.primaryScreenText
             )
             Row {
                 if (index == 0) {
@@ -149,7 +150,7 @@ private fun FunctionView(
                         modifier = Modifier.size(16.dp),
                         icon = Icons.Default.KeyboardArrowUp,
                         actionText = "Move Function Up",
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        color = LocalAppTheme.current.primaryScreenText,
                         onClick = { onMoveFunction(-1) }
                     )
                 }
@@ -160,7 +161,7 @@ private fun FunctionView(
                         modifier = Modifier.size(16.dp),
                         icon = Icons.Default.KeyboardArrowDown,
                         actionText = "Move Function Down",
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        color = LocalAppTheme.current.primaryScreenText,
                         onClick = { onMoveFunction(1) }
                     )
                 }
@@ -169,7 +170,7 @@ private fun FunctionView(
                 modifier = Modifier.size(16.dp),
                 icon = Icons.Default.Delete,
                 actionText = "Delete Function",
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                color = LocalAppTheme.current.primaryScreenText,
                 onClick = { onDelete(index) }
             )
         }
@@ -190,7 +191,7 @@ private fun FunctionView(
             showEditIcon = false,
             textStyle = MaterialTheme.typography.bodySmall,
             labelTextStyle = MaterialTheme.typography.bodySmall,
-            textColor = MaterialTheme.colorScheme.onSecondaryContainer
+            textColor = LocalAppTheme.current.primaryScreenText
         )
         DefaultTextField(
             modifier = Modifier
@@ -208,7 +209,7 @@ private fun FunctionView(
             showEditIcon = false,
             textStyle = MaterialTheme.typography.bodySmall,
             labelTextStyle = MaterialTheme.typography.bodySmall,
-            textColor = MaterialTheme.colorScheme.onSecondaryContainer
+            textColor = LocalAppTheme.current.primaryScreenText
         )
         key(commonCounter) {
             Row(
@@ -221,7 +222,7 @@ private fun FunctionView(
                 Text(
                     text = "Visibility:",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                    color = LocalAppTheme.current.primaryScreenText
                 )
                 Visibility.entries.forEach { visibility ->
                     VisibilityButton(
@@ -241,9 +242,9 @@ private fun FunctionView(
                     .padding(horizontal = 4.dp),
                 label = "Static:",
                 isChecked = function.isStatic,
-                textColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                otherContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                iconColor = MaterialTheme.colorScheme.secondaryContainer,
+                textColor = LocalAppTheme.current.primaryScreenText,
+                otherContentColor = LocalAppTheme.current.primaryScreenText,
+                iconColor = LocalAppTheme.current.primaryScreenTextContainer,
                 onChecked = { newValue ->
                     onUpdateValue {
                         isStatic = newValue
@@ -255,7 +256,7 @@ private fun FunctionView(
             if (function.params.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(4.dp))
                 HorizontalDivider(
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    color = LocalAppTheme.current.primaryScreenText,
                     fillMaxWidth = 1f
                 )
                 Text(
@@ -264,7 +265,7 @@ private fun FunctionView(
                         .padding(horizontal = 8.dp),
                     text = "Parameters:",
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    color = LocalAppTheme.current.primaryScreenText,
                     textAlign = TextAlign.Start
                 )
             }
@@ -291,7 +292,7 @@ private fun FunctionView(
                         showEditIcon = false,
                         textStyle = MaterialTheme.typography.labelMedium,
                         labelTextStyle = MaterialTheme.typography.labelSmall,
-                        textColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        textColor = LocalAppTheme.current.primaryScreenText
                     )
                     DefaultTextField(
                         modifier = Modifier
@@ -309,7 +310,7 @@ private fun FunctionView(
                         showEditIcon = false,
                         textStyle = MaterialTheme.typography.labelMedium,
                         labelTextStyle = MaterialTheme.typography.labelSmall,
-                        textColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        textColor = LocalAppTheme.current.primaryScreenText
                     )
                     ActionButton(
                         modifier = Modifier
@@ -317,7 +318,7 @@ private fun FunctionView(
                             .size(12.dp),
                         icon = Icons.Default.Delete,
                         actionText = "Delete Parameter",
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        color = LocalAppTheme.current.primaryScreenText,
                         onClick = {
                             onUpdateValue {
                                 function.params.removeAt(index)
@@ -332,7 +333,7 @@ private fun FunctionView(
                         horizontalAlignment = Alignment.End
                     ) {
                         HorizontalDivider(
-                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            color = LocalAppTheme.current.primaryScreenText,
                             fillMaxWidth = 0.85f,
                         )
                     }
@@ -349,7 +350,7 @@ private fun FunctionView(
                 modifier = Modifier.size(24.dp),
                 icon = Icons.Default.Add,
                 actionText = "Add Parameter",
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                color = LocalAppTheme.current.primaryScreenText,
                 onClick = {
                     onUpdateValue {
                         function.params += Param()

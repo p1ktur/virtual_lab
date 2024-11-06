@@ -3,6 +3,42 @@ package app.presenter.theme
 import androidx.compose.material3.*
 import androidx.compose.ui.graphics.*
 
+// Own Theme 0 1 2 3 4 5 6 7 8 9 A B C D E F
+
+val primaryScreenZeroLight = Color(0xFFFFDFEF) // 0xFFD8A8B8
+val primaryScreenOneLight = Color(0xFFFFDFEB) // 0xFFE0B0C0
+val primaryScreenOneDimmedLight = primaryScreenOneLight.run { copy(1f, red * 0.55f, green * 0.55f, blue * 0.55f) }
+val primaryScreenTwoLight = Color(0xFFF8DBE7) // 0xFFE8B8C8
+val primaryScreenThreeLight = Color(0xFFEFD7E3) // 0xFFF0C0D0
+val primaryScreenBackgroundLight = Color(0xFFFFF8F8)
+val primaryScreenDividerLight = Color(0xFF4D2633)
+val primaryScreenTextLight = Color(0xFF4D2633)
+val primaryScreenTextInverseLight = Color(0xFFEFD7E3)
+val primaryScreenTextDimmedLight = Color(0xFF4D2633)
+val primaryScreenTextDimmedInverseLight = Color(0xFF7F515F)
+val primaryScreenTextContainerLight = Color(0xFFFDEAED) // 0xFFFBDCE3
+val primaryScreenHighlightColorLight = Color(0xFF7788DD)
+val primaryCanvasBackgroundLight = Color(0xFFF8F0F0)
+val primaryCanvasGridLight = Color(0xFF997788)
+
+val primaryScreenZeroDark = Color(0xFF6F4F5F)
+val primaryScreenOneDark = Color(0xFF684858)
+val primaryScreenOneDimmedDark = primaryScreenOneDark.run { copy(1f, red * 0.55f, green * 0.55f, blue * 0.55f) }
+val primaryScreenTwoDark = Color(0xFF5F3F4F)
+val primaryScreenThreeDark = Color(0xFF583848)
+val primaryScreenBackgroundDark = Color(0xFF080000)
+val primaryScreenDividerDark = Color(0xFF7F515F)
+val primaryScreenTextDark = Color(0xFFEFD7E3)
+val primaryScreenTextInverseDark = Color(0xFF4D2633)
+val primaryScreenTextDimmedDark = Color(0xFF7F515F)
+val primaryScreenTextDimmedInverseDark = Color(0xFF4D2633)
+val primaryScreenTextContainerDark = Color(0xFF876276)
+val primaryScreenHighlightColorDark = Color(0xFF7788DD)
+val primaryCanvasBackgroundDark = Color(0xFF997788)
+val primaryCanvasGridDark = Color(0xFF4D2633)
+
+// Material 3 DEPRECATED
+
 fun Color.invert(): Color {
     val red = (255 - (red * 255).toInt()).coerceIn(0, 255)
     val green = (255 - (green * 255).toInt()).coerceIn(0, 255)

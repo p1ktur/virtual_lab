@@ -17,6 +17,7 @@ import app.domain.util.numbers.*
 import app.domain.viewModels.diagrams.classDiagram.*
 import app.presenter.components.buttons.*
 import app.presenter.components.common.*
+import app.presenter.theme.*
 
 @Composable
 fun FieldsList(
@@ -42,7 +43,7 @@ fun FieldsList(
                 .fillMaxWidth()
                 .shadow(4.dp, RoundedCornerShape(8f))
                 .clip(RoundedCornerShape(8f))
-                .background(MaterialTheme.colorScheme.secondaryContainer)
+                .background(LocalAppTheme.current.primaryScreenTextContainer)
                 .padding(6.dp)
                 .padding(end = if (canScroll) 12.dp else 0.dp)
                 .heightIn(0.dp, maxListHeight),
@@ -78,7 +79,7 @@ fun FieldsList(
                     modifier = Modifier.size(24.dp),
                     icon = Icons.Default.Add,
                     actionText = "Add Field",
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    color = LocalAppTheme.current.primaryScreenText,
                     onClick = {
                         onUiAction(ClassDiagramUiAction.UpdateComponentData {
                             fields += Field()
@@ -92,7 +93,7 @@ fun FieldsList(
                 modifier = Modifier
                     .height(maxListHeight)
                     .width(12.dp)
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                    .background(LocalAppTheme.current.primaryScreenTextContainer)
                     .padding(all = 4.dp)
                     .align(Alignment.CenterEnd),
                 adapter = rememberScrollbarAdapter(lazyColumnState),
@@ -101,8 +102,8 @@ fun FieldsList(
                     thickness = 8.dp,
                     shape = RoundedCornerShape(4f),
                     hoverDurationMillis = 200,
-                    unhoverColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    hoverColor = MaterialTheme.colorScheme.primary
+                    unhoverColor = LocalAppTheme.current.primaryScreenTextDimmed,
+                    hoverColor = LocalAppTheme.current.primaryScreenTextDimmedInverse
                 )
             )
         }
@@ -124,7 +125,7 @@ private fun FieldView(
         modifier = modifier
             .shadow(2.dp, RoundedCornerShape(8f))
             .clip(RoundedCornerShape(8f))
-            .background(MaterialTheme.colorScheme.secondaryContainer)
+            .background(LocalAppTheme.current.primaryScreenTextContainer)
             .padding(vertical = 4.dp)
     ) {
         Row(
@@ -136,7 +137,7 @@ private fun FieldView(
             Text(
                 text = "(${index + 1})",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
+                color = LocalAppTheme.current.primaryScreenText
             )
             Row {
                 if (index == 0) {
@@ -146,7 +147,7 @@ private fun FieldView(
                         modifier = Modifier.size(16.dp),
                         icon = Icons.Default.KeyboardArrowUp,
                         actionText = "Move Field Up",
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        color = LocalAppTheme.current.primaryScreenText,
                         onClick = { onMoveField(-1) }
                     )
                 }
@@ -157,7 +158,7 @@ private fun FieldView(
                         modifier = Modifier.size(16.dp),
                         icon = Icons.Default.KeyboardArrowDown,
                         actionText = "Move Field Down",
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        color = LocalAppTheme.current.primaryScreenText,
                         onClick = { onMoveField(1) }
                     )
                 }
@@ -166,7 +167,7 @@ private fun FieldView(
                 modifier = Modifier.size(16.dp),
                 icon = Icons.Default.Delete,
                 actionText = "Delete Field",
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                color = LocalAppTheme.current.primaryScreenText,
                 onClick = { onDelete(index) }
             )
         }
@@ -187,7 +188,7 @@ private fun FieldView(
             showEditIcon = false,
             textStyle = MaterialTheme.typography.bodySmall,
             labelTextStyle = MaterialTheme.typography.bodySmall,
-            textColor = MaterialTheme.colorScheme.onSecondaryContainer
+            textColor = LocalAppTheme.current.primaryScreenText
         )
         DefaultTextField(
             modifier = Modifier
@@ -205,7 +206,7 @@ private fun FieldView(
             showEditIcon = false,
             textStyle = MaterialTheme.typography.bodySmall,
             labelTextStyle = MaterialTheme.typography.bodySmall,
-            textColor = MaterialTheme.colorScheme.onSecondaryContainer
+            textColor = LocalAppTheme.current.primaryScreenText
         )
         key(commonCounter) {
             Row(
@@ -218,7 +219,7 @@ private fun FieldView(
                 Text(
                     text = "Visibility:",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                    color = LocalAppTheme.current.primaryScreenText
                 )
                 Visibility.entries.forEach { visibility ->
                     VisibilityButton(
@@ -238,9 +239,9 @@ private fun FieldView(
                     .padding(horizontal = 4.dp),
                 label = "Static:",
                 isChecked = field.isStatic,
-                textColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                otherContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                iconColor = MaterialTheme.colorScheme.secondaryContainer,
+                textColor = LocalAppTheme.current.primaryScreenText,
+                otherContentColor = LocalAppTheme.current.primaryScreenText,
+                iconColor = LocalAppTheme.current.primaryScreenTextContainer,
                 onChecked = { newValue ->
                     onUpdateValue {
                         isStatic = newValue

@@ -11,6 +11,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.*
+import app.presenter.components.common.*
 import app.presenter.theme.*
 import com.virtual.lab.virtuallaboratory.generated.resources.*
 import com.virtual.lab.virtuallaboratory.generated.resources.Res
@@ -34,7 +35,7 @@ fun WindowScope.WindowTitleBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(32.dp)
-                    .background(MaterialTheme.colorScheme.secondaryContainer),
+                    .background(LocalAppTheme.current.primaryScreenZero),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -51,7 +52,7 @@ fun WindowScope.WindowTitleBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(32.dp)
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                    .background(LocalAppTheme.current.primaryScreenZero)
             ) {
                 Row(
                     modifier = Modifier.fillMaxSize(),
@@ -68,10 +69,14 @@ fun WindowScope.WindowTitleBar(
                 }
             }
         }
+        HorizontalDivider(
+            fillMaxWidth = 1f,
+            color = LocalAppTheme.current.primaryScreenDivider
+        )
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
+                .background(LocalAppTheme.current.primaryScreenBackground),
             content = content
         )
     }
@@ -93,13 +98,13 @@ private fun TitleBarContent(
                 .aspectRatio(1f),
             painter = painterResource(Res.drawable.app_icon),
             contentDescription = "App icon",
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer, BlendMode.SrcAtop)
+            colorFilter = ColorFilter.tint(LocalAppTheme.current.primaryScreenText, BlendMode.SrcAtop)
         )
         Text(
             modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp),
             text = "Virtual Laboratory",
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSecondaryContainer
+            color = LocalAppTheme.current.primaryScreenText
         )
     }
     Row {
@@ -114,7 +119,7 @@ private fun TitleBarContent(
                 Theme.DARK -> Icons.Default.DarkMode
             },
             contentDescription = "Change theme",
-            tint = MaterialTheme.colorScheme.onSecondaryContainer
+            tint = LocalAppTheme.current.primaryScreenText
         )
         Icon(
             modifier = Modifier
@@ -124,7 +129,7 @@ private fun TitleBarContent(
                 .padding(4.dp),
             imageVector = Icons.Default.Minimize,
             contentDescription = "Minimize app",
-            tint = MaterialTheme.colorScheme.onSecondaryContainer
+            tint = LocalAppTheme.current.primaryScreenText
         )
         Icon(
             modifier = Modifier
@@ -134,7 +139,7 @@ private fun TitleBarContent(
                 .padding(4.dp),
             imageVector = Icons.Default.Fullscreen,
             contentDescription = "Maximize app",
-            tint = MaterialTheme.colorScheme.onSecondaryContainer
+            tint = LocalAppTheme.current.primaryScreenText
         )
         Icon(
             modifier = Modifier
@@ -144,7 +149,7 @@ private fun TitleBarContent(
                 .padding(4.dp),
             imageVector = Icons.Default.Close,
             contentDescription = "Close app",
-            tint = MaterialTheme.colorScheme.onSecondaryContainer
+            tint = LocalAppTheme.current.primaryScreenText
         )
     }
 }

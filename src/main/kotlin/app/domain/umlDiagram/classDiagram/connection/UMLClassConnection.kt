@@ -50,10 +50,6 @@ data class UMLClassConnection(
         var bottom: Float = 0.5f
     )
 
-    companion object {
-        const val ARROW_COLOR = 0xFF000000
-    }
-
     @Transient var calculatedFrom: Offset = Offset.Zero
     @Transient var calculatedTo: Offset = Offset.Zero
 
@@ -384,7 +380,6 @@ data class UMLClassConnection(
                 break
             }
         }
-
 
         for (index in references.indices) {
             if (references[index].equalsTo(endRef.getRefClass()) && !references[index].equalsTo(startRef.getRefClass())) {

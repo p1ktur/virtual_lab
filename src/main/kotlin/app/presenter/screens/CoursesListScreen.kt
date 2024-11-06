@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.*
 import app.domain.model.*
 import app.domain.viewModels.courses.coursesList.*
 import app.presenter.components.common.*
+import app.presenter.theme.*
 
 @Composable
 fun CoursesListScreen(
@@ -58,11 +59,7 @@ fun CoursesListScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(12.dp)
-            .shadow(8.dp, RoundedCornerShape(12f))
-            .clip(RoundedCornerShape(12f))
-            .background(MaterialTheme.colorScheme.primaryContainer)
-            .border(1.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(12f)),
+            .background(LocalAppTheme.current.primaryScreenTwo),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -72,7 +69,7 @@ fun CoursesListScreen(
                 .alpha(screenTitleAlpha),
             text = "Your Courses",
             style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
+            color = LocalAppTheme.current.primaryScreenText
         )
         LazyColumn(
             modifier = Modifier
@@ -97,18 +94,18 @@ fun CoursesListScreen(
                     Text(
                         text = course.name,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = LocalAppTheme.current.primaryScreenText
                     )
                     Text(
                         text = course.description,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = LocalAppTheme.current.primaryScreenText
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                 }
                 if (index != courses.lastIndex) {
                     HorizontalDivider(
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        color = LocalAppTheme.current.primaryScreenDivider,
                         fillMaxWidth = 0.85f
                     )
                 }
@@ -118,8 +115,9 @@ fun CoursesListScreen(
             VerticalScrollbar(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .width(8.dp)
-                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .width(12.dp)
+                    .background(LocalAppTheme.current.primaryScreenTwo)
+                    .padding(horizontal = 2.dp)
                     .align(Alignment.CenterEnd),
                 adapter = rememberScrollbarAdapter(columnScrollState),
                 style = ScrollbarStyle(
@@ -127,8 +125,8 @@ fun CoursesListScreen(
                     thickness = 8.dp,
                     shape = RoundedCornerShape(4f),
                     hoverDurationMillis = 200,
-                    unhoverColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    hoverColor = MaterialTheme.colorScheme.primary
+                    unhoverColor = LocalAppTheme.current.primaryScreenTextDimmed,
+                    hoverColor = LocalAppTheme.current.primaryScreenTextDimmedInverse
                 )
             )
         }

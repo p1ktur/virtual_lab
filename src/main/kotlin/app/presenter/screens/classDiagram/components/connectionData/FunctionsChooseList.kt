@@ -83,7 +83,7 @@ fun FunctionsChooseList(
                     text = functions.toString(),
                     style = MaterialTheme.typography.labelMedium,
                     color = (if (isStart) reference.startRef else reference.endRef).run {
-                        ((this as? RefConnection.ReferencedConnection)?.refType as? RefType.Field)?.let {
+                        ((this as? RefConnection.ReferencedConnection)?.refType as? RefType.Function)?.let {
                             if (it.index == index) LocalAppTheme.current.primaryScreenHighlightColor else LocalAppTheme.current.primaryScreenText
                         } ?: LocalAppTheme.current.primaryScreenText
                     },

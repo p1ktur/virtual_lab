@@ -153,8 +153,6 @@ fun NavigationScreen() {
                     fileManager.onDeliverSaveData = { saveData ->
                         viewModel.applySaveData(saveData)
                     }
-
-                    fileManager.load(File("C:\\class_diagrams\\class_diagram_changed.json"))
                 }
 
                 ClassDiagramScreen(
@@ -168,7 +166,7 @@ fun NavigationScreen() {
     FilePicker(
         show = filePickerRequest != null,
         initialDirectory = "C://",
-        title = "Choose folder to export data",
+        title = "Choose file",
         fileExtensions = filePickerRequest?.extensions?.toList() ?: emptyList()
     ) { mpFile ->
         val action = filePickerRequest?.action ?: return@FilePicker

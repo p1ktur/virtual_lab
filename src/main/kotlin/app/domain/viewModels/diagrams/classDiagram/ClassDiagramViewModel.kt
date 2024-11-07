@@ -66,7 +66,9 @@ class ClassDiagramViewModel : ViewModel() {
     fun getSaveData(): SaveData {
         return SaveData(
             components = uiState.value.classComponents,
-            connections = uiState.value.classConnections
+            connections = uiState.value.classConnections.map {
+                it.toSerializable(uiState.value.classComponents)
+            }
         )
     }
 
@@ -74,12 +76,9 @@ class ClassDiagramViewModel : ViewModel() {
         _uiState.update {
             it.copy(
                 classComponents = saveData.components,
-                classConnections = saveData.connections
+                classConnections = saveData.connections.map { c -> c.toOriginal(saveData.components) },
+                focusUiState = ClassDiagramUiState.FocusUiState()
             )
-        }
-
-        uiState.value.classConnections.forEach {
-            it.findAndApplyCorrectReferences(uiState.value.classComponents)
         }
 
         updateCommonCounter()

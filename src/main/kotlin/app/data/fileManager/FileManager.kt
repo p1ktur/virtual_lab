@@ -1,6 +1,8 @@
 package app.data.fileManager
 
 import androidx.compose.runtime.*
+import app.domain.umlDiagram.classDiagram.component.*
+import app.domain.umlDiagram.classDiagram.connection.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
@@ -68,6 +70,44 @@ class FileManager {
         try {
             val saveData = json.decodeFromString<SaveData>(saveDataJson)
             onDeliverSaveData?.invoke(saveData)
-        } catch (_: Exception) { }
+        } catch (_: Exception) {
+            try {
+                val saveData = json.decodeFromString<SaveDataDeprecated>(saveDataJson)
+                onDeliverSaveData?.invoke(
+                    SaveData(
+                        components = saveData.components,
+                        connections = saveData.connections.onEach {
+                            it.findAndApplyCorrectReferences(saveData.components)
+                        }.map {
+                            it.toSerializable(saveData.components)
+                        }
+                    )
+                )
+            } catch (_: Exception) {
+                openedSaveFile.value = null
+                onDeliverSaveData?.invoke(
+                    SaveData(
+                        components = emptyList(),
+                        connections = emptyList()
+                    )
+                )
+            }
+        }
+    }
+
+    private fun UMLClassConnection.findAndApplyCorrectReferences(references: List<UMLClassComponent>) {
+        for (index in references.indices) {
+            if (references[index].equalsTo(startRef.getRefClass())) {
+                startRef.setRefClass(references[index])
+                break
+            }
+        }
+
+        for (index in references.indices) {
+            if (references[index].equalsTo(endRef.getRefClass()) && !references[index].equalsTo(startRef.getRefClass())) {
+                endRef.setRefClass(references[index])
+                break
+            }
+        }
     }
 }

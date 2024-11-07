@@ -4,6 +4,7 @@ import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
 import androidx.compose.ui.text.*
+import app.domain.serialization.umlDiagram.classDiagram.connection.*
 import app.domain.umlDiagram.classDiagram.component.*
 import app.domain.umlDiagram.mouse.*
 import app.domain.util.geometry.*
@@ -373,22 +374,6 @@ data class UMLClassConnection(
         highlightedSegments.clear()
     }
 
-    fun findAndApplyCorrectReferences(references: List<UMLClassComponent>) {
-        for (index in references.indices) {
-            if (references[index].equalsTo(startRef.getRefClass())) {
-                startRef.setRefClass(references[index])
-                break
-            }
-        }
-
-        for (index in references.indices) {
-            if (references[index].equalsTo(endRef.getRefClass()) && !references[index].equalsTo(startRef.getRefClass())) {
-                endRef.setRefClass(references[index])
-                break
-            }
-        }
-    }
-
     fun getLongerName(): String = "$name ${startRef.getRefClass().hashCode()} ${endRef.getRefClass().hashCode()}"
 
     private fun defineRelativePosition(): RelativePosition {
@@ -443,5 +428,39 @@ data class UMLClassConnection(
         result = 31 * result + endArrowHead.hashCode()
         result = 31 * result + arrowType.hashCode()
         return result
+    }
+
+    fun toSerializable(components: List<UMLClassComponent>): UMLClassConnectionSerializable {
+        return UMLClassConnectionSerializable(
+            name = name,
+            startText = startText,
+            endText = endText,
+            startRef = when (startRef) {
+                is RefConnection.SimpleConnection -> RefConnectionSerializable.Simple(
+                    index = components.indexOf(startRef.getRefClass()),
+                    offset = (startRef as RefConnection.SimpleConnection).offset
+                )
+                is RefConnection.ReferencedConnection -> RefConnectionSerializable.Referenced(
+                    index = components.indexOf(startRef.getRefClass()),
+                    refType = (startRef as RefConnection.ReferencedConnection).refType
+                )
+            },
+            endRef = when (endRef) {
+                is RefConnection.SimpleConnection -> RefConnectionSerializable.Simple(
+                    index = components.indexOf(endRef.getRefClass()),
+                    offset = (endRef as RefConnection.SimpleConnection).offset
+                )
+                is RefConnection.ReferencedConnection -> RefConnectionSerializable.Referenced(
+                    index = components.indexOf(endRef.getRefClass()),
+                    refType = (endRef as RefConnection.ReferencedConnection).refType
+                )
+            },
+            startArrowHead = startArrowHead,
+            endArrowHead = endArrowHead,
+            arrowType = arrowType,
+            middleOffset = middleOffset,
+            middleArchOffset = middleArchOffset,
+            forcedType = forcedType
+        )
     }
 }

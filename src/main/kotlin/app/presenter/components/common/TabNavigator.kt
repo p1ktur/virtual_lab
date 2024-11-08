@@ -146,7 +146,7 @@ fun TabNavigator(
                     Text(
                         modifier = Modifier
                             .clickable {
-                                tabActionOption.action(tabActionOption.param)
+                                tabActionOption.action(navController, tabActionOption.param)
                             }
                             .padding(8.dp),
                         text = tabActionOption.name,

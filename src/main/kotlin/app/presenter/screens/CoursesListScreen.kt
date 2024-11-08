@@ -9,8 +9,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.*
+import androidx.compose.ui.text.style.*
 import androidx.compose.ui.unit.*
-import app.domain.model.*
 import app.domain.viewModels.courses.coursesList.*
 import app.presenter.components.common.*
 import app.presenter.theme.*
@@ -39,23 +39,6 @@ fun CoursesListScreen(
         )
     )
 
-    val courses = listOf(
-        Course(),
-        Course(),
-        Course(),
-        Course(),
-        Course(),
-        Course(),
-        Course(),
-        Course(),
-        Course(),
-        Course(),
-        Course(),
-        Course(),
-        Course(),
-        Course(),
-    )
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -64,7 +47,7 @@ fun CoursesListScreen(
     ) {
         Text(
             modifier = Modifier
-                .align(Alignment.TopStart)
+                .align(Alignment.TopCenter)
                 .padding(8.dp)
                 .alpha(screenTitleAlpha),
             text = "Your Courses",
@@ -73,20 +56,31 @@ fun CoursesListScreen(
         )
         LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
+                .fillMaxSize()
                 .padding(start = 8.dp, end = if (canScroll) 8.dp else 0.dp),
             state = columnScrollState
         ) {
             item {
                 Spacer(modifier = Modifier.height((MaterialTheme.typography.titleLarge.fontSize.value + 16).dp))
             }
-            itemsIndexed(courses) { index, course ->
+            if (uiState.courses.isEmpty()) {
+                item {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "No Courses Yet",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = LocalAppTheme.current.primaryScreenText,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+            itemsIndexed(uiState.courses) { index, course ->
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-
+                            onUiAction(CoursesListUiAction.OpenCourse(course.id))
                         },
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
@@ -103,7 +97,7 @@ fun CoursesListScreen(
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                 }
-                if (index != courses.lastIndex) {
+                if (index != uiState.courses.lastIndex) {
                     HorizontalDivider(
                         color = LocalAppTheme.current.primaryScreenDivider,
                         fillMaxWidth = 0.85f

@@ -1,5 +1,7 @@
 package app.domain.viewModels.courses.coursesList
 
+import app.domain.model.*
+
 data class CoursesListUiState(
-    val dummy: Int = 0
+    val courses: List<Course> = emptyList()
 )

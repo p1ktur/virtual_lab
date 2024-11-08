@@ -30,8 +30,8 @@ class NavController(val navigator: Navigator) {
         navigator.goBackWith(result)
     }
 
-    fun clearBackStack() {
-        navigator.goBack(PopUpTo(""))
+    fun clearBackStack(upTo: String = "") {
+        navigator.goBack(PopUpTo(upTo))
     }
 
     fun compareRoutes(route1: String?, route2: String?): Boolean {

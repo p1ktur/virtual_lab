@@ -39,25 +39,6 @@ fun CourseScreen(
         )
     )
 
-    val course = Course()
-
-    val tasks = listOf(
-        Task(),
-        Task(),
-        Task(),
-        Task(),
-        Task(),
-        Task(),
-        Task(),
-        Task(),
-        Task(),
-        Task(),
-        Task(),
-        Task(),
-        Task(),
-        Task(),
-    )
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -83,12 +64,12 @@ fun CourseScreen(
                     .padding(8.dp)
             ) {
                 Text(
-                    text = course.name,
+                    text = uiState.course.name,
                     style = MaterialTheme.typography.bodyLarge,
                     color = LocalAppTheme.current.primaryScreenText
                 )
                 Text(
-                    text = course.description,
+                    text = uiState.course.description,
                     style = MaterialTheme.typography.bodyMedium,
                     color = LocalAppTheme.current.primaryScreenText
                 )
@@ -107,7 +88,7 @@ fun CourseScreen(
                 item {
                     Spacer(modifier = Modifier.height((MaterialTheme.typography.titleLarge.fontSize.value + 16).dp))
                 }
-                itemsIndexed(tasks) { index, task ->
+                itemsIndexed(uiState.tasks) { index, task ->
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -130,7 +111,7 @@ fun CourseScreen(
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                     }
-                    if (index != tasks.lastIndex) {
+                    if (index != uiState.tasks.lastIndex) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.End

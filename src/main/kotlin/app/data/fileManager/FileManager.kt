@@ -1,11 +1,11 @@
 package app.data.fileManager
 
 import androidx.compose.runtime.*
+import app.data.server.*
 import app.domain.umlDiagram.classDiagram.component.*
 import app.domain.umlDiagram.classDiagram.connection.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.*
-import kotlinx.serialization.json.*
 import java.io.*
 
 class FileManager {
@@ -16,12 +16,7 @@ class FileManager {
         LOAD
     }
 
-    private val json = Json {
-        ignoreUnknownKeys = true
-        encodeDefaults = true
-        prettyPrint = true
-        explicitNulls = true
-    }
+    private val json = ServerJson.get()
 
     companion object {
         val saveExtensions = arrayOf("txt", "json")

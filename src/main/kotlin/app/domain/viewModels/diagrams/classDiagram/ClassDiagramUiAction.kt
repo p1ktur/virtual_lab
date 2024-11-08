@@ -9,7 +9,9 @@ import app.domain.umlDiagram.mouse.*
 
 sealed interface ClassDiagramUiAction {
     // Common
+    data object FetchData : ClassDiagramUiAction
     data object UpdateCommonCounter : ClassDiagramUiAction
+    data object SaveChanges : ClassDiagramUiAction
 
     // Components
     data class ClickOnComponent(val index: Int, val containment: ComponentContainmentResult) : ClassDiagramUiAction

@@ -1,5 +1,8 @@
 package app.domain.viewModels.task
 
+import app.domain.model.*
+
 data class TaskUiState(
-    val dummy: Int = 0
+    val task: Task = Task(),
+    val showSaveChangesButton: Boolean = false
 )

@@ -19,9 +19,11 @@ import app.presenter.screens.*
 import app.presenter.screens.classDiagram.*
 import com.darkrockstudios.libraries.mpfilepicker.*
 import kotlinx.coroutines.*
+import kotlinx.serialization.*
 import moe.tlaster.precompose.koin.*
 import moe.tlaster.precompose.navigation.*
 import org.koin.compose.*
+import org.koin.core.parameter.*
 import java.io.*
 
 @Composable
@@ -29,6 +31,8 @@ fun NavigationScreen() {
     val coroutineScope = rememberCoroutineScope()
 
     val serverRepository = koinInject<ServerRepository>()
+    val authenticatedType by serverRepository.authenticatedType.collectAsState()
+
     val fileManager = koinInject<FileManager>()
 
     val openedSaveFile by remember { fileManager.openedSaveFile }
@@ -56,18 +60,20 @@ fun NavigationScreen() {
         actionOptions = listOf(
             TabActionOption(
                 name = "Log as Teacher",
-                action = { param ->
+                action = { navController, param ->
                     (param as? AuthType)?.let { authType ->
                         serverRepository.authenticateAs(authType)
+                        navController.clearBackStack(COURSES_LIST)
                     }
                 },
                 param = AuthType.TEACHER
             ),
             TabActionOption(
                 name = "Log as Student",
-                action = { param ->
+                action = { navController, param ->
                     (param as? AuthType)?.let { authType ->
                         serverRepository.authenticateAs(authType)
+                        navController.clearBackStack(COURSES_LIST)
                     }
                 },
                 param = AuthType.STUDENT
@@ -113,37 +119,81 @@ fun NavigationScreen() {
         NavHost(
             modifier = Modifier.fillMaxSize(),
             navigator = navController.navigator,
-            initialRoute = CLASS_DIAGRAM
+            initialRoute = COURSES_LIST
         ) {
             scene(route = COURSES_LIST) {
-                val viewModel = koinViewModel<CoursesListViewModel>()
+                val viewModel = koinViewModel<CoursesListViewModel>(parameters = { parametersOf(authenticatedType) })
                 val uiState by viewModel.uiState.collectAsState()
+
+                LaunchedEffect(Unit) {
+                    viewModel.onUiAction(CoursesListUiAction.FetchData)
+                }
 
                 CoursesListScreen(
                     uiState = uiState,
-                    onUiAction = viewModel::onUiAction,
+                    onUiAction = { action ->
+                        when (action) {
+                            is CoursesListUiAction.OpenCourse -> navController.navigate("$COURSE/${action.courseId}")
+                            CoursesListUiAction.CreateCourse -> navController.navigate("$COURSE/null")
+                            else -> Unit
+                        }
+                        viewModel.onUiAction(action)
+                    }
                 )
             }
-            scene(route = COURSE) {
-                val viewModel = koinViewModel<CourseViewModel>()
+            scene(route = "$COURSE/{courseId}") { navBackStackEntry ->
+                val courseId = navBackStackEntry.path<Int>("courseId")
+
+                val viewModel = koinViewModel<CourseViewModel>(parameters = { parametersOf(courseId) })
                 val uiState by viewModel.uiState.collectAsState()
+
+                LaunchedEffect(Unit) {
+                    viewModel.onUiAction(CourseUiAction.FetchData)
+                }
 
                 CourseScreen(
                     uiState = uiState,
-                    onUiAction = viewModel::onUiAction,
+                    onUiAction = { action ->
+                        when (action) {
+                            is CourseUiAction.OpenTask -> navController.navigate("$TASK/${action.taskId}")
+                            CourseUiAction.CreateTask -> navController.navigate("$TASK/null")
+                            CourseUiAction.SaveChanges -> if (courseId == null) navController.goBack()
+                            else -> Unit
+                        }
+                        viewModel.onUiAction(action)
+                    }
                 )
             }
-            scene(route = TASK) {
-                val viewModel = koinViewModel<TaskViewModel>()
+            scene(route = "$TASK/{courseId}/{taskId}") { navBackStackEntry ->
+                val courseId = navBackStackEntry.path<Int>("courseId") ?: 0
+                val taskId = navBackStackEntry.path<Int>("taskId")
+
+                val viewModel = koinViewModel<TaskViewModel>(parameters = { parametersOf(courseId, taskId) })
                 val uiState by viewModel.uiState.collectAsState()
+
+                LaunchedEffect(Unit) {
+                    viewModel.onUiAction(TaskUiAction.FetchData)
+                }
 
                 TaskScreen(
                     uiState = uiState,
-                    onUiAction = viewModel::onUiAction,
+                    onUiAction = { action ->
+                        when (action) {
+                            TaskUiAction.CreateDiagram -> coroutineScope.launch {
+                                val diagramJson = navController.navigateForResult("$CLASS_DIAGRAM/${taskId}")?.toString() ?: ""
+                                viewModel.onUiAction(TaskUiAction.UpdateDiagram(diagramJson))
+                            }
+                            TaskUiAction.SaveChanges -> if (taskId == null) navController.goBack()
+                            else -> Unit
+                        }
+                        viewModel.onUiAction(action)
+                    }
                 )
             }
-            scene(route = CLASS_DIAGRAM) {
-                val viewModel = koinViewModel<ClassDiagramViewModel>()
+            scene(route = "$CLASS_DIAGRAM/{taskId}") { navBackStackEntry ->
+                val taskId = navBackStackEntry.path<Int>("taskId")
+
+                val viewModel = koinViewModel<ClassDiagramViewModel>(parameters = { parametersOf(taskId) })
                 val uiState by viewModel.uiState.collectAsState()
 
                 LaunchedEffect(Unit) {
@@ -153,11 +203,25 @@ fun NavigationScreen() {
                     fileManager.onDeliverSaveData = { saveData ->
                         viewModel.applySaveData(saveData)
                     }
+
+                    viewModel.onUiAction(ClassDiagramUiAction.FetchData)
                 }
 
                 ClassDiagramScreen(
                     uiState = uiState,
-                    onUiAction = viewModel::onUiAction,
+                    onUiAction = { action ->
+                        when (action) {
+                            ClassDiagramUiAction.SaveChanges -> {
+                                val saveData = viewModel.getSaveData()
+
+                                navController.goBackWith(
+                                    result = ServerJson.get().encodeToString(saveData)
+                                )
+                            }
+                            else -> Unit
+                        }
+                        viewModel.onUiAction(action)
+                    }
                 )
             }
         }

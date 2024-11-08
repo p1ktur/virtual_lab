@@ -1,23 +1,28 @@
 package app.domain.viewModels.task
 
 import app.data.server.*
+import app.domain.auth.*
+import app.domain.model.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import moe.tlaster.precompose.viewmodel.*
+import java.text.SimpleDateFormat
 
 class TaskViewModel(
+    authType: AuthType,
     private val courseId: Int,
     private val taskId: Int?,
     private val serverRepository: ServerRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(TaskUiState())
+    private val _uiState = MutableStateFlow(TaskUiState(authType))
     val uiState = _uiState.asStateFlow()
 
     fun onUiAction(action: TaskUiAction) {
         viewModelScope.launch {
             when (action) {
                 TaskUiAction.FetchData -> fetchData()
+                is TaskUiAction.SubmitAttempt -> submitAttempt(action.diagramJson)
                 TaskUiAction.CreateDiagram -> Unit
                 is TaskUiAction.UpdateDiagram -> updateDiagram(action.diagramJson)
                 is TaskUiAction.UpdateName -> updateName(action.name)
@@ -38,6 +43,25 @@ class TaskViewModel(
                         task = task
                     )
                 }
+            }
+        }
+    }
+
+    private fun submitAttempt(diagramJson: String) {
+        taskId?.let { id ->
+            viewModelScope.launch(Dispatchers.IO) {
+                val attempt = StudentTaskAttempt(
+                    id = System.currentTimeMillis().toInt(),
+                    studentId = 0,
+                    taskId = id,
+                    attemptDate = SimpleDateFormat("dd.MM.yyyy HH:mm").format(System.currentTimeMillis()),
+                    isSuccessful = true,
+                    number = 0, //TODO think something out
+                    mark = 0, //TODO evaluate!!
+                    studentDiagramJson = diagramJson
+                )
+
+                serverRepository.submitStudentAttempt(attempt)
             }
         }
     }

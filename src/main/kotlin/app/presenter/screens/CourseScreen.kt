@@ -10,7 +10,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.*
 import androidx.compose.ui.unit.*
-import app.domain.model.*
 import app.domain.viewModels.courses.course.*
 import app.presenter.components.common.*
 import app.presenter.theme.*

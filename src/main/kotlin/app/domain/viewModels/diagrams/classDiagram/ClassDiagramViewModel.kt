@@ -4,6 +4,7 @@ import androidx.compose.ui.geometry.*
 import androidx.compose.ui.input.pointer.*
 import app.data.fileManager.*
 import app.data.server.*
+import app.domain.auth.*
 import app.domain.umlDiagram.editing.*
 import app.domain.umlDiagram.classDiagram.component.*
 import app.domain.umlDiagram.classDiagram.connection.*
@@ -12,24 +13,22 @@ import app.domain.util.list.*
 import app.domain.util.numbers.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.serialization.json.Json.Default.decodeFromString
 import moe.tlaster.precompose.viewmodel.*
 
 class ClassDiagramViewModel(
+    authType: AuthType,
     private val taskId: Int?,
     private val serverRepository: ServerRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(ClassDiagramUiState())
+    private val _uiState = MutableStateFlow(ClassDiagramUiState(authType))
     val uiState = _uiState.asStateFlow()
-
-
 
     fun onUiAction(action: ClassDiagramUiAction) {
         viewModelScope.launch {
             when (action) {
                 // Common
-                ClassDiagramUiAction.FetchData -> Unit
+                ClassDiagramUiAction.FetchData -> fetchData()
                 ClassDiagramUiAction.UpdateCommonCounter -> updateCommonCounter()
                 ClassDiagramUiAction.SaveChanges -> Unit
 

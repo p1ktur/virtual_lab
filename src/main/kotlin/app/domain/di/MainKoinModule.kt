@@ -36,7 +36,7 @@ val mainKoinModule = module {
     single { FileManager() }
 
     factory { CoursesListViewModel(get(), get()) }
-    factory { CourseViewModel(get(), get()) }
-    factory { TaskViewModel(get(), get(), get()) }
-    factory { ClassDiagramViewModel(get(), get()) }
+    factory { CourseViewModel(get(), get(), get()) }
+    factory { TaskViewModel(get(), get(), get(), get()) }
+    factory { ClassDiagramViewModel(get(), get(), get()) }
 }

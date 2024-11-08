@@ -1,17 +1,40 @@
 import androidx.compose.runtime.*
 import androidx.compose.ui.test.*
+import app.data.dataSources.*
+import app.data.server.*
+import app.domain.auth.*
 import app.domain.umlDiagram.editing.*
 import app.domain.viewModels.diagrams.classDiagram.*
 import app.presenter.screens.classDiagram.*
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
 import org.junit.Test
 import kotlin.test.*
 
 @OptIn(ExperimentalTestApi::class)
 class DiagramCanvasTest {
 
+    private val httpClient = HttpClient(CIO) {
+        install(Logging) {
+            logger = Logger.DEFAULT
+            level = LogLevel.BODY
+        }
+        install(ContentNegotiation) {
+            ServerJson.get()
+        }
+        install(DefaultRequest) {
+            url(ServerRepository.BASE_URL)
+        }
+    }
+
+    private val serverRepository = ServerRepository(CoursesDataSource(httpClient))
+
     @Test
     fun `Test new Diagram appears on click`() = runComposeUiTest {
-        val classDiagramViewModel = ClassDiagramViewModel()
+        val classDiagramViewModel = ClassDiagramViewModel(AuthType.STUDENT, null, serverRepository)
 
         setContent {
             val uiState = classDiagramViewModel.uiState.collectAsState()
@@ -33,7 +56,7 @@ class DiagramCanvasTest {
 
     @Test
     fun `Test how next Diagram appears on Click`() = runComposeUiTest {
-        val classDiagramViewModel = ClassDiagramViewModel()
+        val classDiagramViewModel = ClassDiagramViewModel(AuthType.STUDENT, null, serverRepository)
 
         setContent {
             val uiState = classDiagramViewModel.uiState.collectAsState()
@@ -65,7 +88,7 @@ class DiagramCanvasTest {
 
     @Test
     fun `Test how Edit Mode Changes`() = runComposeUiTest {
-        val classDiagramViewModel = ClassDiagramViewModel()
+        val classDiagramViewModel = ClassDiagramViewModel(AuthType.STUDENT, null, serverRepository)
 
         setContent {
             val uiState = classDiagramViewModel.uiState.collectAsState()

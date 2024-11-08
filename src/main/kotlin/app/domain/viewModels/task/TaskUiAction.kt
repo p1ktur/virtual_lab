@@ -2,6 +2,7 @@ package app.domain.viewModels.task
 
 sealed interface TaskUiAction {
     data object FetchData : TaskUiAction
+    data class SubmitAttempt(val diagramJson: String) : TaskUiAction
 
     data object CreateDiagram: TaskUiAction
     data class UpdateDiagram(val diagramJson: String): TaskUiAction

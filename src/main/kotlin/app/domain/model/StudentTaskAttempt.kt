@@ -1,6 +1,6 @@
 package app.domain.model
 
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 @Serializable
 data class StudentTaskAttempt(
@@ -10,6 +10,6 @@ data class StudentTaskAttempt(
     val attemptDate: String,
     val isSuccessful: Boolean,
     val number: Int,
-    val rate: Int,
-    val studentDataJSON: String
+    @SerialName("rate") val mark: Int,
+    @SerialName("studentDataJSON") val studentDiagramJson: String
 )

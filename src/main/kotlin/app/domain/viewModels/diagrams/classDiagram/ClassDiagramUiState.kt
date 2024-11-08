@@ -2,6 +2,7 @@ package app.domain.viewModels.diagrams.classDiagram
 
 import androidx.compose.ui.geometry.*
 import androidx.compose.ui.input.pointer.*
+import app.domain.auth.*
 import app.domain.umlDiagram.editing.*
 import app.domain.umlDiagram.classDiagram.component.*
 import app.domain.umlDiagram.classDiagram.connection.*
@@ -10,6 +11,7 @@ import java.awt.*
 
 data class ClassDiagramUiState(
     // Common
+    val authType: AuthType,
     val commonCounter: Int = 0,
     // Components
     val classComponents: List<UMLClassComponent> = emptyList(),

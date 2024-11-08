@@ -1,6 +1,14 @@
+import app.data.dataSources.*
 import app.data.fileManager.*
+import app.data.server.*
+import app.domain.auth.*
 import app.domain.umlDiagram.mouse.*
 import app.domain.viewModels.diagrams.classDiagram.*
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
 import kotlinx.coroutines.*
 import org.junit.Test
 import java.io.*
@@ -8,9 +16,24 @@ import kotlin.test.*
 
 class ClassDiagramViewModelTest {
 
+    private val httpClient = HttpClient(CIO) {
+        install(Logging) {
+            logger = Logger.DEFAULT
+            level = LogLevel.BODY
+        }
+        install(ContentNegotiation) {
+            ServerJson.get()
+        }
+        install(DefaultRequest) {
+            url(ServerRepository.BASE_URL)
+        }
+    }
+
+    private val serverRepository = ServerRepository(CoursesDataSource(httpClient))
+
     @Test
     fun `Test How ViewModel loads Save Data`() = runBlocking {
-        val classDiagramViewModel = ClassDiagramViewModel()
+        val classDiagramViewModel = ClassDiagramViewModel(AuthType.STUDENT, null, serverRepository)
         val fileManager = classDiagramViewModel.setupFileLoading()
         val uiState = classDiagramViewModel.uiState
 
@@ -24,7 +47,7 @@ class ClassDiagramViewModelTest {
 
     @Test
     fun `Test How ViewModel processes Component deleting`() = runBlocking {
-        val classDiagramViewModel = ClassDiagramViewModel()
+        val classDiagramViewModel = ClassDiagramViewModel(AuthType.STUDENT, null, serverRepository)
         val fileManager = classDiagramViewModel.setupFileLoading()
         val uiState = classDiagramViewModel.uiState
 
@@ -53,7 +76,7 @@ class ClassDiagramViewModelTest {
 
     @Test
     fun `Test How ViewModel processes click on Component`() = runBlocking {
-        val classDiagramViewModel = ClassDiagramViewModel()
+        val classDiagramViewModel = ClassDiagramViewModel(AuthType.STUDENT, null, serverRepository)
         val uiState = classDiagramViewModel.uiState
 
         assertTrue(uiState.value.classComponents.isEmpty())
@@ -70,7 +93,7 @@ class ClassDiagramViewModelTest {
 
     @Test
     fun `Test How ViewModel creates New Connection`() = runBlocking {
-        val classDiagramViewModel = ClassDiagramViewModel()
+        val classDiagramViewModel = ClassDiagramViewModel(AuthType.STUDENT, null, serverRepository)
         val uiState = classDiagramViewModel.uiState
 
         assertTrue(uiState.value.classComponents.isEmpty())
@@ -96,7 +119,7 @@ class ClassDiagramViewModelTest {
 
     @Test
     fun `Test How ViewModel processes click on Connection`() = runBlocking {
-        val classDiagramViewModel = ClassDiagramViewModel()
+        val classDiagramViewModel = ClassDiagramViewModel(AuthType.STUDENT, null, serverRepository)
         val uiState = classDiagramViewModel.uiState
 
         assertTrue(uiState.value.classComponents.isEmpty())

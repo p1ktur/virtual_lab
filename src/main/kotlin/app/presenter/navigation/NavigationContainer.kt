@@ -129,6 +129,10 @@ fun NavigationScreen() {
                     viewModel.onUiAction(CoursesListUiAction.FetchData)
                 }
 
+                // TODO change behaviour depending on authType
+                // Student -> view & submit attempt
+                // Teacher -> update & create data
+
                 CoursesListScreen(
                     uiState = uiState,
                     onUiAction = { action ->
@@ -144,12 +148,16 @@ fun NavigationScreen() {
             scene(route = "$COURSE/{courseId}") { navBackStackEntry ->
                 val courseId = navBackStackEntry.path<Int>("courseId")
 
-                val viewModel = koinViewModel<CourseViewModel>(parameters = { parametersOf(courseId) })
+                val viewModel = koinViewModel<CourseViewModel>(parameters = { parametersOf(authenticatedType, courseId) })
                 val uiState by viewModel.uiState.collectAsState()
 
                 LaunchedEffect(Unit) {
                     viewModel.onUiAction(CourseUiAction.FetchData)
                 }
+
+                // TODO change behaviour depending on authType
+                // Student -> view & submit attempt
+                // Teacher -> update & create data
 
                 CourseScreen(
                     uiState = uiState,
@@ -168,12 +176,17 @@ fun NavigationScreen() {
                 val courseId = navBackStackEntry.path<Int>("courseId") ?: 0
                 val taskId = navBackStackEntry.path<Int>("taskId")
 
-                val viewModel = koinViewModel<TaskViewModel>(parameters = { parametersOf(courseId, taskId) })
+                val viewModel = koinViewModel<TaskViewModel>(parameters = { parametersOf(authenticatedType, courseId, taskId) })
                 val uiState by viewModel.uiState.collectAsState()
 
                 LaunchedEffect(Unit) {
                     viewModel.onUiAction(TaskUiAction.FetchData)
                 }
+
+                // TODO change behaviour depending on authType
+                // Student -> view & submit attempt
+                // Teacher -> update & create data
+                // On submission view mark
 
                 TaskScreen(
                     uiState = uiState,
@@ -181,7 +194,10 @@ fun NavigationScreen() {
                         when (action) {
                             TaskUiAction.CreateDiagram -> coroutineScope.launch {
                                 val diagramJson = navController.navigateForResult("$CLASS_DIAGRAM/${taskId}")?.toString() ?: ""
-                                viewModel.onUiAction(TaskUiAction.UpdateDiagram(diagramJson))
+                                when (authenticatedType) {
+                                    AuthType.TEACHER -> viewModel.onUiAction(TaskUiAction.UpdateDiagram(diagramJson))
+                                    AuthType.STUDENT -> viewModel.onUiAction(TaskUiAction.SubmitAttempt(diagramJson))
+                                }
                             }
                             TaskUiAction.SaveChanges -> if (taskId == null) navController.goBack()
                             else -> Unit
@@ -193,8 +209,12 @@ fun NavigationScreen() {
             scene(route = "$CLASS_DIAGRAM/{taskId}") { navBackStackEntry ->
                 val taskId = navBackStackEntry.path<Int>("taskId")
 
-                val viewModel = koinViewModel<ClassDiagramViewModel>(parameters = { parametersOf(taskId) })
+                val viewModel = koinViewModel<ClassDiagramViewModel>(parameters = { parametersOf(authenticatedType, taskId) })
                 val uiState by viewModel.uiState.collectAsState()
+
+                // TODO change behaviour depending on authType
+                // Student -> submit attempt
+                // Teacher -> update diagram
 
                 LaunchedEffect(Unit) {
                     fileManager.onRequestSaveData = {

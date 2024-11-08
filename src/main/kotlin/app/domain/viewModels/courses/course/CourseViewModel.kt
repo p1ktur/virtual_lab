@@ -8,11 +8,12 @@ import kotlinx.coroutines.flow.*
 import moe.tlaster.precompose.viewmodel.*
 
 class CourseViewModel(
+    authType: AuthType,
     private val courseId: Int?,
     private val serverRepository: ServerRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(CourseUiState())
+    private val _uiState = MutableStateFlow(CourseUiState(authType))
     val uiState = _uiState.asStateFlow()
 
     fun onUiAction(action: CourseUiAction) {

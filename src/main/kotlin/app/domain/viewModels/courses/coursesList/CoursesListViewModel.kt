@@ -11,7 +11,7 @@ class CoursesListViewModel(
     private val serverRepository: ServerRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(CoursesListUiState())
+    private val _uiState = MutableStateFlow(CoursesListUiState(authType))
     val uiState = _uiState.asStateFlow()
 
     fun onUiAction(action: CoursesListUiAction) {

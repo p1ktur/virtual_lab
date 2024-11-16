@@ -5,15 +5,16 @@ import androidx.compose.ui.input.pointer.*
 import app.data.fileManager.*
 import app.data.server.*
 import app.domain.auth.*
-import app.domain.umlDiagram.editing.*
 import app.domain.umlDiagram.classDiagram.component.*
 import app.domain.umlDiagram.classDiagram.connection.*
+import app.domain.umlDiagram.editing.*
 import app.domain.umlDiagram.mouse.*
 import app.domain.util.list.*
 import app.domain.util.numbers.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import moe.tlaster.precompose.viewmodel.*
+import java.net.*
 
 class ClassDiagramViewModel(
     private val taskId: Int?,
@@ -93,12 +94,16 @@ class ClassDiagramViewModel(
 
     //ACTIONS
     private fun fetchData() {
+        if (serverRepository.authenticatedType.value is AuthType.Student) return
+
         taskId?.let { id ->
             viewModelScope.launch(Dispatchers.IO) {
                 val task = serverRepository.getTask(id)
 
-                if (task != null) {
-                    val saveData = ServerJson.get().decodeFromString<SaveData>(task.diagramJson)
+                if (task != null && task.diagramJson.length > 5) {
+                    val decodedDiagramJson = URLDecoder.decode(task.diagramJson, "utf-8")
+
+                    val saveData = ServerJson.get().decodeFromString<SaveData>(decodedDiagramJson)
                     applySaveData(saveData)
                 }
             }
@@ -251,6 +256,8 @@ class ClassDiagramViewModel(
     }
 
     private fun createConnectionOn(index: Int) {
+        if (index == uiState.value.classComponents.lastIndex) return
+
         val startRef = uiState.value.classComponents.last()
 
         val newClassConnection = UMLClassConnection(

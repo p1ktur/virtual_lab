@@ -1,19 +1,14 @@
 package app.presenter.navigation
 
-import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.*
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.text.style.*
 import androidx.compose.ui.unit.*
 import app.data.fileManager.*
 import app.data.server.*
-import app.domain.auth.*
 import app.domain.actionTab.*
 import app.domain.actionTab.options.*
+import app.domain.auth.*
 import app.domain.model.*
 import app.domain.viewModels.courses.course.*
 import app.domain.viewModels.courses.coursesList.*
@@ -25,7 +20,6 @@ import app.presenter.components.common.*
 import app.presenter.components.dialog.*
 import app.presenter.screens.*
 import app.presenter.screens.classDiagram.*
-import app.presenter.theme.*
 import com.darkrockstudios.libraries.mpfilepicker.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.*
@@ -33,9 +27,7 @@ import moe.tlaster.precompose.koin.*
 import moe.tlaster.precompose.navigation.*
 import org.koin.compose.*
 import org.koin.core.parameter.*
-import java.awt.SystemColor.*
 import java.io.*
-import java.net.*
 
 @Composable
 fun NavigationScreen() {
@@ -146,10 +138,6 @@ fun NavigationScreen() {
                     viewModel.onUiAction(CoursesListUiAction.FetchData)
                 }
 
-                // TODO change behaviour depending on authType
-                // Student -> view & submit attempt
-                // Teacher -> update & create data
-
                 CoursesListScreen(
                     uiState = uiState,
                     onUiAction = { action ->
@@ -169,12 +157,11 @@ fun NavigationScreen() {
                 val uiState by viewModel.uiState.collectAsState()
 
                 LaunchedEffect(Unit) {
+                    navController.onRouteEnterCallbacks[COURSE] = {
+                        viewModel.onUiAction(CourseUiAction.FetchData)
+                    }
                     viewModel.onUiAction(CourseUiAction.FetchData)
                 }
-
-                // TODO change behaviour depending on authType
-                // Student -> view & submit attempt
-                // Teacher -> update & create data
 
                 CourseScreen(
                     uiState = uiState,
@@ -186,15 +173,28 @@ fun NavigationScreen() {
                             CourseUiAction.CreateEducationalMaterial -> navController.navigate("$EDUCATIONAL_MATERIAL/${courseId ?: uiState.course.id}/null")
                             is CourseUiAction.OpenEducationalMaterial -> navController.navigate("$EDUCATIONAL_MATERIAL/${courseId ?: uiState.course.id}/${action.educationalMaterialId}")
 
-                            is CourseUiAction.OpenStudentsList -> coroutineScope.launch {
-                                val studentId = navController.navigateForResult("$STUDENTS_LIST/${courseId ?: uiState.course.id}/${action.inverse}") as? Int
+                            is CourseUiAction.OpenStudentsList -> {
+                                navController.onRouteEnterCallbacks.remove(COURSE)
 
-                                if (studentId == null) return@launch
+                                coroutineScope.launch {
+                                    val studentId = navController.navigateForResult("$STUDENTS_LIST/${courseId ?: uiState.course.id}/${action.inverse}") as? Int
 
-                                if (action.inverse) {
-                                    viewModel.onUiAction(CourseUiAction.AddStudentToCourse(studentId))
-                                } else {
-                                    viewModel.onUiAction(CourseUiAction.RemoveStudentFromCourse(studentId))
+                                    if (studentId == null) {
+                                        navController.onRouteEnterCallbacks[COURSE] = {
+                                            viewModel.onUiAction(CourseUiAction.FetchData)
+                                        }
+                                        return@launch
+                                    }
+
+                                    if (action.inverse) {
+                                        viewModel.onUiAction(CourseUiAction.RemoveStudentFromCourse(studentId))
+                                    } else {
+                                        viewModel.onUiAction(CourseUiAction.AddStudentToCourse(studentId))
+                                    }
+
+                                    navController.onRouteEnterCallbacks[COURSE] = {
+                                        viewModel.onUiAction(CourseUiAction.FetchData)
+                                    }
                                 }
                             }
 
@@ -218,24 +218,33 @@ fun NavigationScreen() {
                 val uiState by viewModel.uiState.collectAsState()
 
                 LaunchedEffect(Unit) {
+                    navController.onRouteEnterCallbacks[TASK] = {
+                        viewModel.onUiAction(TaskUiAction.FetchData)
+                    }
                     viewModel.onUiAction(TaskUiAction.FetchData)
                 }
-
-                // TODO change behaviour depending on authType
-                // Student -> view & submit attempt
-                // Teacher -> update & create data
-                // On submission view mark
 
                 TaskScreen(
                     uiState = uiState,
                     onUiAction = { action ->
                         when (action) {
-                            TaskUiAction.CreateDiagram -> coroutineScope.launch {
-                                val diagramJson = navController.navigateForResult("$CLASS_DIAGRAM/${taskId ?: uiState.task.id}")?.toString() ?: ""
-                                when (authType) {
-                                    is AuthType.Teacher -> viewModel.onUiAction(TaskUiAction.UpdateDiagram(diagramJson))
-                                    is AuthType.Student -> viewModel.onUiAction(TaskUiAction.SubmitAttempt(diagramJson))
-                                    else -> Unit
+                            TaskUiAction.CreateDiagram -> {
+                                navController.onRouteEnterCallbacks.remove(TASK)
+
+                                coroutineScope.launch {
+                                    val diagramJson = navController.navigateForResult("$CLASS_DIAGRAM/${taskId ?: uiState.task.id}")?.toString()
+
+                                    diagramJson?.let { json ->
+                                        when (authType) {
+                                            is AuthType.Teacher -> viewModel.onUiAction(TaskUiAction.UpdateDiagram(json))
+                                            is AuthType.Student -> viewModel.onUiAction(TaskUiAction.SubmitAttempt(json))
+                                            else -> Unit
+                                        }
+                                    }
+
+                                    navController.onRouteEnterCallbacks[TASK] = {
+                                        viewModel.onUiAction(TaskUiAction.FetchData)
+                                    }
                                 }
                             }
                             is TaskUiAction.DeleteTask -> navController.goBack()
@@ -251,10 +260,6 @@ fun NavigationScreen() {
                 val viewModel = koinViewModel<ClassDiagramViewModel>(parameters = { parametersOf(taskId) })
                 val uiState by viewModel.uiState.collectAsState()
 
-                // TODO change behaviour depending on authType
-                // Student -> submit attempt
-                // Teacher -> update diagram
-
                 LaunchedEffect(Unit) {
                     fileManager.onRequestSaveData = {
                         viewModel.getSaveData()
@@ -263,6 +268,9 @@ fun NavigationScreen() {
                         viewModel.applySaveData(saveData)
                     }
 
+                    navController.onRouteEnterCallbacks[CLASS_DIAGRAM] = {
+                        viewModel.onUiAction(ClassDiagramUiAction.FetchData)
+                    }
                     viewModel.onUiAction(ClassDiagramUiAction.FetchData)
                 }
 
@@ -296,12 +304,11 @@ fun NavigationScreen() {
                 val uiState by viewModel.uiState.collectAsState()
 
                 LaunchedEffect(Unit) {
+                    navController.onRouteEnterCallbacks[EDUCATIONAL_MATERIAL] = {
+                        viewModel.onUiAction(EducationalMaterialUiAction.FetchData)
+                    }
                     viewModel.onUiAction(EducationalMaterialUiAction.FetchData)
                 }
-
-                // TODO change behaviour depending on authType
-                // Student -> view & submit attempt
-                // Teacher -> update & create data
 
                 EducationalMaterialScreen(
                     uiState = uiState,
@@ -322,6 +329,9 @@ fun NavigationScreen() {
                 val uiState by viewModel.uiState.collectAsState()
 
                 LaunchedEffect(Unit) {
+                    navController.onRouteEnterCallbacks[STUDENTS_LIST] = {
+                        viewModel.onUiAction(StudentsListUiAction.FetchData(inverse))
+                    }
                     viewModel.onUiAction(StudentsListUiAction.FetchData(inverse))
                 }
 

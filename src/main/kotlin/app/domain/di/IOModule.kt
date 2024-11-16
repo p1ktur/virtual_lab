@@ -24,6 +24,10 @@ val ioKoinModule = module {
             install(DefaultRequest) {
                 url(ServerRepository.BASE_URL)
             }
+            install(HttpRequestRetry) {
+                maxRetries = 3
+                delayMillis { 2000 }
+            }
         }
     }
 

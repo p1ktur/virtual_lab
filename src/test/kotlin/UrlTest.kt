@@ -1,22 +1,17 @@
 import app.data.server.*
 import app.domain.model.*
 import io.ktor.client.*
-import io.ktor.client.engine.cio.*
 import io.ktor.client.engine.mock.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.client.utils.*
 import io.ktor.http.*
-import io.ktor.http.content.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.util.reflect.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.*
-import kotlinx.serialization.*
-import org.junit.Test
+import org.junit.*
 
 class UrlTest {
     @Test

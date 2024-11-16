@@ -36,13 +36,21 @@ fun TabNavigator(
     val navigator = rememberNavigator()
     val navController by remember(navigator) {
         val navController = NavController(navigator).apply {
-            navigateCallback = { route ->
+            internalNavigateCallback = { route ->
                 navigationRouteStack.add(route)
                 currentRoute = route
+
+                currentRoute?.let {
+                    onRouteEnterCallbacks[getRouteFirstNode(it)]?.invoke()
+                }
             }
-            goBackCallback = {
+            internalGoBackCallback = {
                 if (navigationRouteStack.isNotEmpty()) navigationRouteStack.removeLast()
                 if (navigationRouteStack.isNotEmpty()) currentRoute = navigationRouteStack.last()
+
+                currentRoute?.let {
+                    onRouteEnterCallbacks[getRouteFirstNode(it)]?.invoke()
+                }
             }
         }
 
@@ -94,12 +102,12 @@ fun TabNavigator(
             ) {
                 navOptions.forEachIndexed { index, tabNavOption ->
                     val firstCheck = remember(currentRoute, currentEntry) {
-                        navController.compareRoutes(currentRoute, tabNavOption.route)
+                        navController.compareRoutesFirstNodes(currentRoute, tabNavOption.route)
                     }
                     val secondCheck = remember(currentRoute, currentEntry) {
                         navOptions.any { option ->
                             currentEntry?.route?.route?.let {
-                                navController.compareRoutes(it, option.route)
+                                navController.compareRoutesFirstNodes(it, option.route)
                             } ?: false
                         }
                     }
@@ -107,7 +115,7 @@ fun TabNavigator(
                     Text(
                         modifier = Modifier
                             .clickable {
-                                if (navigationAllowed && !navController.compareRoutes(currentRoute, tabNavOption.route)) {
+                                if (navigationAllowed && !navController.compareRoutesFirstNodes(currentRoute, tabNavOption.route)) {
                                     currentRoute = tabNavOption.route
                                     navController.navigate(tabNavOption.route)
                                     onNavOptionClick?.invoke(tabNavOption)

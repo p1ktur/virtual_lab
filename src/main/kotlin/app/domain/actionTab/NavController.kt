@@ -2,31 +2,35 @@ package app.domain.actionTab
 
 import moe.tlaster.precompose.navigation.*
 
+typealias Route = String
+
 class NavController(val navigator: Navigator) {
 
-    val canGoBack = navigator.canGoBack
+    val canGoBack get() = navigator.canGoBack
 
-    var navigateCallback: ((String) -> Unit)? = null
-    var goBackCallback: (() -> Unit)? = null
+    var internalNavigateCallback: ((String) -> Unit)? = null
+    var internalGoBackCallback: (() -> Unit)? = null
 
-    fun navigate(route: String) {
-        navigateCallback?.invoke(route)
+    val onRouteEnterCallbacks = mutableMapOf<String, () -> Unit>()
+
+    fun navigate(route: Route) {
+        internalNavigateCallback?.invoke(route)
         navigator.navigate(route)
     }
 
-    suspend fun navigateForResult(route: String): Any? {
-        navigateCallback?.invoke(route)
+    suspend fun navigateForResult(route: Route): Any? {
+        internalNavigateCallback?.invoke(route)
         val result = navigator.navigateForResult(route)
         return result
     }
 
     fun goBack() {
-        goBackCallback?.invoke()
+        internalGoBackCallback?.invoke()
         navigator.goBack()
     }
 
     fun goBackWith(result: Any? = null) {
-        goBackCallback?.invoke()
+        internalGoBackCallback?.invoke()
         navigator.goBackWith(result)
     }
 
@@ -34,7 +38,7 @@ class NavController(val navigator: Navigator) {
         navigator.goBack(PopUpTo(upTo))
     }
 
-    fun compareRoutes(route1: String?, route2: String?): Boolean {
+    fun compareRoutesFirstNodes(route1: Route?, route2: Route?): Boolean {
         if (route1 == null || route2 == null) return false
 
         return try {
@@ -45,6 +49,15 @@ class NavController(val navigator: Navigator) {
             }
         } catch (_: Exception) {
             false
+        }
+    }
+
+    fun getRouteFirstNode(route: Route): Route {
+        return if (route.count { it == '/' } < 2) {
+            route
+        } else {
+            val nodes = route.split("/")
+            "/${nodes[1]}"
         }
     }
 }

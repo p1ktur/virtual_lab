@@ -395,6 +395,8 @@ data class UMLClassComponent(
         result = 31 * result + fields.toTypedArray().contentHashCode()
         result = 31 * result + functions.toTypedArray().contentHashCode()
         result = 31 * result + isInterface.hashCode()
+        result = 31 * result + position.hashCode()
+        result = 31 * result + size.hashCode()
         return result
     }
 
@@ -408,6 +410,8 @@ data class UMLClassComponent(
         if (!fields.containsAll(other.fields)) return false
         if (!functions.containsAll(other.functions)) return false
         if (isInterface != other.isInterface) return false
+        if (position != other.position) return false
+        if (size != other.size) return false
 
         return true
     }

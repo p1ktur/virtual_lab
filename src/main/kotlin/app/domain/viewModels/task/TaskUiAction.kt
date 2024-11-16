@@ -14,6 +14,9 @@ sealed interface TaskUiAction {
     data object SubMaxAttempts : TaskUiAction
     data class UpdateMaxAttempts(val maxAttempts: Int) : TaskUiAction
 
+    data class UpdatePassMark(val passMark: Int) : TaskUiAction
+    data class UpdateMaxMark(val maxMark: Int) : TaskUiAction
+
     data object SaveChanges : TaskUiAction
     data object DeleteTask : TaskUiAction
 }

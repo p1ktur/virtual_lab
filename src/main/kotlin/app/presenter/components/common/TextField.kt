@@ -16,9 +16,7 @@ import androidx.compose.ui.draw.*
 import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.text.*
-import androidx.compose.ui.text.style.*
 import androidx.compose.ui.unit.*
-import app.presenter.theme.*
 
 sealed interface TextFieldFilter {
     data object Default : TextFieldFilter

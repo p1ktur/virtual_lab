@@ -5,11 +5,11 @@ import app.data.server.*
 import app.domain.auth.*
 import app.domain.model.*
 import app.domain.umlDiagram.comparing.*
-import app.domain.viewModels.studentsList.StudentsListUiState
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import moe.tlaster.precompose.viewmodel.*
-import java.text.SimpleDateFormat
+import java.net.*
+import java.text.*
 
 class TaskViewModel(
     private val courseId: Int,
@@ -37,6 +37,9 @@ class TaskViewModel(
                 TaskUiAction.SubMaxAttempts -> subMaxAttempts()
                 is TaskUiAction.UpdateMaxAttempts -> updateMaxAttempts(action.maxAttempts)
 
+                is TaskUiAction.UpdatePassMark -> updatePassMark(action.passMark)
+                is TaskUiAction.UpdateMaxMark -> updateMaxMark(action.maxMark)
+
                 TaskUiAction.SaveChanges -> saveChanges()
                 TaskUiAction.DeleteTask -> deleteTask()
             }
@@ -48,9 +51,9 @@ class TaskViewModel(
             viewModelScope.launch(Dispatchers.IO) {
                 val task = serverRepository.getTask(id)
                 val studentTaskAttempts = when (val authType = uiState.value.authType) {
-                    is AuthType.Administrator -> serverRepository.getStudentAttemptsByCourse(courseId)
-                    is AuthType.Teacher -> serverRepository.getStudentAttemptsByCourse(courseId)
-                    is AuthType.Student -> serverRepository.getStudentAttemptsByStudent(courseId, authType.user.id)
+                    is AuthType.Administrator -> serverRepository.getStudentAttemptsByTask(id)
+                    is AuthType.Teacher -> serverRepository.getStudentAttemptsByTask(id)
+                    is AuthType.Student -> serverRepository.getStudentAttemptsByTaskAndStudent(id, authType.user.id)
                 } ?: emptyList()
 
                 if (task != null) {
@@ -81,24 +84,26 @@ class TaskViewModel(
 
         taskId?.let { id ->
             viewModelScope.launch(Dispatchers.IO) {
-                val standardJson = json.decodeFromString<SaveData>(uiState.value.task.diagramJson).toCompareData()
+                val decodedDiagramJson = URLDecoder.decode(uiState.value.task.diagramJson, "utf-8")
+                val standardJson = json.decodeFromString<SaveData>(decodedDiagramJson).toCompareData()
                 val toCompareJson = json.decodeFromString<SaveData>(diagramJson).toCompareData()
                 val mark = withContext(Dispatchers.Default) {
                     umlDiagramComparer
                         .compare(standardJson, toCompareJson)
                         .value(uiState.value.task.maxMark)
                 }
-                // TODO number on backend auto set
+
+                val encodedDiagramJson = URLEncoder.encode(diagramJson, "utf-8")
                 val attempt = StudentTaskAttempt(
                     id = 0,
                     studentId = authType.user.id,
                     student = authType.user,
                     taskId = id,
-                    attemptDate = SimpleDateFormat("dd.MM.yyyy HH:mm").format(System.currentTimeMillis()),
+                    attemptDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(System.currentTimeMillis()),
                     isSuccessful = mark >= uiState.value.task.minMark,
                     number = 0,
                     mark = mark,
-                    studentDiagramJson = diagramJson
+                    studentDiagramJson = encodedDiagramJson
                 )
 
                 serverRepository.submitStudentAttempt(attempt)?.let { submittedAttempt ->
@@ -113,12 +118,15 @@ class TaskViewModel(
     }
 
     private fun updateDiagram(diagramJson: String) {
+        val encodedDiagramJson = URLEncoder.encode(diagramJson, "utf-8")
+
         _uiState.update {
             it.copy(
-                task = it.task.copy(diagramJson = diagramJson),
-                showSaveChangesButton = true
+                task = it.task.copy(diagramJson = encodedDiagramJson)
             )
         }
+
+        saveChanges()
     }
 
     private fun updateName(name: String) {
@@ -170,6 +178,24 @@ class TaskViewModel(
         }
     }
 
+    private fun updatePassMark(passMark: Int) {
+        _uiState.update {
+            it.copy(
+                task = it.task.copy(minMark = passMark),
+                showSaveChangesButton = true
+            )
+        }
+    }
+
+    private fun updateMaxMark(maxMark: Int) {
+        _uiState.update {
+            it.copy(
+                task = it.task.copy(maxMark = maxMark),
+                showSaveChangesButton = true
+            )
+        }
+    }
+
     private fun saveChanges() {
         _uiState.update {
             it.copy(
@@ -177,10 +203,11 @@ class TaskViewModel(
             )
         }
 
+        val taskToSave = uiState.value.task
+
         viewModelScope.launch(Dispatchers.IO) {
             if (taskId == null && uiState.value.task.id == 0) {
-                val authId = serverRepository.getAuthId() ?: return@launch
-                serverRepository.addTaskToCourse(authId, uiState.value.task)?.let { newId ->
+                serverRepository.addTaskToCourse(courseId, taskToSave)?.let { newId ->
                     _uiState.update {
                         it.copy(
                             task = it.task.copy(id = newId)
@@ -188,9 +215,9 @@ class TaskViewModel(
                     }
                 }
             } else if (taskId != null) {
-                serverRepository.updateTask(taskId, uiState.value.task)
+                serverRepository.updateTask(taskId, taskToSave)
             } else {
-                serverRepository.updateTask(uiState.value.task.id, uiState.value.task)
+                serverRepository.updateTask(uiState.value.task.id, taskToSave)
             }
         }
     }

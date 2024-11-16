@@ -12,10 +12,10 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.unit.*
 import app.domain.auth.*
-import app.domain.viewModels.studentsList.StudentsListUiState
 import app.domain.viewModels.task.*
 import app.presenter.components.common.*
 import app.presenter.theme.*
+import java.text.*
 
 @Composable
 fun TaskScreen(
@@ -27,7 +27,8 @@ fun TaskScreen(
     }
     val taskIsCreated = remember(uiState.task) { uiState.task.id > 0 }
 
-    // TODO show attempts left for student
+    val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS") }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -179,20 +180,101 @@ fun TaskScreen(
                     color = LocalAppTheme.current.text
                 )
             }
+            Spacer(modifier = Modifier.height(8.dp))
+            if (canEdit) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    SingleLineTextField(
+                        modifier = Modifier
+                            .width(240.dp)
+                            .padding(horizontal = 4.dp),
+                        text = uiState.task.minMark.toString(),
+                        label = "Pass Mark:",
+                        filter = TextFieldFilter.OnlyNumbers,
+                        onValueChange = { newValue ->
+                            newValue.toIntOrNull()?.let { passMark ->
+                                onUiAction(TaskUiAction.UpdatePassMark(passMark))
+                            }
+                        },
+                        maxLength = 4,
+                        showEditIcon = false,
+                        showFrame = false,
+                        textStyle = MaterialTheme.typography.bodyLarge.copy(
+                            textAlign = TextAlign.Center
+                        ),
+                        labelTextStyle = MaterialTheme.typography.bodyLarge,
+                        textColor = LocalAppTheme.current.text
+                    )
+                    SingleLineTextField(
+                        modifier = Modifier
+                            .width(240.dp)
+                            .padding(horizontal = 4.dp),
+                        text = uiState.task.maxMark.toString(),
+                        label = "Max Mark:",
+                        filter = TextFieldFilter.OnlyNumbers,
+                        onValueChange = { newValue ->
+                            newValue.toIntOrNull()?.let { maxMark ->
+                                onUiAction(TaskUiAction.UpdateMaxMark(maxMark))
+                            }
+                        },
+                        maxLength = 4,
+                        showEditIcon = false,
+                        showFrame = false,
+                        textStyle = MaterialTheme.typography.bodyLarge.copy(
+                            textAlign = TextAlign.Center
+                        ),
+                        labelTextStyle = MaterialTheme.typography.bodyLarge,
+                        textColor = LocalAppTheme.current.text
+                    )
+                }
+
+            } else {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        modifier = Modifier.padding(horizontal = 4.dp),
+                        text = "Pass Mark: ${uiState.task.minMark}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = LocalAppTheme.current.text
+                    )
+                    Text(
+                        modifier = Modifier.padding(horizontal = 4.dp),
+                        text = "Max Mark: ${uiState.task.maxMark}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = LocalAppTheme.current.text
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(24.dp))
             HorizontalDivider(
                 color = LocalAppTheme.current.text,
                 fillMaxWidth = 1f
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 4.dp),
-                text = if (uiState.authType is AuthType.Student) "Your Attempts" else "Student Attempts",
-                style = MaterialTheme.typography.bodyLarge,
-                color = LocalAppTheme.current.text
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 4.dp),
+                    text = if (uiState.authType is AuthType.Student) "Your Attempts" else "Student Attempts",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = LocalAppTheme.current.text
+                )
+                if (canEdit) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                } else {
+                    Text(
+                        modifier = Modifier.padding(horizontal = 4.dp),
+                        text = "Attempts left: ${uiState.task.maxAttempts - uiState.studentTaskAttempts.size}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = LocalAppTheme.current.text
+                    )
+                }
+            }
             if (uiState.studentTaskAttempts.isEmpty()) {
                 Text(
                     modifier = Modifier
@@ -206,7 +288,8 @@ fun TaskScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(40.dp),
+                        .height(40.dp)
+                        .padding(horizontal = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -280,7 +363,7 @@ fun TaskScreen(
                         .weight(1f)
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp),
-                    contentPadding = PaddingValues(6.dp),
+                    contentPadding = PaddingValues(vertical = 6.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     itemsIndexed(uiState.studentTaskAttempts) { index, attempt ->
@@ -307,7 +390,7 @@ fun TaskScreen(
                                 modifier = Modifier
                                     .weight(4f)
                                     .padding(horizontal = 2.dp),
-                                text = attempt.attemptDate,
+                                text = SimpleDateFormat("dd.MM.yyyy HH:mm").format(dateFormat.parse(attempt.attemptDate)),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = LocalAppTheme.current.text,
                                 textAlign = TextAlign.Center
@@ -412,7 +495,7 @@ fun TaskScreen(
                 modifier = Modifier
                     .padding(bottom = 24.dp, end = 24.dp)
                     .align(Alignment.BottomEnd),
-                text = if (uiState.task.diagramJson.isBlank()) "Create Diagram" else "Update Diagram",
+                text = if (uiState.task.diagramJson.length < 5) "Create Diagram" else "Update Diagram",
                 color = LocalAppTheme.current.text,
                 backgroundColor = LocalAppTheme.current.container,
                 onClick = {

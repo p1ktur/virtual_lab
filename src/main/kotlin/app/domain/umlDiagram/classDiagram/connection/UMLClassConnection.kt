@@ -414,6 +414,8 @@ data class UMLClassConnection(
         if (startArrowHead != other.startArrowHead) return false
         if (endArrowHead != other.endArrowHead) return false
         if (arrowType != other.arrowType) return false
+        if (middleOffset != other.middleOffset) return false
+        if (middleArchOffset != other.middleArchOffset) return false
 
         return true
     }
@@ -427,6 +429,8 @@ data class UMLClassConnection(
         result = 31 * result + startArrowHead.hashCode()
         result = 31 * result + endArrowHead.hashCode()
         result = 31 * result + arrowType.hashCode()
+        result = 31 * result + middleOffset.hashCode()
+        result = 31 * result + middleArchOffset.hashCode()
         return result
     }
 

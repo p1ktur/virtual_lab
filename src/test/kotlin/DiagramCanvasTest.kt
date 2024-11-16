@@ -2,7 +2,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.test.*
 import app.data.dataSources.*
 import app.data.server.*
-import app.domain.auth.*
 import app.domain.umlDiagram.editing.*
 import app.domain.viewModels.diagrams.classDiagram.*
 import app.presenter.screens.classDiagram.*

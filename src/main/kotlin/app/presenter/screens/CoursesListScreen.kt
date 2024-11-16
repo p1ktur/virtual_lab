@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.unit.*
 import app.domain.auth.*
-import app.domain.viewModels.courses.course.*
 import app.domain.viewModels.courses.coursesList.*
 import app.presenter.components.common.*
 import app.presenter.theme.*
@@ -66,8 +65,9 @@ fun CoursesListScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 8.dp, end = if (canScroll) 8.dp else 0.dp),
-            state = columnScrollState
+                .padding(start = 8.dp, end = if (canScroll) 16.dp else 8.dp),
+            state = columnScrollState,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
                 Spacer(modifier = Modifier.height((MaterialTheme.typography.titleLarge.fontSize.value + 24).dp))
@@ -86,7 +86,9 @@ fun CoursesListScreen(
             }
             itemsIndexed(uiState.courses, key = { _, it -> it.id }) { index, course ->
                 Box(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(

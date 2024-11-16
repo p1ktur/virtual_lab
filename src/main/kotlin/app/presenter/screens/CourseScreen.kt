@@ -17,12 +17,8 @@ import androidx.compose.ui.text.style.*
 import androidx.compose.ui.unit.*
 import app.domain.auth.*
 import app.domain.viewModels.courses.course.*
-import app.domain.viewModels.task.*
 import app.presenter.components.common.*
-import app.presenter.components.tooltip.*
 import app.presenter.theme.*
-import java.awt.Desktop
-import java.awt.SystemColor.*
 
 @Composable
 fun CourseScreen(

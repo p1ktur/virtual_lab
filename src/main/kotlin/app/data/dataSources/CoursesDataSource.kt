@@ -41,7 +41,7 @@ class CoursesDataSource(
     }
 
     // COMMON
-    suspend fun getStudentsListByCourseIdInverse(courseId: Int): List<User>? {
+    suspend fun getStudentsListByCourseId(courseId: Int): List<User>? {
         return try {
             httpClient.get {
                 url {
@@ -55,7 +55,7 @@ class CoursesDataSource(
         }
     }
 
-    suspend fun getStudentsListByCourseId(courseId: Int): List<User>? {
+    suspend fun getStudentsListByCourseIdInverse(courseId: Int): List<User>? {
         return try {
             httpClient.get {
                 url {
@@ -134,11 +134,10 @@ class CoursesDataSource(
     // TEACHER
     suspend fun addStudentToCourse(courseId: Int, studentId: Int) {
         try {
-            httpClient.post {
+            httpClient.put {
                 url {
-                    path("Course")
-                    parameters.append("courseId", courseId.toString())
-                    parameters.append("studentId", studentId.toString())
+                    path("Course/${courseId}")
+                    parameters.append("studentIdToAdd", studentId.toString())
                 }
             }
         } catch (_: Exception) {}
@@ -146,11 +145,10 @@ class CoursesDataSource(
 
     suspend fun removeStudentFromCourse(courseId: Int, studentId: Int) {
         try {
-            httpClient.delete {
+            httpClient.put {
                 url {
-                    path("Course")
-                    parameters.append("courseId", courseId.toString())
-                    parameters.append("studentId", studentId.toString())
+                    path("Course/${courseId}")
+                    parameters.append("studentIdToRemove", studentId.toString())
                 }
             }
         } catch (_: Exception) {}
@@ -208,18 +206,19 @@ class CoursesDataSource(
         } catch (_: Exception) {}
     }
 
-    suspend fun postTaskToCourse(teacherId: Int, task: Task): Int? {
+    suspend fun postTaskToCourse(courseId: Int, task: Task): Int? {
         return try {
             httpClient.post {
                 url {
                     path("Task")
-                    parameters.append("teacherId", teacherId.toString())
+                    parameters.append("courseId", courseId.toString())
 
                     contentType(ContentType.Application.Json)
                     setBody(task)
                 }
             }.body<Task>().id
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            println(e)
             null
         }
     }
@@ -234,7 +233,7 @@ class CoursesDataSource(
                     setBody(task)
                 }
             }
-        } catch (_: Exception) {}
+        } catch (_: Exception) { }
     }
 
     suspend fun deleteTaskById(taskId: Int) {
@@ -285,12 +284,12 @@ class CoursesDataSource(
         } catch (_: Exception) {}
     }
 
-    suspend fun getStudentAttemptsByCourseId(courseId: Int): List<StudentTaskAttempt>? {
+    suspend fun getStudentAttemptsByTaskId(taskId: Int): List<StudentTaskAttempt>? {
         return try {
             httpClient.get {
                 url {
                     path("StudentTaskAttempt")
-                    parameters.append("courseId", courseId.toString())
+                    parameters.append("taskId", taskId.toString())
                 }
             }.body()
         } catch (_: Exception) {
@@ -327,12 +326,12 @@ class CoursesDataSource(
         }
     }
 
-    suspend fun getStudentAttemptsByStudentId(courseId: Int, studentId: Int): List<StudentTaskAttempt>? {
+    suspend fun getStudentAttemptsByTaskAndStudentId(taskId: Int, studentId: Int): List<StudentTaskAttempt>? {
         return try {
             httpClient.get {
                 url {
                     path("StudentTaskAttempt")
-                    parameters.append("courseId", courseId.toString())
+                    parameters.append("taskId", taskId.toString())
                     parameters.append("studentId", studentId.toString())
                 }
             }.body()

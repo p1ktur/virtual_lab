@@ -116,8 +116,8 @@ class ServerRepository(
         coursesDataSource.deleteCourseById(courseId)
     }
 
-    suspend fun addTaskToCourse(teacherId: Int, task: Task): Int? {
-        return coursesDataSource.postTaskToCourse(teacherId, task)
+    suspend fun addTaskToCourse(courseId: Int, task: Task): Int? {
+        return coursesDataSource.postTaskToCourse(courseId, task)
     }
 
     suspend fun updateTask(taskId: Int, task: Task) {
@@ -140,8 +140,8 @@ class ServerRepository(
         coursesDataSource.deleteEducationalMaterialById(educationalMaterialId)
     }
 
-    suspend fun getStudentAttemptsByCourse(courseId: Int): List<StudentTaskAttempt>? {
-        return coursesDataSource.getStudentAttemptsByCourseId(courseId)
+    suspend fun getStudentAttemptsByTask(taskId: Int): List<StudentTaskAttempt>? {
+        return coursesDataSource.getStudentAttemptsByTaskId(taskId)
     }
 
     // STUDENT
@@ -149,8 +149,8 @@ class ServerRepository(
         return coursesDataSource.getCoursesByStudentId(studentId)
     }
 
-    suspend fun getStudentAttemptsByStudent(courseId: Int, studentId: Int): List<StudentTaskAttempt>? {
-        return coursesDataSource.getStudentAttemptsByStudentId(courseId, studentId)
+    suspend fun getStudentAttemptsByTaskAndStudent(taskId: Int, studentId: Int): List<StudentTaskAttempt>? {
+        return coursesDataSource.getStudentAttemptsByTaskAndStudentId(taskId, studentId)
     }
 
     suspend fun submitStudentAttempt(attempt: StudentTaskAttempt): StudentTaskAttempt? {

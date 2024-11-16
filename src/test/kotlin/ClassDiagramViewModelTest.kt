@@ -1,7 +1,6 @@
 import app.data.dataSources.*
 import app.data.fileManager.*
 import app.data.server.*
-import app.domain.auth.*
 import app.domain.umlDiagram.mouse.*
 import app.domain.viewModels.diagrams.classDiagram.*
 import io.ktor.client.*

@@ -37,15 +37,20 @@ dependencies {
 
     // Ktor
     val ktorClient = "3.0.1"
-    implementation("io.ktor:ktor-client-core:$ktorClient")
     implementation("io.ktor:ktor-client-cio:$ktorClient")
+    implementation("io.ktor:ktor-client-core:$ktorClient")
     implementation("io.ktor:ktor-client-encoding:$ktorClient")
     implementation("io.ktor:ktor-client-logging:$ktorClient")
     implementation("io.ktor:ktor-client-okhttp:$ktorClient")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorClient")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorClient")
+    testImplementation("io.ktor:ktor-client-mock:$ktorClient")
 
     // Material3
     implementation("org.jetbrains.compose.material3:material3-desktop:1.2.1")
+
+    // Network
+    implementation("org.slf4j:slf4j-nop:2.0.7")
 
     // PreCompose
     api("moe.tlaster:precompose:1.6.0-rc05")

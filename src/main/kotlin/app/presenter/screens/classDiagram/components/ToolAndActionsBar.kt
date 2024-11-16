@@ -11,8 +11,8 @@ import androidx.compose.ui.text.style.*
 import androidx.compose.ui.unit.*
 import app.domain.umlDiagram.editing.*
 import app.domain.viewModels.diagrams.classDiagram.*
-import app.presenter.components.buttons.*
 import app.presenter.components.common.*
+import app.presenter.screens.classDiagram.components.buttons.*
 import app.presenter.theme.*
 import app.test.*
 
@@ -33,15 +33,15 @@ fun ToolAndActionsBar(
                 .addTestTag("Add Component Button"),
             icon = Icons.Filled.Add,
             actionText = "Add Component",
-            color = LocalAppTheme.current.primaryScreenText,
-            backgroundColor = LocalAppTheme.current.primaryScreenThree,
+            color = LocalAppTheme.current.text,
+            backgroundColor = LocalAppTheme.current.screenThree,
             onClick = {
                 onUiAction(ClassDiagramUiAction.AddComponent)
             }
         )
         VerticalDivider(
             height = 32.dp,
-            color = LocalAppTheme.current.primaryScreenDivider
+            color = LocalAppTheme.current.divider
         )
         EditModeButton(
             modifier = Modifier
@@ -50,8 +50,8 @@ fun ToolAndActionsBar(
             icon = Icons.Outlined.PanTool,
             editMode = uiState.editMode,
             connectedEditMode = EditMode.SELECTOR,
-            color = LocalAppTheme.current.primaryScreenText,
-            backgroundColor = LocalAppTheme.current.primaryScreenThree,
+            color = LocalAppTheme.current.text,
+            backgroundColor = LocalAppTheme.current.screenThree,
             onClick = {
                 onUiAction(ClassDiagramUiAction.UpdateEditMode(EditMode.SELECTOR))
             }
@@ -63,8 +63,8 @@ fun ToolAndActionsBar(
             icon = Icons.Filled.SyncAlt,
             editMode = uiState.editMode,
             connectedEditMode = EditMode.CONNECTOR,
-            color = LocalAppTheme.current.primaryScreenText,
-            backgroundColor = LocalAppTheme.current.primaryScreenThree,
+            color = LocalAppTheme.current.text,
+            backgroundColor = LocalAppTheme.current.screenThree,
             onClick = {
                 onUiAction(ClassDiagramUiAction.UpdateEditMode(EditMode.CONNECTOR))
             }
@@ -79,7 +79,7 @@ fun ToolAndActionsBar(
             },
             style = MaterialTheme.typography.bodySmall,
             textAlign = TextAlign.End,
-            color = LocalAppTheme.current.primaryScreenText
+            color = LocalAppTheme.current.text
         )
     }
 }

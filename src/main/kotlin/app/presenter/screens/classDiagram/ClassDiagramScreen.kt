@@ -7,6 +7,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.*
 import androidx.compose.ui.text.style.*
+import androidx.compose.ui.unit.*
+import app.domain.auth.*
 import app.domain.viewModels.diagrams.classDiagram.*
 import app.presenter.components.common.*
 import app.presenter.screens.classDiagram.components.*
@@ -33,7 +35,7 @@ fun ClassDiagramScreen(
                         modifier = Modifier
                             .fillMaxWidth(0.25f)
                             .fillMaxHeight()
-                            .background(LocalAppTheme.current.primaryScreenTwo),
+                            .background(LocalAppTheme.current.screenTwo),
                         index = index,
                         reference = ref,
                         commonCounter = uiState.commonCounter,
@@ -45,7 +47,7 @@ fun ClassDiagramScreen(
                         modifier = Modifier
                             .fillMaxWidth(0.25f)
                             .fillMaxHeight()
-                            .background(LocalAppTheme.current.primaryScreenTwo),
+                            .background(LocalAppTheme.current.screenTwo),
                         index = index,
                         reference = ref,
                         commonCounter = uiState.commonCounter,
@@ -57,13 +59,13 @@ fun ClassDiagramScreen(
                         modifier = Modifier
                             .fillMaxWidth(0.25f)
                             .fillMaxHeight()
-                            .background(LocalAppTheme.current.primaryScreenTwo),
+                            .background(LocalAppTheme.current.screenTwo),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "Select component or connection",
                             style = MaterialTheme.typography.bodyLarge,
-                            color = LocalAppTheme.current.primaryScreenText,
+                            color = LocalAppTheme.current.text,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -71,7 +73,7 @@ fun ClassDiagramScreen(
             }
             VerticalDivider(
                 fillMaxHeight = 1f,
-                color = LocalAppTheme.current.primaryScreenDivider,
+                color = LocalAppTheme.current.divider,
             )
             Column(
                 modifier = Modifier
@@ -82,24 +84,40 @@ fun ClassDiagramScreen(
                 ToolAndActionsBar(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(LocalAppTheme.current.primaryScreenThree)
+                        .background(LocalAppTheme.current.screenThree)
                         .addTestTag("Tools and Actions Bar"),
                     uiState = uiState,
                     onUiAction = onUiAction
                 )
                 HorizontalDivider(
                     fillMaxWidth = 1f,
-                    color = LocalAppTheme.current.primaryScreenDivider,
+                    color = LocalAppTheme.current.divider,
                 )
                 ClassDiagramCanvas(
                     modifier = Modifier
                         .fillMaxSize()
                         .clipToBounds()
-                        .background(LocalAppTheme.current.primaryScreenThree),
+                        .background(LocalAppTheme.current.screenThree),
                     uiState = uiState,
                     onUiAction = onUiAction
                 )
             }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(0.25f)
+                .align(Alignment.BottomStart),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            app.presenter.components.buttons.TextButton(
+                modifier = Modifier.padding(bottom = 24.dp),
+                text = if (uiState.authType is AuthType.Student) "Submit" else "Save",
+                color = LocalAppTheme.current.text,
+                backgroundColor = LocalAppTheme.current.container,
+                onClick = {
+                    onUiAction(ClassDiagramUiAction.SaveChanges)
+                }
+            )
         }
     }
 }

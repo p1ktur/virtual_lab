@@ -10,12 +10,12 @@ fun Offset.smoothen(about: Float = SMOOTHEN_VALUE): Offset {
     )
 }
 
-fun Size.smoothen(about: Float = SMOOTHEN_VALUE): Size {
-    return copy(
-        width = width - width % about,
-        height = height - height % about
-    )
-}
+//fun Size.smoothen(about: Float = SMOOTHEN_VALUE): Size {
+//    return copy(
+//        width = width - width % about,
+//        height = height - height % about
+//    )
+//}
 
 fun Float.smoothen(about: Float = SMOOTHEN_VALUE): Float {
     return this - this % about

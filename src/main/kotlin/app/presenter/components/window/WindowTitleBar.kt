@@ -35,7 +35,7 @@ fun WindowScope.WindowTitleBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(32.dp)
-                    .background(LocalAppTheme.current.primaryScreenZero),
+                    .background(LocalAppTheme.current.screenZero),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -52,7 +52,7 @@ fun WindowScope.WindowTitleBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(32.dp)
-                    .background(LocalAppTheme.current.primaryScreenZero)
+                    .background(LocalAppTheme.current.screenZero)
             ) {
                 Row(
                     modifier = Modifier.fillMaxSize(),
@@ -71,12 +71,12 @@ fun WindowScope.WindowTitleBar(
         }
         HorizontalDivider(
             fillMaxWidth = 1f,
-            color = LocalAppTheme.current.primaryScreenDivider
+            color = LocalAppTheme.current.divider
         )
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(LocalAppTheme.current.primaryScreenBackground),
+                .background(LocalAppTheme.current.background),
             content = content
         )
     }
@@ -98,13 +98,13 @@ private fun TitleBarContent(
                 .aspectRatio(1f),
             painter = painterResource(Res.drawable.app_icon),
             contentDescription = "App icon",
-            colorFilter = ColorFilter.tint(LocalAppTheme.current.primaryScreenText, BlendMode.SrcAtop)
+            colorFilter = ColorFilter.tint(LocalAppTheme.current.text, BlendMode.SrcAtop)
         )
         Text(
             modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp),
             text = "Virtual Laboratory",
             style = MaterialTheme.typography.bodySmall,
-            color = LocalAppTheme.current.primaryScreenText
+            color = LocalAppTheme.current.text
         )
     }
     Row {
@@ -119,7 +119,7 @@ private fun TitleBarContent(
                 Theme.DARK -> Icons.Default.DarkMode
             },
             contentDescription = "Change theme",
-            tint = LocalAppTheme.current.primaryScreenText
+            tint = LocalAppTheme.current.text
         )
         Icon(
             modifier = Modifier
@@ -129,7 +129,7 @@ private fun TitleBarContent(
                 .padding(4.dp),
             imageVector = Icons.Default.Minimize,
             contentDescription = "Minimize app",
-            tint = LocalAppTheme.current.primaryScreenText
+            tint = LocalAppTheme.current.text
         )
         Icon(
             modifier = Modifier
@@ -139,7 +139,7 @@ private fun TitleBarContent(
                 .padding(4.dp),
             imageVector = Icons.Default.Fullscreen,
             contentDescription = "Maximize app",
-            tint = LocalAppTheme.current.primaryScreenText
+            tint = LocalAppTheme.current.text
         )
         Icon(
             modifier = Modifier
@@ -149,7 +149,7 @@ private fun TitleBarContent(
                 .padding(4.dp),
             imageVector = Icons.Default.Close,
             contentDescription = "Close app",
-            tint = LocalAppTheme.current.primaryScreenText
+            tint = LocalAppTheme.current.text
         )
     }
 }

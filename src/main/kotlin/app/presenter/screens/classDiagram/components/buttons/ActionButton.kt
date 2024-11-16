@@ -1,4 +1,4 @@
-package app.presenter.components.buttons
+package app.presenter.screens.classDiagram.components.buttons
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -10,43 +10,38 @@ import androidx.compose.ui.draw.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.vector.*
 import androidx.compose.ui.unit.*
-import app.domain.umlDiagram.editing.*
 import app.presenter.components.tooltip.*
 
 @Composable
-fun EditModeButton(
+fun ActionButton(
     modifier: Modifier,
     icon: ImageVector,
-    editMode: EditMode,
-    connectedEditMode: EditMode,
+    actionText: String,
     color: Color = MaterialTheme.colorScheme.onBackground,
     backgroundColor: Color = Color.Transparent,
     onClick: () -> Unit
 ) {
     TooltipOn(
-        text = when (connectedEditMode) {
-            EditMode.SELECTOR -> "Selector Tool"
-            EditMode.CONNECTOR -> "Connector Tool"
-        }
+        text = actionText
     ) {
         Box(
             modifier = modifier
                 .clip(CircleShape)
-                .background(backgroundColor)
-                .clickable(onClick = onClick)
                 .run {
-                    if (editMode == connectedEditMode) {
-                        this.border(0.5.dp, color, CircleShape)
-                    } else this
+                    if (backgroundColor != Color.Transparent) {
+                        this.background(backgroundColor)
+                            .border(0.5.dp, color, CircleShape)
+                    } else {
+                        this
+                    }
                 }
-                .padding(4.dp)
-                .border(0.5.dp, color, CircleShape),
+                .clickable(onClick = onClick),
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                modifier = Modifier.size(14.dp),
+                modifier = Modifier.size(16.dp),
                 imageVector = icon,
-                contentDescription = "Edit mode button",
+                contentDescription = "Action button",
                 tint = color
             )
         }

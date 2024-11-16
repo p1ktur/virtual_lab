@@ -16,12 +16,11 @@ import kotlinx.coroutines.flow.*
 import moe.tlaster.precompose.viewmodel.*
 
 class ClassDiagramViewModel(
-    authType: AuthType,
     private val taskId: Int?,
     private val serverRepository: ServerRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(ClassDiagramUiState(authType))
+    private val _uiState = MutableStateFlow(ClassDiagramUiState(serverRepository.authenticatedType.value))
     val uiState = _uiState.asStateFlow()
 
     fun onUiAction(action: ClassDiagramUiAction) {
@@ -98,8 +97,10 @@ class ClassDiagramViewModel(
             viewModelScope.launch(Dispatchers.IO) {
                 val task = serverRepository.getTask(id)
 
-                val saveData = ServerJson.get().decodeFromString<SaveData>(task.diagramJson)
-                applySaveData(saveData)
+                if (task != null) {
+                    val saveData = ServerJson.get().decodeFromString<SaveData>(task.diagramJson)
+                    applySaveData(saveData)
+                }
             }
         }
     }

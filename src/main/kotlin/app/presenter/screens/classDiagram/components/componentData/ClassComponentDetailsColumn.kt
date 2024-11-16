@@ -14,6 +14,7 @@ import app.domain.umlDiagram.classDiagram.component.*
 import app.domain.viewModels.diagrams.classDiagram.*
 import app.presenter.components.buttons.*
 import app.presenter.components.common.*
+import app.presenter.screens.classDiagram.components.buttons.*
 import app.presenter.theme.*
 
 @Composable
@@ -52,17 +53,17 @@ fun ClassComponentDetailsColumn(
                     modifier = Modifier.size(24.dp),
                     icon = Icons.Default.Delete,
                     actionText = "Delete Component",
-                    color = LocalAppTheme.current.primaryScreenText,
+                    color = LocalAppTheme.current.text,
                     onClick = {
                         onUiAction(ClassDiagramUiAction.DeleteComponent(index))
                     }
                 )
             }
-            DefaultTextField(
+            SingleLineTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 4.dp),
-                startValue = reference.name,
+                text = reference.name,
                 label = "Name:",
                 onValueChange = { newValue ->
                     onUiAction(ClassDiagramUiAction.UpdateComponentData {
@@ -73,10 +74,10 @@ fun ClassComponentDetailsColumn(
                 showEditIcon = false,
                 textStyle = MaterialTheme.typography.bodyMedium,
                 labelTextStyle = MaterialTheme.typography.labelLarge,
-                textColor = LocalAppTheme.current.primaryScreenText
+                textColor = LocalAppTheme.current.text
             )
             HorizontalDivider(
-                color = LocalAppTheme.current.primaryScreenText,
+                color = LocalAppTheme.current.text,
                 fillMaxWidth = 1f
             )
             key(commonCounter) {
@@ -86,9 +87,9 @@ fun ClassComponentDetailsColumn(
                         .padding(end = 4.dp),
                     label = "Is Interface:",
                     isChecked = reference.isInterface,
-                    textColor = LocalAppTheme.current.primaryScreenText,
-                    otherContentColor = LocalAppTheme.current.primaryScreenText,
-                    iconColor = LocalAppTheme.current.primaryScreenTwo,
+                    textColor = LocalAppTheme.current.text,
+                    otherContentColor = LocalAppTheme.current.text,
+                    iconColor = LocalAppTheme.current.screenTwo,
                     onChecked = { newValue ->
                         onUiAction(ClassDiagramUiAction.UpdateComponentData {
                             isInterface = newValue
@@ -97,7 +98,7 @@ fun ClassComponentDetailsColumn(
                 )
             }
             HorizontalDivider(
-                color = LocalAppTheme.current.primaryScreenText,
+                color = LocalAppTheme.current.text,
                 fillMaxWidth = 1f
             )
             Text(
@@ -106,7 +107,7 @@ fun ClassComponentDetailsColumn(
                     .padding(horizontal = 4.dp),
                 text = "Fields",
                 style = MaterialTheme.typography.labelLarge,
-                color = LocalAppTheme.current.primaryScreenText,
+                color = LocalAppTheme.current.text,
                 textAlign = TextAlign.Start
             )
             FieldsList(
@@ -118,7 +119,7 @@ fun ClassComponentDetailsColumn(
                 onUiAction = onUiAction
             )
             HorizontalDivider(
-                color = LocalAppTheme.current.primaryScreenText,
+                color = LocalAppTheme.current.text,
                 fillMaxWidth = 1f
             )
             Text(
@@ -127,7 +128,7 @@ fun ClassComponentDetailsColumn(
                     .padding(horizontal = 4.dp),
                 text = "Functions",
                 style = MaterialTheme.typography.labelLarge,
-                color = LocalAppTheme.current.primaryScreenText,
+                color = LocalAppTheme.current.text,
                 textAlign = TextAlign.Start
             )
             FunctionsList(
@@ -146,7 +147,7 @@ fun ClassComponentDetailsColumn(
                     .fillMaxHeight()
                     .padding(end = 1.dp)
                     .width(8.dp)
-                    .background(LocalAppTheme.current.primaryScreenTwo)
+                    .background(LocalAppTheme.current.screenTwo)
                     .align(Alignment.CenterEnd),
                 adapter = rememberScrollbarAdapter(columnScrollState),
                 style = ScrollbarStyle(
@@ -154,8 +155,8 @@ fun ClassComponentDetailsColumn(
                     thickness = 8.dp,
                     shape = RoundedCornerShape(4f),
                     hoverDurationMillis = 200,
-                    unhoverColor = LocalAppTheme.current.primaryScreenTextDimmed,
-                    hoverColor = LocalAppTheme.current.primaryScreenTextDimmedInverse
+                    unhoverColor = LocalAppTheme.current.textDimmed,
+                    hoverColor = LocalAppTheme.current.textDimmedInverse
                 )
             )
         }

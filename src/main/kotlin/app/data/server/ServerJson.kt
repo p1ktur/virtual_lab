@@ -7,6 +7,7 @@ object ServerJson {
         ignoreUnknownKeys = true
         prettyPrint = true
         encodeDefaults = true
+        coerceInputValues = true
     }
 
     fun get(): Json = json

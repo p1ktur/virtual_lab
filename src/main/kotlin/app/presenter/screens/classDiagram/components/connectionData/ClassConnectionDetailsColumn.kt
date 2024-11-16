@@ -11,8 +11,8 @@ import androidx.compose.ui.*
 import androidx.compose.ui.unit.*
 import app.domain.umlDiagram.classDiagram.connection.*
 import app.domain.viewModels.diagrams.classDiagram.*
-import app.presenter.components.buttons.*
 import app.presenter.components.common.*
+import app.presenter.screens.classDiagram.components.buttons.*
 import app.presenter.theme.*
 
 @Composable
@@ -51,17 +51,17 @@ fun ClassConnectionDetailsColumn(
                     modifier = Modifier.size(24.dp),
                     icon = Icons.Default.Delete,
                     actionText = "Delete Connection",
-                    color = LocalAppTheme.current.primaryScreenText,
+                    color = LocalAppTheme.current.text,
                     onClick = {
                         onUiAction(ClassDiagramUiAction.DeleteConnection(index))
                     }
                 )
             }
-            DefaultTextField(
+            SingleLineTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 4.dp),
-                startValue = reference.name,
+                text = reference.name,
                 label = "Name:",
                 onValueChange = { newValue ->
                     onUiAction(ClassDiagramUiAction.UpdateConnectionData {
@@ -72,10 +72,10 @@ fun ClassConnectionDetailsColumn(
                 showEditIcon = false,
                 textStyle = MaterialTheme.typography.bodyMedium,
                 labelTextStyle = MaterialTheme.typography.bodySmall,
-                textColor = LocalAppTheme.current.primaryScreenText
+                textColor = LocalAppTheme.current.text
             )
             HorizontalDivider(
-                color = LocalAppTheme.current.primaryScreenText,
+                color = LocalAppTheme.current.text,
                 fillMaxWidth = 1f
             )
             ConnectionCustomizationView(
@@ -85,7 +85,7 @@ fun ClassConnectionDetailsColumn(
             )
             if (reference.startRef.getRefClass().fields.isNotEmpty() || reference.startRef.getRefClass().functions.isNotEmpty()) {
                 HorizontalDivider(
-                    color = LocalAppTheme.current.primaryScreenText,
+                    color = LocalAppTheme.current.text,
                     fillMaxWidth = 1f
                 )
                 Text(
@@ -94,7 +94,7 @@ fun ClassConnectionDetailsColumn(
                         .padding(horizontal = 4.dp),
                     text = "Connect Start to:",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = LocalAppTheme.current.primaryScreenText
+                    color = LocalAppTheme.current.text
                 )
                 FieldsChooseList(
                     reference = reference,
@@ -113,7 +113,7 @@ fun ClassConnectionDetailsColumn(
             }
             if (reference.endRef.getRefClass().fields.isNotEmpty() || reference.endRef.getRefClass().functions.isNotEmpty()) {
                 HorizontalDivider(
-                    color = LocalAppTheme.current.primaryScreenText,
+                    color = LocalAppTheme.current.text,
                     fillMaxWidth = 1f
                 )
                 Text(
@@ -122,7 +122,7 @@ fun ClassConnectionDetailsColumn(
                         .padding(horizontal = 4.dp),
                     text = "Connect End to:",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = LocalAppTheme.current.primaryScreenText
+                    color = LocalAppTheme.current.text
                 )
                 FieldsChooseList(
                     reference = reference,
@@ -146,7 +146,7 @@ fun ClassConnectionDetailsColumn(
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(8.dp)
-                    .background(LocalAppTheme.current.primaryScreenTwo)
+                    .background(LocalAppTheme.current.screenTwo)
                     .align(Alignment.CenterEnd),
                 adapter = rememberScrollbarAdapter(columnScrollState),
                 style = ScrollbarStyle(
@@ -154,8 +154,8 @@ fun ClassConnectionDetailsColumn(
                     thickness = 8.dp,
                     shape = RoundedCornerShape(4f),
                     hoverDurationMillis = 200,
-                    unhoverColor = LocalAppTheme.current.primaryScreenTextDimmed,
-                    hoverColor = LocalAppTheme.current.primaryScreenTextDimmedInverse
+                    unhoverColor = LocalAppTheme.current.textDimmed,
+                    hoverColor = LocalAppTheme.current.textDimmedInverse
                 )
             )
         }

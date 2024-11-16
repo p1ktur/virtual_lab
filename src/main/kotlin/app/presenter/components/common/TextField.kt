@@ -1,5 +1,7 @@
 package app.presenter.components.common
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.*
@@ -16,31 +18,81 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.unit.*
+import app.presenter.theme.*
+
+sealed interface TextFieldFilter {
+    data object Default : TextFieldFilter
+    data object OnlyNumbers : TextFieldFilter
+}
 
 @Composable
-fun DefaultTextField(
+fun SingleLineTextField(
     modifier: Modifier = Modifier,
-    startValue: String,
+    text: String,
     label: String,
     onValueChange: (String) -> Unit,
+    filter: TextFieldFilter = TextFieldFilter.Default,
     showFrame: Boolean = true,
     showEditIcon: Boolean = true,
-    multiLine: Boolean = false,
     maxLength: Int = 72,
     textStyle: TextStyle,
     labelTextStyle: TextStyle,
     textColor: Color
 ) {
-    var text by remember(startValue) { mutableStateOf(startValue) }
+    var internalText by remember(text) { mutableStateOf(text) }
 
     Column(
         modifier = modifier
     ) {
         if (showFrame) {
+            val offsetTarget by remember(internalText) {
+                mutableStateOf(
+                    if (internalText.isBlank()) {
+                        Offset(
+                            x = 10f,
+                            y = textStyle.lineHeight.value + 12f
+                        )
+                    } else {
+                        Offset.Zero
+                    }
+                )
+            }
+            val labelOffset by animateOffsetAsState(
+                targetValue = offsetTarget,
+                animationSpec = tween(
+                    durationMillis = 300,
+                    easing = EaseInOut
+                ),
+                label = "Label offset animation"
+            )
+
+            val labelColorTarget by remember(internalText) {
+                mutableStateOf(
+                    if (internalText.isBlank()) {
+                        textColor.copy(0.75f)
+                    } else {
+                        textColor
+                    }
+                )
+            }
+            val labelColor by animateColorAsState(
+                targetValue = labelColorTarget,
+                animationSpec = tween(
+                    durationMillis = 300,
+                    easing = EaseInOut
+                ),
+                label = "Label color animation"
+            )
+
             Text(
+                modifier = Modifier
+                    .padding(bottom = 2.dp)
+                    .offset {
+                        IntOffset(x = labelOffset.x.toInt(), y = labelOffset.y.toInt())
+                    },
                 text = label,
                 style = labelTextStyle,
-                color = textColor
+                color = labelColor
             )
         }
         Row(
@@ -50,7 +102,7 @@ fun DefaultTextField(
                     if (showFrame) {
                         this.clip(RoundedCornerShape(6f))
                             .border(1.dp, textColor, RoundedCornerShape(6f))
-                            .padding(4.dp)
+                            .padding(vertical = 4.dp, horizontal = 8.dp)
                     } else {
                         this.padding(vertical = 4.dp)
                     }
@@ -91,14 +143,17 @@ fun DefaultTextField(
                             }
                         }
                     },
-                value = text,
+                value = internalText,
                 onValueChange = { newValue ->
                     if (newValue.length <= maxLength) {
-                        text = newValue
-                        onValueChange(text)
+                        internalText = when (filter) {
+                            TextFieldFilter.Default -> newValue
+                            TextFieldFilter.OnlyNumbers -> newValue.filter { it.isDigit() }
+                        }
+                        onValueChange(internalText)
                     }
                 },
-                singleLine = !multiLine,
+                singleLine = true,
                 textStyle = textStyle.copy(color = textColor),
                 cursorBrush = SolidColor(textColor)
             )
@@ -106,134 +161,149 @@ fun DefaultTextField(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun OptionsTextField(
+fun MultiLineTextField(
     modifier: Modifier = Modifier,
-    startValue: String,
+    text: String,
     label: String,
-    showEditIcon: Boolean = true,
-    decorated: Boolean = false,
-    options: List<String> = emptyList(),
-    onOptionSelected: (Int) -> Unit,
-    isError: Boolean = false
+    placeholder: String,
+    onValueChange: (String) -> Unit,
+    filter: TextFieldFilter = TextFieldFilter.Default,
+    showFrame: Boolean = true,
+    maxLength: Int = 288,
+    textStyle: TextStyle,
+    labelTextStyle: TextStyle,
+    placeholderTextStyle: TextStyle,
+    textColor: Color
 ) {
-    var text by remember(startValue) {
-        mutableStateOf(startValue)
-    }
+    var internalText by remember(text) { mutableStateOf(text) }
 
-    var isMenuExpanded by remember {
-        mutableStateOf(false)
-    }
-
-    LaunchedEffect(Unit) {
-        if (!options.contains(text)) text = options.firstOrNull().toString()
-    }
-
-    if (options.isEmpty()) {
-        Row(
-            modifier = modifier,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            if (showEditIcon) {
-                androidx.compose.material3.Icon(
-                    modifier = Modifier.size(24.dp),
-                    imageVector = Icons.Default.ModeEdit,
-                    contentDescription = "Edit icon",
-                    tint = MaterialTheme.colorScheme.onBackground
+    val offsetTarget by remember(internalText) {
+        mutableStateOf(
+            if (internalText.isBlank()) {
+                Offset(
+                    x = 10f,
+                    y = textStyle.lineHeight.value + 12f
                 )
-                Spacer(modifier = Modifier.width(4.dp))
+            } else {
+                Offset.Zero
             }
-            Text(
-                text = "No options",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-        }
-    } else {
-        ExposedDropdownMenuBox(
-            modifier = Modifier,
-            expanded = isMenuExpanded,
-            onExpandedChange = { newValue ->
-                isMenuExpanded = newValue
+        )
+    }
+    val labelOffset by animateOffsetAsState(
+        targetValue = offsetTarget,
+        animationSpec = tween(
+            durationMillis = 300,
+            easing = EaseInOut
+        ),
+        label = "Label offset animation"
+    )
+
+    val labelColorTarget by remember(internalText) {
+        mutableStateOf(
+            if (internalText.isBlank()) {
+                textColor.copy(0.75f)
+            } else {
+                textColor
             }
-        ) {
-            Row(
-                modifier = modifier,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                androidx.compose.material3.Text(
-                    text = label,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                if (showEditIcon) {
-                    androidx.compose.material3.Icon(
-                        modifier = Modifier.size(24.dp),
-                        imageVector = Icons.Default.Menu,
-                        contentDescription = "Edit icon",
-                        tint = MaterialTheme.colorScheme.onBackground
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
+        )
+    }
+    val labelColor by animateColorAsState(
+        targetValue = labelColorTarget,
+        animationSpec = tween(
+            durationMillis = 300,
+            easing = EaseInOut
+        ),
+        label = "Label color animation"
+    )
+
+    val labelAlphaTarget by remember(internalText) {
+        mutableStateOf(
+            if (internalText.isBlank()) {
+                0f
+            } else {
+                1f
+            }
+        )
+    }
+    val labelAlpha by animateFloatAsState(
+        targetValue = labelAlphaTarget,
+        animationSpec = tween(
+            durationMillis = 300,
+            easing = EaseInOut
+        ),
+        label = "Label color animation"
+    )
+
+    val placeholderAlphaTarget by remember(internalText) {
+        mutableStateOf(
+            if (internalText.isBlank()) {
+                1f
+            } else {
+                0f
+            }
+        )
+    }
+    val placeholderAlpha by animateFloatAsState(
+        targetValue = placeholderAlphaTarget,
+        animationSpec = tween(
+            durationMillis = 300,
+            easing = EaseInOut
+        ),
+        label = "Label color animation"
+    )
+
+    Column(
+        modifier = modifier
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(bottom = 2.dp)
+                .offset {
+                    IntOffset(x = labelOffset.x.toInt(), y = labelOffset.y.toInt())
                 }
-                Text(
-                    modifier = if (decorated) {
-                        Modifier
-                            .weight(1f)
-                            .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(5))
-                            .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(5))
+                .alpha(labelAlpha),
+            text = label,
+            style = labelTextStyle,
+            color = labelColor
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .run {
+                    if (showFrame) {
+                        this.clip(RoundedCornerShape(6f))
+                            .border(1.dp, textColor, RoundedCornerShape(6f))
                             .padding(4.dp)
                     } else {
-                        Modifier
-                    },
-                    text = text,
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        color = if (!isError) {
-                            if (decorated) {
-                                MaterialTheme.colorScheme.onBackground
-                            } else {
-                                MaterialTheme.colorScheme.onPrimaryContainer
-                            }
-                        } else {
-                            MaterialTheme.colorScheme.error
-                        },
-                        textAlign = TextAlign.End
-                    )
-                )
-            }
-            ExposedDropdownMenu(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
-                    .border(2.dp, MaterialTheme.colorScheme.primary),
-                expanded = isMenuExpanded,
-                onDismissRequest = {
-                    isMenuExpanded = false
-                }
-            ) {
-                options.forEachIndexed { index, option ->
-                    DropdownMenuItem(
-                        onClick = {
-                            text = option
-                            onOptionSelected(index)
-                            isMenuExpanded = false
-                        }
-                    ) {
-                        Text(
-                            text = option,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer,
-                            textAlign = TextAlign.End
-                        )
+                        this.padding(vertical = 4.dp)
                     }
                 }
-            }
+        ) {
+            BasicTextField(
+                modifier = modifier.fillMaxWidth(),
+                value = internalText,
+                onValueChange = { newValue ->
+                    if (newValue.length <= maxLength) {
+                        internalText = when (filter) {
+                            TextFieldFilter.Default -> newValue
+                            TextFieldFilter.OnlyNumbers -> newValue.filter { it.isDigit() }
+                        }
+                        onValueChange(internalText)
+                    }
+                },
+                textStyle = textStyle.copy(color = textColor),
+                cursorBrush = SolidColor(textColor)
+            )
+            Text(
+                modifier = Modifier
+                    .padding(start = 4.dp)
+                    .alpha(placeholderAlpha)
+                    .align(Alignment.CenterStart),
+                text = placeholder,
+                style = placeholderTextStyle,
+                color = textColor.copy(0.75f)
+            )
         }
     }
 }

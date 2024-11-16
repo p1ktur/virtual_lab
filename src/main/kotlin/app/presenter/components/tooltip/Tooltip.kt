@@ -21,7 +21,7 @@ fun TooltipOn(
                 modifier = Modifier
                     .background(Color.White, RoundedCornerShape(4f))
                     .border(0.5.dp, Color.Black, RoundedCornerShape(4f))
-                    .padding(2.dp),
+                    .padding(vertical = 2.dp, horizontal = 4.dp),
                 text = text,
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Black

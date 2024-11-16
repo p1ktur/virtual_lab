@@ -34,7 +34,7 @@ class DiagramCanvasTest {
 
     @Test
     fun `Test new Diagram appears on click`() = runComposeUiTest {
-        val classDiagramViewModel = ClassDiagramViewModel(AuthType.STUDENT, null, serverRepository)
+        val classDiagramViewModel = ClassDiagramViewModel(null, serverRepository)
 
         setContent {
             val uiState = classDiagramViewModel.uiState.collectAsState()
@@ -56,7 +56,7 @@ class DiagramCanvasTest {
 
     @Test
     fun `Test how next Diagram appears on Click`() = runComposeUiTest {
-        val classDiagramViewModel = ClassDiagramViewModel(AuthType.STUDENT, null, serverRepository)
+        val classDiagramViewModel = ClassDiagramViewModel(null, serverRepository)
 
         setContent {
             val uiState = classDiagramViewModel.uiState.collectAsState()
@@ -88,7 +88,7 @@ class DiagramCanvasTest {
 
     @Test
     fun `Test how Edit Mode Changes`() = runComposeUiTest {
-        val classDiagramViewModel = ClassDiagramViewModel(AuthType.STUDENT, null, serverRepository)
+        val classDiagramViewModel = ClassDiagramViewModel(null, serverRepository)
 
         setContent {
             val uiState = classDiagramViewModel.uiState.collectAsState()

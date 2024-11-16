@@ -17,80 +17,80 @@ enum class Theme {
 }
 
 class AppTheme(val theme: Theme) {
-    val primaryScreenZero: Color
+    val screenZero: Color
         get() = when (theme) {
-            Theme.LIGHT -> primaryScreenZeroLight
-            Theme.DARK -> primaryScreenZeroDark
+            Theme.LIGHT -> screenZeroLight
+            Theme.DARK -> screenZeroDark
         }
-    val primaryScreenOne: Color
+    val screenOne: Color
         get() = when (theme) {
-            Theme.LIGHT -> primaryScreenOneLight
-            Theme.DARK -> primaryScreenOneDark
+            Theme.LIGHT -> screenOneLight
+            Theme.DARK -> screenOneDark
         }
-    val primaryScreenOneDimmed: Color
+    val screenOneDimmed: Color
         get() = when (theme) {
-            Theme.LIGHT -> primaryScreenOneDimmedLight
-            Theme.DARK -> primaryScreenOneDimmedDark
+            Theme.LIGHT -> screenOneDimmedLight
+            Theme.DARK -> screenOneDimmedDark
         }
-    val primaryScreenTwo: Color
+    val screenTwo: Color
         get() = when (theme) {
-            Theme.LIGHT -> primaryScreenTwoLight
-            Theme.DARK -> primaryScreenTwoDark
+            Theme.LIGHT -> screenTwoLight
+            Theme.DARK -> screenTwoDark
         }
-    val primaryScreenThree: Color
+    val screenThree: Color
         get() = when (theme) {
-            Theme.LIGHT -> primaryScreenThreeLight
-            Theme.DARK -> primaryScreenThreeDark
+            Theme.LIGHT -> screenThreeLight
+            Theme.DARK -> screenThreeDark
         }
-    val primaryScreenBackground: Color
+    val background: Color
         get() = when (theme) {
-            Theme.LIGHT -> primaryScreenBackgroundLight
-            Theme.DARK -> primaryScreenBackgroundDark
+            Theme.LIGHT -> backgroundLight
+            Theme.DARK -> backgroundDark
         }
-    val primaryScreenDivider: Color
+    val divider: Color
         get() = when (theme) {
-            Theme.LIGHT -> primaryScreenDividerLight
-            Theme.DARK -> primaryScreenDividerDark
+            Theme.LIGHT -> dividerLight
+            Theme.DARK -> dividerDark
         }
-    val primaryScreenText: Color
+    val text: Color
         get() = when (theme) {
-            Theme.LIGHT -> primaryScreenTextLight
-            Theme.DARK -> primaryScreenTextDark
+            Theme.LIGHT -> textLight
+            Theme.DARK -> textDark
         }
-    val primaryScreenTextInverse: Color
+    val textInverse: Color
         get() = when (theme) {
-            Theme.LIGHT -> primaryScreenTextInverseLight
-            Theme.DARK -> primaryScreenTextInverseDark
+            Theme.LIGHT -> textInverseLight
+            Theme.DARK -> textInverseDark
         }
-    val primaryScreenTextDimmed: Color
+    val textDimmed: Color
         get() = when (theme) {
-            Theme.LIGHT -> primaryScreenTextDimmedLight
-            Theme.DARK -> primaryScreenTextDimmedDark
+            Theme.LIGHT -> textDimmedLight
+            Theme.DARK -> textDimmedDark
         }
-    val primaryScreenTextDimmedInverse: Color
+    val textDimmedInverse: Color
         get() = when (theme) {
-            Theme.LIGHT -> primaryScreenTextDimmedInverseLight
-            Theme.DARK -> primaryScreenTextDimmedInverseDark
+            Theme.LIGHT -> textDimmedInverseLight
+            Theme.DARK -> textDimmedInverseDark
         }
-    val primaryScreenTextContainer: Color
+    val container: Color
         get() = when (theme) {
-            Theme.LIGHT -> primaryScreenTextContainerLight
-            Theme.DARK -> primaryScreenTextContainerDark
+            Theme.LIGHT -> containerLight
+            Theme.DARK -> containerDark
         }
-    val primaryScreenHighlightColor: Color
+    val highlightColor: Color
         get() = when (theme) {
-            Theme.LIGHT -> primaryScreenHighlightColorLight
-            Theme.DARK -> primaryScreenHighlightColorDark
+            Theme.LIGHT -> highlightColorLight
+            Theme.DARK -> highlightColorDark
         }
-    val primaryCanvasBackground: Color
+    val canvasBackground: Color
         get() = when (theme) {
-            Theme.LIGHT -> primaryCanvasBackgroundLight
-            Theme.DARK -> primaryCanvasBackgroundDark
+            Theme.LIGHT -> canvasBackgroundLight
+            Theme.DARK -> canvasBackgroundDark
         }
-    val primaryCanvasGrid: Color
+    val canvasGrid: Color
         get() = when (theme) {
-            Theme.LIGHT -> primaryCanvasGridLight
-            Theme.DARK -> primaryCanvasGridDark
+            Theme.LIGHT -> canvasGridLight
+            Theme.DARK -> canvasGridDark
         }
 }
 

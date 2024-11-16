@@ -34,15 +34,15 @@ fun ClassDiagramCanvas(
     val umlConnectionTextStyle = MaterialTheme.typography.bodySmall
 
     // Canvas
-    val highlightColor = LocalAppTheme.current.primaryScreenHighlightColor
-    val backgroundColor = LocalAppTheme.current.primaryCanvasBackground
-    val gridColor = LocalAppTheme.current.primaryCanvasGrid
+    val highlightColor = LocalAppTheme.current.highlightColor
+    val backgroundColor = LocalAppTheme.current.canvasBackground
+    val gridColor = LocalAppTheme.current.canvasGrid
     // Component
-    val frameColor = LocalAppTheme.current.primaryScreenText
-    val containerColor = LocalAppTheme.current.primaryScreenTextContainer
-    val componentTextColor = LocalAppTheme.current.primaryScreenText
+    val frameColor = LocalAppTheme.current.text
+    val containerColor = LocalAppTheme.current.container
+    val componentTextColor = LocalAppTheme.current.text
     // Arrows
-    val arrowsColor = LocalAppTheme.current.primaryScreenText
+    val arrowsColor = LocalAppTheme.current.text
 
     fun Offset.scaledAndTranslated(): Offset = unZoom(uiState.canvasUiState.center, uiState.canvasUiState.zoom) - uiState.canvasUiState.offset
 

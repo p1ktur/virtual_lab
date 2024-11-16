@@ -33,25 +33,25 @@ fun UMLClassComponent.checkSidesForContainment(mousePosition: Offset): Component
     return ComponentContainmentResult.None
 }
 
-fun UMLClassComponent.checkVerticesForContainment(mousePosition: Offset): ComponentContainmentResult {
-    val topLeft = position
-    val containsTopLeft = mousePosition.isAround(topLeft, ComponentContainmentResult.VERTEX_CHECK_RADIUS)
-    if (containsTopLeft) return ComponentContainmentResult.Vertex(VertexDirection.TOP_LEFT)
-
-    val topRight = Offset(position.x + size.width, position.y)
-    val containsTopRight = mousePosition.isAround(topRight, ComponentContainmentResult.VERTEX_CHECK_RADIUS)
-    if (containsTopRight) return ComponentContainmentResult.Vertex(VertexDirection.TOP_RIGHT)
-
-    val bottomLeft = Offset(position.x, position.y + size.height)
-    val containsBottomLeft = mousePosition.isAround(bottomLeft, ComponentContainmentResult.VERTEX_CHECK_RADIUS)
-    if (containsBottomLeft) return ComponentContainmentResult.Vertex(VertexDirection.BOTTOM_LEFT)
-
-    val bottomRight = Offset(position.x + size.width, position.y + size.height)
-    val containsBottomRight = mousePosition.isAround(bottomRight, ComponentContainmentResult.VERTEX_CHECK_RADIUS)
-    if (containsBottomRight) return ComponentContainmentResult.Vertex(VertexDirection.BOTTOM_RIGHT)
-
-    return ComponentContainmentResult.None
-}
+//fun UMLClassComponent.checkVerticesForContainment(mousePosition: Offset): ComponentContainmentResult {
+//    val topLeft = position
+//    val containsTopLeft = mousePosition.isAround(topLeft, ComponentContainmentResult.VERTEX_CHECK_RADIUS)
+//    if (containsTopLeft) return ComponentContainmentResult.Vertex(VertexDirection.TOP_LEFT)
+//
+//    val topRight = Offset(position.x + size.width, position.y)
+//    val containsTopRight = mousePosition.isAround(topRight, ComponentContainmentResult.VERTEX_CHECK_RADIUS)
+//    if (containsTopRight) return ComponentContainmentResult.Vertex(VertexDirection.TOP_RIGHT)
+//
+//    val bottomLeft = Offset(position.x, position.y + size.height)
+//    val containsBottomLeft = mousePosition.isAround(bottomLeft, ComponentContainmentResult.VERTEX_CHECK_RADIUS)
+//    if (containsBottomLeft) return ComponentContainmentResult.Vertex(VertexDirection.BOTTOM_LEFT)
+//
+//    val bottomRight = Offset(position.x + size.width, position.y + size.height)
+//    val containsBottomRight = mousePosition.isAround(bottomRight, ComponentContainmentResult.VERTEX_CHECK_RADIUS)
+//    if (containsBottomRight) return ComponentContainmentResult.Vertex(VertexDirection.BOTTOM_RIGHT)
+//
+//    return ComponentContainmentResult.None
+//}
 
 fun UMLClassConnection.checkSegmentsForContainment(mousePosition: Offset): ConnectionContainmentResult {
     return if (drawnAsArch) checkArchSegmentsForContainment(mousePosition) else checkSimpleSegmentsForContainment(mousePosition)

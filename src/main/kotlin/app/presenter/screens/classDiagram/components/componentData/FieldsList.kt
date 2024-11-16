@@ -17,6 +17,7 @@ import app.domain.util.numbers.*
 import app.domain.viewModels.diagrams.classDiagram.*
 import app.presenter.components.buttons.*
 import app.presenter.components.common.*
+import app.presenter.screens.classDiagram.components.buttons.*
 import app.presenter.theme.*
 
 @Composable
@@ -43,7 +44,7 @@ fun FieldsList(
                 .fillMaxWidth()
                 .shadow(4.dp, RoundedCornerShape(8f))
                 .clip(RoundedCornerShape(8f))
-                .background(LocalAppTheme.current.primaryScreenTextContainer)
+                .background(LocalAppTheme.current.container)
                 .padding(6.dp)
                 .padding(end = if (canScroll) 12.dp else 0.dp)
                 .heightIn(0.dp, maxListHeight),
@@ -79,7 +80,7 @@ fun FieldsList(
                     modifier = Modifier.size(24.dp),
                     icon = Icons.Default.Add,
                     actionText = "Add Field",
-                    color = LocalAppTheme.current.primaryScreenText,
+                    color = LocalAppTheme.current.text,
                     onClick = {
                         onUiAction(ClassDiagramUiAction.UpdateComponentData {
                             fields += Field()
@@ -93,7 +94,7 @@ fun FieldsList(
                 modifier = Modifier
                     .height(maxListHeight)
                     .width(12.dp)
-                    .background(LocalAppTheme.current.primaryScreenTextContainer)
+                    .background(LocalAppTheme.current.container)
                     .padding(all = 4.dp)
                     .align(Alignment.CenterEnd),
                 adapter = rememberScrollbarAdapter(lazyColumnState),
@@ -102,8 +103,8 @@ fun FieldsList(
                     thickness = 8.dp,
                     shape = RoundedCornerShape(4f),
                     hoverDurationMillis = 200,
-                    unhoverColor = LocalAppTheme.current.primaryScreenTextDimmed,
-                    hoverColor = LocalAppTheme.current.primaryScreenTextDimmedInverse
+                    unhoverColor = LocalAppTheme.current.textDimmed,
+                    hoverColor = LocalAppTheme.current.textDimmedInverse
                 )
             )
         }
@@ -125,7 +126,7 @@ private fun FieldView(
         modifier = modifier
             .shadow(2.dp, RoundedCornerShape(8f))
             .clip(RoundedCornerShape(8f))
-            .background(LocalAppTheme.current.primaryScreenTextContainer)
+            .background(LocalAppTheme.current.container)
             .padding(vertical = 4.dp)
     ) {
         Row(
@@ -137,7 +138,7 @@ private fun FieldView(
             Text(
                 text = "(${index + 1})",
                 style = MaterialTheme.typography.labelSmall,
-                color = LocalAppTheme.current.primaryScreenText
+                color = LocalAppTheme.current.text
             )
             Row {
                 if (index == 0) {
@@ -147,7 +148,7 @@ private fun FieldView(
                         modifier = Modifier.size(16.dp),
                         icon = Icons.Default.KeyboardArrowUp,
                         actionText = "Move Field Up",
-                        color = LocalAppTheme.current.primaryScreenText,
+                        color = LocalAppTheme.current.text,
                         onClick = { onMoveField(-1) }
                     )
                 }
@@ -158,7 +159,7 @@ private fun FieldView(
                         modifier = Modifier.size(16.dp),
                         icon = Icons.Default.KeyboardArrowDown,
                         actionText = "Move Field Down",
-                        color = LocalAppTheme.current.primaryScreenText,
+                        color = LocalAppTheme.current.text,
                         onClick = { onMoveField(1) }
                     )
                 }
@@ -167,16 +168,16 @@ private fun FieldView(
                 modifier = Modifier.size(16.dp),
                 icon = Icons.Default.Delete,
                 actionText = "Delete Field",
-                color = LocalAppTheme.current.primaryScreenText,
+                color = LocalAppTheme.current.text,
                 onClick = { onDelete(index) }
             )
         }
         Spacer(modifier = Modifier.height(4.dp))
-        DefaultTextField(
+        SingleLineTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp),
-            startValue = field.name,
+            text = field.name,
             label = "Name:",
             onValueChange = { newValue ->
                 onUpdateValue {
@@ -188,13 +189,13 @@ private fun FieldView(
             showEditIcon = false,
             textStyle = MaterialTheme.typography.bodySmall,
             labelTextStyle = MaterialTheme.typography.bodySmall,
-            textColor = LocalAppTheme.current.primaryScreenText
+            textColor = LocalAppTheme.current.text
         )
-        DefaultTextField(
+        SingleLineTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp),
-            startValue = field.type,
+            text = field.type,
             label = "Type:",
             onValueChange = { newValue ->
                 onUpdateValue {
@@ -206,7 +207,7 @@ private fun FieldView(
             showEditIcon = false,
             textStyle = MaterialTheme.typography.bodySmall,
             labelTextStyle = MaterialTheme.typography.bodySmall,
-            textColor = LocalAppTheme.current.primaryScreenText
+            textColor = LocalAppTheme.current.text
         )
         key(commonCounter) {
             Row(
@@ -219,7 +220,7 @@ private fun FieldView(
                 Text(
                     text = "Visibility:",
                     style = MaterialTheme.typography.bodySmall,
-                    color = LocalAppTheme.current.primaryScreenText
+                    color = LocalAppTheme.current.text
                 )
                 Visibility.entries.forEach { visibility ->
                     VisibilityButton(
@@ -239,9 +240,9 @@ private fun FieldView(
                     .padding(horizontal = 4.dp),
                 label = "Static:",
                 isChecked = field.isStatic,
-                textColor = LocalAppTheme.current.primaryScreenText,
-                otherContentColor = LocalAppTheme.current.primaryScreenText,
-                iconColor = LocalAppTheme.current.primaryScreenTextContainer,
+                textColor = LocalAppTheme.current.text,
+                otherContentColor = LocalAppTheme.current.text,
+                iconColor = LocalAppTheme.current.container,
                 onChecked = { newValue ->
                     onUpdateValue {
                         isStatic = newValue

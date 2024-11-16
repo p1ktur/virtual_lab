@@ -1,22 +1,31 @@
 package app.presenter.navigation
 
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.*
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.text.style.*
 import androidx.compose.ui.unit.*
 import app.data.fileManager.*
 import app.data.server.*
 import app.domain.auth.*
 import app.domain.actionTab.*
 import app.domain.actionTab.options.*
+import app.domain.model.*
 import app.domain.viewModels.courses.course.*
 import app.domain.viewModels.courses.coursesList.*
 import app.domain.viewModels.diagrams.classDiagram.*
+import app.domain.viewModels.educationalMaterial.*
+import app.domain.viewModels.studentsList.*
 import app.domain.viewModels.task.*
 import app.presenter.components.common.*
 import app.presenter.components.dialog.*
 import app.presenter.screens.*
 import app.presenter.screens.classDiagram.*
+import app.presenter.theme.*
 import com.darkrockstudios.libraries.mpfilepicker.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.*
@@ -24,14 +33,17 @@ import moe.tlaster.precompose.koin.*
 import moe.tlaster.precompose.navigation.*
 import org.koin.compose.*
 import org.koin.core.parameter.*
+import java.awt.SystemColor.*
 import java.io.*
+import java.net.*
 
 @Composable
 fun NavigationScreen() {
     val coroutineScope = rememberCoroutineScope()
 
     val serverRepository = koinInject<ServerRepository>()
-    val authenticatedType by serverRepository.authenticatedType.collectAsState()
+    val authType by serverRepository.authenticatedType.collectAsState()
+    val authenticating by serverRepository.authenticating.collectAsState()
 
     val fileManager = koinInject<FileManager>()
 
@@ -55,28 +67,33 @@ fun NavigationScreen() {
         }
     }
 
+    if (authenticating) {
+        LoadingText()
+        return
+    }
+
     TabNavigator(
         navOptions = listOf(),
         actionOptions = listOf(
             TabActionOption(
                 name = "Log as Teacher",
                 action = { navController, param ->
-                    (param as? AuthType)?.let { authType ->
-                        serverRepository.authenticateAs(authType)
+                    (param as? User.UserRole)?.let { userRole ->
+                        serverRepository.authenticateAs(userRole, coroutineScope)
                         navController.clearBackStack(COURSES_LIST)
                     }
                 },
-                param = AuthType.TEACHER
+                param = User.UserRole.TEACHER
             ),
             TabActionOption(
                 name = "Log as Student",
                 action = { navController, param ->
-                    (param as? AuthType)?.let { authType ->
-                        serverRepository.authenticateAs(authType)
+                    (param as? User.UserRole)?.let { userRole ->
+                        serverRepository.authenticateAs(userRole, coroutineScope)
                         navController.clearBackStack(COURSES_LIST)
                     }
                 },
-                param = AuthType.STUDENT
+                param = User.UserRole.STUDENT
             )
         ),
         menuOptions = listOf(
@@ -122,10 +139,10 @@ fun NavigationScreen() {
             initialRoute = COURSES_LIST
         ) {
             scene(route = COURSES_LIST) {
-                val viewModel = koinViewModel<CoursesListViewModel>(parameters = { parametersOf(authenticatedType) })
+                val viewModel = koinViewModel<CoursesListViewModel>()
                 val uiState by viewModel.uiState.collectAsState()
 
-                LaunchedEffect(Unit) {
+                LaunchedEffect(authType) {
                     viewModel.onUiAction(CoursesListUiAction.FetchData)
                 }
 
@@ -148,7 +165,7 @@ fun NavigationScreen() {
             scene(route = "$COURSE/{courseId}") { navBackStackEntry ->
                 val courseId = navBackStackEntry.path<Int>("courseId")
 
-                val viewModel = koinViewModel<CourseViewModel>(parameters = { parametersOf(authenticatedType, courseId) })
+                val viewModel = koinViewModel<CourseViewModel>(parameters = { parametersOf(courseId) })
                 val uiState by viewModel.uiState.collectAsState()
 
                 LaunchedEffect(Unit) {
@@ -163,9 +180,25 @@ fun NavigationScreen() {
                     uiState = uiState,
                     onUiAction = { action ->
                         when (action) {
-                            is CourseUiAction.OpenTask -> navController.navigate("$TASK/${action.taskId}")
-                            CourseUiAction.CreateTask -> navController.navigate("$TASK/null")
-                            CourseUiAction.SaveChanges -> if (courseId == null) navController.goBack()
+                            is CourseUiAction.OpenTask -> navController.navigate("$TASK/${courseId ?: uiState.course.id}/${action.taskId}")
+                            CourseUiAction.CreateTask -> navController.navigate("$TASK/${courseId ?: uiState.course.id}/null")
+
+                            CourseUiAction.CreateEducationalMaterial -> navController.navigate("$EDUCATIONAL_MATERIAL/${courseId ?: uiState.course.id}/null")
+                            is CourseUiAction.OpenEducationalMaterial -> navController.navigate("$EDUCATIONAL_MATERIAL/${courseId ?: uiState.course.id}/${action.educationalMaterialId}")
+
+                            is CourseUiAction.OpenStudentsList -> coroutineScope.launch {
+                                val studentId = navController.navigateForResult("$STUDENTS_LIST/${courseId ?: uiState.course.id}/${action.inverse}") as? Int
+
+                                if (studentId == null) return@launch
+
+                                if (action.inverse) {
+                                    viewModel.onUiAction(CourseUiAction.AddStudentToCourse(studentId))
+                                } else {
+                                    viewModel.onUiAction(CourseUiAction.RemoveStudentFromCourse(studentId))
+                                }
+                            }
+
+                            CourseUiAction.DeleteCourse -> navController.goBack()
                             else -> Unit
                         }
                         viewModel.onUiAction(action)
@@ -173,10 +206,15 @@ fun NavigationScreen() {
                 )
             }
             scene(route = "$TASK/{courseId}/{taskId}") { navBackStackEntry ->
-                val courseId = navBackStackEntry.path<Int>("courseId") ?: 0
+                val courseId = navBackStackEntry.path<Int>("courseId")
                 val taskId = navBackStackEntry.path<Int>("taskId")
 
-                val viewModel = koinViewModel<TaskViewModel>(parameters = { parametersOf(authenticatedType, courseId, taskId) })
+                if (courseId == null) {
+                    navController.goBack()
+                    return@scene
+                }
+
+                val viewModel = koinViewModel<TaskViewModel>(parameters = { parametersOf(courseId, taskId) })
                 val uiState by viewModel.uiState.collectAsState()
 
                 LaunchedEffect(Unit) {
@@ -193,13 +231,14 @@ fun NavigationScreen() {
                     onUiAction = { action ->
                         when (action) {
                             TaskUiAction.CreateDiagram -> coroutineScope.launch {
-                                val diagramJson = navController.navigateForResult("$CLASS_DIAGRAM/${taskId}")?.toString() ?: ""
-                                when (authenticatedType) {
-                                    AuthType.TEACHER -> viewModel.onUiAction(TaskUiAction.UpdateDiagram(diagramJson))
-                                    AuthType.STUDENT -> viewModel.onUiAction(TaskUiAction.SubmitAttempt(diagramJson))
+                                val diagramJson = navController.navigateForResult("$CLASS_DIAGRAM/${taskId ?: uiState.task.id}")?.toString() ?: ""
+                                when (authType) {
+                                    is AuthType.Teacher -> viewModel.onUiAction(TaskUiAction.UpdateDiagram(diagramJson))
+                                    is AuthType.Student -> viewModel.onUiAction(TaskUiAction.SubmitAttempt(diagramJson))
+                                    else -> Unit
                                 }
                             }
-                            TaskUiAction.SaveChanges -> if (taskId == null) navController.goBack()
+                            is TaskUiAction.DeleteTask -> navController.goBack()
                             else -> Unit
                         }
                         viewModel.onUiAction(action)
@@ -209,7 +248,7 @@ fun NavigationScreen() {
             scene(route = "$CLASS_DIAGRAM/{taskId}") { navBackStackEntry ->
                 val taskId = navBackStackEntry.path<Int>("taskId")
 
-                val viewModel = koinViewModel<ClassDiagramViewModel>(parameters = { parametersOf(authenticatedType, taskId) })
+                val viewModel = koinViewModel<ClassDiagramViewModel>(parameters = { parametersOf(taskId) })
                 val uiState by viewModel.uiState.collectAsState()
 
                 // TODO change behaviour depending on authType
@@ -238,6 +277,59 @@ fun NavigationScreen() {
                                     result = ServerJson.get().encodeToString(saveData)
                                 )
                             }
+                            else -> Unit
+                        }
+                        viewModel.onUiAction(action)
+                    }
+                )
+            }
+            scene(route = "$EDUCATIONAL_MATERIAL/{courseId}/{educationalMaterialId}") { navBackStackEntry ->
+                val courseId = navBackStackEntry.path<Int>("courseId")
+                val educationalMaterialId = navBackStackEntry.path<Int>("educationalMaterialId")
+
+                if (courseId == null) {
+                    navController.goBack()
+                    return@scene
+                }
+
+                val viewModel = koinViewModel<EducationalMaterialViewModel>(parameters = { parametersOf(courseId, educationalMaterialId) })
+                val uiState by viewModel.uiState.collectAsState()
+
+                LaunchedEffect(Unit) {
+                    viewModel.onUiAction(EducationalMaterialUiAction.FetchData)
+                }
+
+                // TODO change behaviour depending on authType
+                // Student -> view & submit attempt
+                // Teacher -> update & create data
+
+                EducationalMaterialScreen(
+                    uiState = uiState,
+                    onUiAction = { action ->
+                        when (action) {
+                            EducationalMaterialUiAction.DeleteEducationalMaterial -> navController.goBack()
+                            else -> Unit
+                        }
+                        viewModel.onUiAction(action)
+                    }
+                )
+            }
+            scene(route = "$STUDENTS_LIST/{courseId}/{inverse}") { navBackStackEntry ->
+                val courseId = navBackStackEntry.path<Int>("courseId")
+                val inverse = navBackStackEntry.path<Boolean>("inverse") ?: true
+
+                val viewModel = koinViewModel<StudentsListViewModel>(parameters = { parametersOf(courseId) })
+                val uiState by viewModel.uiState.collectAsState()
+
+                LaunchedEffect(Unit) {
+                    viewModel.onUiAction(StudentsListUiAction.FetchData(inverse))
+                }
+
+                StudentsListScreen(
+                    uiState = uiState,
+                    onUiAction = { action ->
+                        when (action) {
+                            is StudentsListUiAction.SelectStudent -> navController.goBackWith(action.studentId)
                             else -> Unit
                         }
                         viewModel.onUiAction(action)

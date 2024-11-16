@@ -1,4 +1,4 @@
-package app.presenter.components.buttons
+package app.presenter.screens.classDiagram.components.buttons
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*

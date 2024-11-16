@@ -18,7 +18,8 @@ import java.awt.*
 fun main() {
     startKoin {
         modules(
-            mainKoinModule
+            navKoinModule,
+            ioKoinModule
         )
     }
 

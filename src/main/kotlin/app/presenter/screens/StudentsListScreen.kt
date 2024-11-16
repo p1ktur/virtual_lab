@@ -15,20 +15,16 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.unit.*
 import app.domain.auth.*
-import app.domain.viewModels.courses.course.*
 import app.domain.viewModels.courses.coursesList.*
+import app.domain.viewModels.studentsList.*
 import app.presenter.components.common.*
 import app.presenter.theme.*
 
 @Composable
-fun CoursesListScreen(
-    uiState: CoursesListUiState,
-    onUiAction: (CoursesListUiAction) -> Unit
+fun StudentsListScreen(
+    uiState: StudentsListUiState,
+    onUiAction: (StudentsListUiAction) -> Unit
 ) {
-    val canEdit = remember(uiState.authType) {
-        uiState.authType is AuthType.Teacher || uiState.authType is AuthType.Administrator
-    }
-
     val columnScrollState = rememberLazyListState()
     val canScroll by remember {
         derivedStateOf {
@@ -59,7 +55,7 @@ fun CoursesListScreen(
                 .padding(8.dp)
                 .alpha(screenTitleAlpha)
                 .align(Alignment.TopCenter),
-            text = "Your Courses",
+            text = "Students",
             style = MaterialTheme.typography.titleLarge,
             color = LocalAppTheme.current.text
         )
@@ -72,66 +68,60 @@ fun CoursesListScreen(
             item {
                 Spacer(modifier = Modifier.height((MaterialTheme.typography.titleLarge.fontSize.value + 24).dp))
             }
-            if (uiState.courses.isEmpty()) {
+            if (uiState.studentsList.isEmpty()) {
                 item {
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         modifier = Modifier.fillMaxWidth(),
-                        text = "No Courses Yet",
+                        text = "No Students Present",
                         style = MaterialTheme.typography.titleSmall,
                         color = LocalAppTheme.current.text,
                         textAlign = TextAlign.Center
                     )
                 }
             }
-            itemsIndexed(uiState.courses, key = { _, it -> it.id }) { index, course ->
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                onUiAction(CoursesListUiAction.OpenCourse(course.id))
-                            }
-                            .padding(horizontal = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        if (canEdit) {
-                            Spacer(modifier = Modifier.height(16.dp))
-                        } else {
-                            Spacer(modifier = Modifier.height(6.dp))
+            itemsIndexed(uiState.studentsList, key = { _, it -> it.id }) { index, student ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onUiAction(StudentsListUiAction.SelectStudent(student.id))
                         }
-                        Text(
-                            text = course.name,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = LocalAppTheme.current.text
-                        )
-                        Text(
-                            text = course.description,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = LocalAppTheme.current.text
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                    }
-                    if (canEdit) {
-                        app.presenter.components.buttons.IconButton(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .align(Alignment.TopEnd),
-                            icon = Icons.Filled.Delete,
-                            actionText = "Delete Course",
-                            color = LocalAppTheme.current.text,
-                            backgroundColor = Color.Transparent,
-                            shape = RectangleShape,
-                            onClick = {
-                                onUiAction(CoursesListUiAction.DeleteCourse(course.id))
-                            }
-                        )
-                    }
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = student.name,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = LocalAppTheme.current.text
+                    )
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = student.middleName,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = LocalAppTheme.current.text
+                    )
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = student.surname,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = LocalAppTheme.current.text
+                    )
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = student.birthDate,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = LocalAppTheme.current.text
+                    )
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = student.email,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = LocalAppTheme.current.text
+                    )
                 }
-                if (index != uiState.courses.lastIndex) {
+                if (index != uiState.studentsList.lastIndex) {
                     HorizontalDivider(
                         color = LocalAppTheme.current.divider,
                         fillMaxWidth = 0.95f
@@ -158,23 +148,6 @@ fun CoursesListScreen(
                     hoverColor = LocalAppTheme.current.textDimmedInverse
                 )
             )
-        }
-        if (canEdit) {
-            Box(
-                modifier = Modifier.align(Alignment.TopEnd)
-            ) {
-                app.presenter.components.buttons.IconButton(
-                    modifier = Modifier.size(32.dp),
-                    icon = Icons.Filled.Add,
-                    actionText = "Add Course",
-                    color = LocalAppTheme.current.text,
-                    backgroundColor = Color.Transparent,
-                    shape = RectangleShape,
-                    onClick = {
-                        onUiAction(CoursesListUiAction.CreateCourse)
-                    }
-                )
-            }
         }
     }
 }

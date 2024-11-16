@@ -41,7 +41,7 @@ fun VerticalDivider(
             .width(1.dp)
             .run {
                 if (fillMaxHeight != 0f && fillMaxHeight in 0f..1f) {
-                    fillMaxHeight()
+                    fillMaxHeight(fillMaxHeight)
                 } else {
                     height(height)
                 }

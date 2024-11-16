@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.*
+import app.presenter.theme.*
 
 @Composable
 fun DialogWindowScope.DialogWindowTitleBar(
@@ -42,7 +43,7 @@ fun DialogWindowScope.DialogWindowTitleBar(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
+                .background(LocalAppTheme.current.background),
             content = content
         )
     }

@@ -5,8 +5,9 @@ import kotlinx.serialization.*
 @Serializable
 data class StudentTaskAttempt(
     val id: Int,
-    val studentId: Int,
     val taskId: Int,
+    val studentId: Int,
+    val student: User,
     val attemptDate: String,
     val isSuccessful: Boolean,
     val number: Int,

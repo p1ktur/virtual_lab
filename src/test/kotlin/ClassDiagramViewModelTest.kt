@@ -33,7 +33,7 @@ class ClassDiagramViewModelTest {
 
     @Test
     fun `Test How ViewModel loads Save Data`() = runBlocking {
-        val classDiagramViewModel = ClassDiagramViewModel(AuthType.STUDENT, null, serverRepository)
+        val classDiagramViewModel = ClassDiagramViewModel(null, serverRepository)
         val fileManager = classDiagramViewModel.setupFileLoading()
         val uiState = classDiagramViewModel.uiState
 
@@ -47,7 +47,7 @@ class ClassDiagramViewModelTest {
 
     @Test
     fun `Test How ViewModel processes Component deleting`() = runBlocking {
-        val classDiagramViewModel = ClassDiagramViewModel(AuthType.STUDENT, null, serverRepository)
+        val classDiagramViewModel = ClassDiagramViewModel(null, serverRepository)
         val fileManager = classDiagramViewModel.setupFileLoading()
         val uiState = classDiagramViewModel.uiState
 
@@ -76,7 +76,7 @@ class ClassDiagramViewModelTest {
 
     @Test
     fun `Test How ViewModel processes click on Component`() = runBlocking {
-        val classDiagramViewModel = ClassDiagramViewModel(AuthType.STUDENT, null, serverRepository)
+        val classDiagramViewModel = ClassDiagramViewModel(null, serverRepository)
         val uiState = classDiagramViewModel.uiState
 
         assertTrue(uiState.value.classComponents.isEmpty())
@@ -93,7 +93,7 @@ class ClassDiagramViewModelTest {
 
     @Test
     fun `Test How ViewModel creates New Connection`() = runBlocking {
-        val classDiagramViewModel = ClassDiagramViewModel(AuthType.STUDENT, null, serverRepository)
+        val classDiagramViewModel = ClassDiagramViewModel(null, serverRepository)
         val uiState = classDiagramViewModel.uiState
 
         assertTrue(uiState.value.classComponents.isEmpty())
@@ -119,7 +119,7 @@ class ClassDiagramViewModelTest {
 
     @Test
     fun `Test How ViewModel processes click on Connection`() = runBlocking {
-        val classDiagramViewModel = ClassDiagramViewModel(AuthType.STUDENT, null, serverRepository)
+        val classDiagramViewModel = ClassDiagramViewModel(null, serverRepository)
         val uiState = classDiagramViewModel.uiState
 
         assertTrue(uiState.value.classComponents.isEmpty())

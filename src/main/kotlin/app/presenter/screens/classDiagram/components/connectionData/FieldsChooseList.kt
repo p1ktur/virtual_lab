@@ -29,7 +29,7 @@ fun FieldsChooseList(
             .padding(horizontal = 4.dp),
         text = "Fields",
         style = MaterialTheme.typography.bodySmall,
-        color = LocalAppTheme.current.primaryScreenText
+        color = LocalAppTheme.current.text
     )
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -72,7 +72,7 @@ fun FieldsChooseList(
                         }
                         .background(
                             if (isChosen) {
-                                LocalAppTheme.current.primaryScreenHighlightColor.copy(alpha = 0.1f)
+                                LocalAppTheme.current.highlightColor.copy(alpha = 0.1f)
                             } else if (index % 2 == 1) {
                                 Color.Black.copy(0.1f)
                             } else {
@@ -84,8 +84,8 @@ fun FieldsChooseList(
                     style = MaterialTheme.typography.labelMedium,
                     color = (if (isStart) reference.startRef else reference.endRef).run {
                         ((this as? RefConnection.ReferencedConnection)?.refType as? RefType.Field)?.let {
-                            if (it.index == index) LocalAppTheme.current.primaryScreenHighlightColor else LocalAppTheme.current.primaryScreenText
-                        } ?: LocalAppTheme.current.primaryScreenText
+                            if (it.index == index) LocalAppTheme.current.highlightColor else LocalAppTheme.current.text
+                        } ?: LocalAppTheme.current.text
                     },
                     textDecoration = if (field.isStatic) TextDecoration.Underline else null
                 )

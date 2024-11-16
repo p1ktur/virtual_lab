@@ -18,11 +18,11 @@ fun ConnectionCustomizationView(
     commonCounter: Int,
     onUiAction: (ClassDiagramUiAction) -> Unit
 ) {
-    DefaultTextField(
+    SingleLineTextField(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 4.dp),
-        startValue = reference.startText,
+        text = reference.startText,
         label = "Start text:",
         onValueChange = { newValue ->
             onUiAction(ClassDiagramUiAction.UpdateConnectionData {
@@ -33,7 +33,7 @@ fun ConnectionCustomizationView(
         showEditIcon = false,
         textStyle = MaterialTheme.typography.bodySmall,
         labelTextStyle = MaterialTheme.typography.labelMedium,
-        textColor = LocalAppTheme.current.primaryScreenText
+        textColor = LocalAppTheme.current.text
     )
     Row(
         modifier = Modifier
@@ -50,9 +50,9 @@ fun ConnectionCustomizationView(
                     arrowHead = head,
                     lookingUp = true,
                     isHighlighted = reference.startArrowHead == head,
-                    mainColor = LocalAppTheme.current.primaryScreenText,
-                    backgroundColor = LocalAppTheme.current.primaryScreenTextContainer,
-                    highlightColor = LocalAppTheme.current.primaryScreenHighlightColor,
+                    mainColor = LocalAppTheme.current.text,
+                    backgroundColor = LocalAppTheme.current.container,
+                    highlightColor = LocalAppTheme.current.highlightColor,
                     onClick = {
                         onUiAction(ClassDiagramUiAction.UpdateConnectionData {
                             startArrowHead = head
@@ -80,9 +80,9 @@ fun ConnectionCustomizationView(
                     endArrowHead = reference.endArrowHead,
                     lookingUp = false,
                     isHighlighted = reference.arrowType == type,
-                    mainColor = LocalAppTheme.current.primaryScreenText,
-                    backgroundColor = LocalAppTheme.current.primaryScreenTextContainer,
-                    highlightColor = LocalAppTheme.current.primaryScreenHighlightColor,
+                    mainColor = LocalAppTheme.current.text,
+                    backgroundColor = LocalAppTheme.current.container,
+                    highlightColor = LocalAppTheme.current.highlightColor,
                     onClick = {
                         onUiAction(ClassDiagramUiAction.UpdateConnectionData {
                             arrowType = type
@@ -107,9 +107,9 @@ fun ConnectionCustomizationView(
                     arrowHead = head,
                     lookingUp = false,
                     isHighlighted = reference.endArrowHead == head,
-                    mainColor = LocalAppTheme.current.primaryScreenText,
-                    backgroundColor = LocalAppTheme.current.primaryScreenTextContainer,
-                    highlightColor = LocalAppTheme.current.primaryScreenHighlightColor,
+                    mainColor = LocalAppTheme.current.text,
+                    backgroundColor = LocalAppTheme.current.container,
+                    highlightColor = LocalAppTheme.current.highlightColor,
                     onClick = {
                         onUiAction(ClassDiagramUiAction.UpdateConnectionData {
                             endArrowHead = head
@@ -119,11 +119,11 @@ fun ConnectionCustomizationView(
             }
         }
     }
-    DefaultTextField(
+    SingleLineTextField(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 4.dp),
-        startValue = reference.endText,
+        text = reference.endText,
         label = "End text:",
         onValueChange = { newValue ->
             onUiAction(ClassDiagramUiAction.UpdateConnectionData {
@@ -134,6 +134,6 @@ fun ConnectionCustomizationView(
         showEditIcon = false,
         textStyle = MaterialTheme.typography.bodySmall,
         labelTextStyle = MaterialTheme.typography.labelMedium,
-        textColor = LocalAppTheme.current.primaryScreenText
+        textColor = LocalAppTheme.current.text
     )
 }

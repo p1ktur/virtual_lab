@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Course(
     val id: Int = 0,
-    val name: String = "Course",
-    val description: String = "Course Description",
+    val name: String = "",
+    val description: String = "",
     val educationalMaterials: List<EducationalMaterial> = emptyList()
 )

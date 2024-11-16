@@ -11,7 +11,3 @@ inline fun <T> List<T>.forEachReversedIndexed(action: (Int, T) -> Unit) {
         action(i, get(i))
     }
 }
-
-fun <T> List<T>.preLast(): T {
-    return if (size > 1) get(lastIndex - 1) else last()
-}

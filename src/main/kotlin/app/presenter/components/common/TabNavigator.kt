@@ -83,7 +83,7 @@ fun TabNavigator(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(32.dp)
-                .background(LocalAppTheme.current.primaryScreenOne)
+                .background(LocalAppTheme.current.screenOne)
         ) {
             val rowScrollState = rememberScrollState()
             Row(
@@ -115,7 +115,7 @@ fun TabNavigator(
                             }
                             .then(
                                 if (firstCheck && secondCheck) {
-                                    Modifier.background(LocalAppTheme.current.primaryScreenOneDimmed)
+                                    Modifier.background(LocalAppTheme.current.screenOneDimmed)
                                 } else {
                                     Modifier
                                 }
@@ -124,14 +124,14 @@ fun TabNavigator(
                         text = tabNavOption.name,
                         style = MaterialTheme.typography.bodySmall,
                         color = if (firstCheck && secondCheck) {
-                            LocalAppTheme.current.primaryScreenText
+                            LocalAppTheme.current.text
                         } else {
-                            LocalAppTheme.current.primaryScreenTextInverse
+                            LocalAppTheme.current.textInverse
                         }
                     )
                     if (index != navOptions.size - 1) {
                         VerticalDivider(
-                            color = LocalAppTheme.current.primaryScreenDivider,
+                            color = LocalAppTheme.current.divider,
                             fillMaxHeight = 1f,
                             verticalPadding = 4.dp
                         )
@@ -150,11 +150,11 @@ fun TabNavigator(
                             .padding(8.dp),
                         text = tabActionOption.name,
                         style = MaterialTheme.typography.bodySmall,
-                        color = LocalAppTheme.current.primaryScreenText
+                        color = LocalAppTheme.current.text
                     )
                     if (index != actionOptions.size - 1 || localMenuOptions.isNotEmpty()) {
                         VerticalDivider(
-                            color = LocalAppTheme.current.primaryScreenDivider,
+                            color = LocalAppTheme.current.divider,
                             fillMaxHeight = 1f,
                             verticalPadding = 4.dp
                         )
@@ -171,13 +171,13 @@ fun TabNavigator(
                         .padding(8.dp),
                     imageVector = Icons.Default.Menu,
                     contentDescription = "Menu",
-                    tint = LocalAppTheme.current.primaryScreenText
+                    tint = LocalAppTheme.current.text
                 )
             }
         }
         HorizontalDivider(
             fillMaxWidth = 1f,
-            color = LocalAppTheme.current.primaryScreenDivider
+            color = LocalAppTheme.current.divider
         )
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -201,7 +201,7 @@ fun TabNavigator(
                         .padding(8.dp),
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Go back",
-                    tint = LocalAppTheme.current.primaryScreenText
+                    tint = LocalAppTheme.current.text
                 )
             }
             if (localMenuOptions.isNotEmpty()) {
@@ -216,8 +216,8 @@ fun TabNavigator(
                 ) {
                     ExposedDropdownMenu(
                         modifier = Modifier
-                            .background(LocalAppTheme.current.primaryScreenTwo)
-                            .border(1.dp, LocalAppTheme.current.primaryScreenDivider),
+                            .background(LocalAppTheme.current.screenTwo)
+                            .border(1.dp, LocalAppTheme.current.divider),
                         expanded = isMenuExpanded,
                         onDismissRequest = {
                             isMenuExpanded = false
@@ -238,7 +238,7 @@ fun TabNavigator(
                                     text = option.text,
                                     style = MaterialTheme.typography.labelMedium,
                                     color = if (option.enabled.value) {
-                                        LocalAppTheme.current.primaryScreenText
+                                        LocalAppTheme.current.text
                                     } else {
                                         Color.LightGray
                                     },

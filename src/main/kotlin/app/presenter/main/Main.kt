@@ -31,7 +31,8 @@ fun main() {
         )
 
         val isSystemInDarkTheme = isSystemInDarkTheme()
-        var appTheme by remember { mutableStateOf(if (isSystemInDarkTheme) Theme.DARK else Theme.LIGHT) }
+//        var appTheme by remember { mutableStateOf(if (isSystemInDarkTheme) Theme.DARK else Theme.LIGHT) }
+        var appTheme by remember { mutableStateOf(Theme.LIGHT) }
 
         var isMaximized by remember { mutableStateOf(false) }
         var isWindowResizeable by remember { mutableStateOf(true) }

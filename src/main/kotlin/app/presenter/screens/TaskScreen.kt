@@ -356,7 +356,7 @@ fun TaskScreen(
                 }
                 HorizontalDivider(
                     color = LocalAppTheme.current.divider,
-                    fillMaxWidth = 0.95f
+                    fillMaxWidth = 1f
                 )
                 LazyColumn(
                     modifier = Modifier

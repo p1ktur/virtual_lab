@@ -61,7 +61,11 @@ fun TabNavigator(
 
     var isMenuExpanded by remember { mutableStateOf(false) }
     val localMenuOptions = remember(menuOptions, onLogOut, currentEntry) {
-        val list = menuOptions.filter { it.associatedRoutes.contains(currentEntry?.route?.route) }.toMutableStateList()
+        val list = menuOptions.filter {
+            it.associatedRoutes.any { route ->
+                navController.compareRoutesFirstNodes(route, currentEntry?.route?.route)
+            }
+        }.toMutableStateList()
 
 //        if (onLogOut != null) list.add(
 //            MenuOption(

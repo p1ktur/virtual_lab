@@ -94,8 +94,7 @@ private fun TitleBarContent(
         Image(
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(vertical = 4.dp, horizontal = 8.dp)
-                .aspectRatio(1f),
+                .padding(vertical = 4.dp, horizontal = 8.dp),
             painter = painterResource(Res.drawable.app_icon),
             contentDescription = "App icon",
             colorFilter = ColorFilter.tint(LocalAppTheme.current.text, BlendMode.SrcAtop)

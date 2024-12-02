@@ -25,7 +25,6 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.*
 import moe.tlaster.precompose.koin.*
 import moe.tlaster.precompose.navigation.*
-import moe.tlaster.precompose.navigation.transition.*
 import org.koin.compose.*
 import org.koin.core.parameter.*
 import java.io.*
